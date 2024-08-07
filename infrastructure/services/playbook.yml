@@ -1,7 +1,0 @@
-- name: Deploy AWS CloudFormation stack
-  hosts: localhost
-  gather_facts: false
-
-  tasks:
-    - name: Create Platform stack
-      command: echo "Kick of tofu deployment"
