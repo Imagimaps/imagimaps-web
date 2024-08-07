@@ -1,0 +1,3 @@
+local_run.sh
+*.plan
+!dist/

@@ -1,0 +1,3 @@
+interface Array {
+  isEmpty: () => boolean;
+}

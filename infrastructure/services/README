@@ -1,0 +1,5 @@
+tofu apply -var-file="prod.tfvars"
+
+Todo:
+TF for CloudFront Distro
+  https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/restrict-access-to-load-balancer.html

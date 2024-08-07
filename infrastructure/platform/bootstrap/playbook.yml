@@ -1,0 +1,34 @@
+- name: Deploy CloudFormation stack
+  hosts: localhost
+  gather_facts: no
+  vars:
+    StateBucketName: "{{ state_bucket_name | default('tofu-remote-state') }}"
+    LockTableName: "{{ lock_table_name | default('tofu-remote-state-lock') }}"
+
+  tasks:
+    - name: Get the current caller identity information
+      amazon.aws.aws_caller_info:
+      register: caller_info
+
+    - debug:
+        var: caller_info
+
+    - name: Create Roles stack
+      cloudformation:
+        stack_name: open-tofu-roles
+        state: present
+        region: ap-southeast-2
+        template: "./tofu-iam.cfn.yml"
+        template_parameters:
+          StateBucketName: "{{ StateBucketName }}"
+          LockTableName: "{{ LockTableName }}"
+
+    - name: Create Remote State stack
+      cloudformation:
+        stack_name: open-tofu-remote-state
+        state: present
+        region: ap-southeast-2
+        template: "./tofu-remote-state.cfn.yml"
+        template_parameters:
+          StateBucketName: "{{ StateBucketName }}"
+          LockTableName: "{{ LockTableName }}"

@@ -1,0 +1,45 @@
+name: Build and Deploy Imagimaps Services and Modules
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/imagimaps-cicd.yml'
+      - '.github/actions/imagimaps-platform/**'
+
+permissions:
+  id-token: write
+  contents: read
+  packages: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test-imagimaps-platform-action:
+    runs-on: ubuntu-latest
+    environment: development
+    container:
+      image: botagar/github-actions-imagimaps
+    env:
+      TF_ENGINE: tofu
+      DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Test Imagimaps Platform Action
+        uses: ./.github/actions/imagimaps-platform
+        with:
+          action: deploy
+          module_dir: services/oauth2-service
+        env:
+          TF_ENGINE: ${{ vars.TF_ENGINE }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+          ARTIFACTS_AWS_ACCOUNT_ID : ${{ vars.ARTIFACTS_AWS_ACCOUNT_ID }}

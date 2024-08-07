@@ -1,0 +1,51 @@
+name: Build and Deploy Imagimaps Specific Infrastructure
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/imagimaps-infrastructure.yml'
+      - '.github/workflows/rw-deploy-aws-tf.yml'
+      - 'infrastructure/iam/**/**'
+
+permissions:
+  id-token: write
+  contents: read
+  packages: write
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  TF_ENGINE: tofu
+
+jobs:
+  service-deploy-role:
+    # I'm not sure I like using Matrix for this. It's probably better off being 3 distinct jobs.
+    strategy:
+      fail-fast: false
+      matrix:
+        environment:
+          - name: artifacts
+            workspace: imagimaps-artifacts-infrastrucutre-iam-service-deploy-role
+            plan_file_name: service-deploy-role.artifacts.tfplan
+            aws_account_id: '058264161182'
+          - name: development
+            workspace: imagimaps-development-infrastrucutre-iam-service-deploy-role
+            plan_file_name: service-deploy-role.development.tfplan
+            aws_account_id: '590183675784'
+          - name: production
+            workspace: imagimaps-production-infrastrucutre-iam-service-deploy-role
+            plan_file_name: service-deploy-role.production.tfplan
+            aws_account_id: '590183744858'
+    uses: ./.github/workflows/rw-deploy-aws-tf.yml
+    with:
+      plan_file_name: ${{ matrix.environment.plan_file_name }}
+      workspace: ${{ matrix.environment.workspace }}
+      working_directory: infrastructure/iam/service-deploy-role
+    secrets:
+      aws_account_id: ${{ matrix.environment.aws_account_id }}
+      aws_region: 'ap-southeast-2'

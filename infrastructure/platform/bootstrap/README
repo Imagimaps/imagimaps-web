@@ -1,0 +1,5 @@
+# TODO
+* Org wide autodeployed (via stacksets) IAM Role to create other roles
+* Cloudtrail monitoring (and the buckets to along with it)
+* Github User IAM role for ECR
+* Github OIDC provider

@@ -1,0 +1,17 @@
+project:
+  name: imagimaps
+platform:
+  tf_state:
+    bucket_prefix: tf-state
+    lock_table_prefix: tf-state-lock
+  environments:
+  - name: artifacts
+    short_name: artifacts
+  - name: development
+    short_name: dev
+    domain: dev.imagimaps.com
+    vpc_cidr: 10.100.0.0/16
+  - name: production
+    short_name: prod
+    domain: imagimaps.com
+    vpc_cidr: 10.200.0.0/16

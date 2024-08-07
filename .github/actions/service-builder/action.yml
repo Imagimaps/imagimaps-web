@@ -1,0 +1,22 @@
+name: Build Imagimaps Service
+description: Build and Push to ECR Imagimaps Services
+inputs:
+  service_dir:
+    description: Path from the root of the repository to the service directory
+    required: true
+  action_home:
+    description: Absolute path to the action home directory
+    required: false
+    default: /action
+  tf_engine:
+    description: TF IaC engine to use
+    required: false
+    default: tofu
+
+outputs:
+  placeholder:
+    description: 'Placeholder'
+
+runs:
+  using: docker
+  image: Dockerfile

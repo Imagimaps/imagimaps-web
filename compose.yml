@@ -1,0 +1,17 @@
+version: '3'
+services:
+  web-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.webapp
+      args:
+        run_args: "--api-only"
+    ports:
+      - 8080:8080
+
+  oauth2-service:
+    build: services/oauth2-service
+    ports:
+      - 8081:8081
+    environment:
+      - PORT=8081

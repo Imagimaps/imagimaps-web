@@ -1,0 +1,14 @@
+.tree-node {
+  &:hover {
+    background-color: #f5f5f5;
+  }
+  p {
+    display: inline;
+  }
+}
+
+.context-small {
+  font-size: 0.65em;
+  font-style: italic;
+  font-weight: lighter;
+}

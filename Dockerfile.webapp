@@ -1,0 +1,30 @@
+# Prepare workspace
+FROM node:18 AS workspace
+WORKDIR /app
+RUN corepack enable && corepack prepare pnpm@8 --activate
+COPY pnpm-lock.yaml .
+# RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store pnpm fetch
+COPY . .
+RUN pnpm install --recursive --frozen-lockfile
+
+# Build stage
+FROM workspace AS build
+# ARG service="webapp"
+WORKDIR /app
+RUN pnpm --recursive run build
+RUN pnpm --filter webapp deploy pruned
+# RUN pnpm --filter ${service} deploy --prod pruned # TODO Investigate why --prod doesn't copy over the modern bin from node_modules/.bin
+
+# Final stage
+FROM node:18-slim AS final
+ARG run_args=""
+WORKDIR /app
+ENV RUN_ARGS=$run_args
+ENV NODE_ENV=production
+ENV HUSKY=0
+COPY --from=build /app/pruned/node_modules/ ./node_modules/
+COPY --from=build /app/pruned/dist/ ./dist/
+COPY --from=build /app/pruned/modern.config.ts /app/pruned/package.json ./
+RUN mkdir src
+EXPOSE 80
+ENTRYPOINT npx modern serve $RUN_ARGS
