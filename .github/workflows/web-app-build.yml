@@ -82,13 +82,11 @@ jobs:
     environment: development
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
 
       - name: Bootstrap WebApp Infrastructure
         id: webapp-infra
