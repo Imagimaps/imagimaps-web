@@ -27,39 +27,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
         with:
           version: 9
 
-    - name: Install Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-        cache: 'pnpm'
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
 
-    - name: Install dependencies
-      run: pnpm -r install
-      env:
-        HUSKY: '0'
+      - name: Install dependencies
+        run: pnpm -r install
+        env:
+          HUSKY: '0'
 
-    - name: Build
-      run: pnpm --filter=webapp build
+      - name: Build
+        run: pnpm --filter=webapp build
 
-    - name: Assemble WebApp files for packaging
-      run: |
-        mkdir -p ${{ env.ARTIFACT_PATH }}
-        cp -r apps/webapp/dist/static ${{ env.ARTIFACT_PATH }}/static
-        cp apps/webapp/dist/html/main/index.html ${{ env.ARTIFACT_PATH }}/index.html
+      - name: Assemble WebApp files for packaging
+        run: |
+          mkdir -p ${{ env.ARTIFACT_PATH }}
+          cp -r apps/webapp/dist/static ${{ env.ARTIFACT_PATH }}/static
+          cp apps/webapp/dist/html/main/index.html ${{ env.ARTIFACT_PATH }}/index.html
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.ARTIFACT_PATH }}
-          if-no-files-found: error
-          retention-days: 7
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+            name: ${{ env.ARTIFACT_NAME }}
+            path: ${{ env.ARTIFACT_PATH }}
+            if-no-files-found: error
+            retention-days: 7
 
   build-bff:
     runs-on: ubuntu-latest
@@ -67,8 +67,8 @@ jobs:
     #   ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
     steps:
-    - name: Placeholder
-      run: echo TODO
+      - name: Placeholder
+        run: echo TODO
 
   deploy-webapp:
     needs:
