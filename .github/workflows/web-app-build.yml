@@ -1,0 +1,106 @@
+name: Build WebApp
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/webapp/**'
+      - '.github/workflows/web-app-build.yml'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  packages: write
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  ARTIFACT_NAME: webapp
+  ARTIFACT_PATH: dist/webapp
+
+jobs:
+  build-webapp:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'pnpm'
+
+    - name: Install dependencies
+      run: pnpm -r install
+      env:
+        HUSKY: '0'
+
+    - name: Build
+      run: pnpm --filter=webapp build
+
+    - name: Assemble WebApp files for packaging
+      run: |
+        mkdir -p ${{ env.ARTIFACT_PATH }}
+        cp -r apps/webapp/dist/static ${{ env.ARTIFACT_PATH }}/static
+        cp apps/webapp/dist/html/main/index.html ${{ env.ARTIFACT_PATH }}/index.html
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
+          if-no-files-found: error
+          retention-days: 7
+
+  build-bff:
+    runs-on: ubuntu-latest
+    # env:
+    #   ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+    steps:
+    - name: Placeholder
+      run: echo TODO
+
+  deploy-webapp:
+    needs:
+      - build-webapp
+    # uses: ./.github/workflows/web-app-deploy.yml
+    # with:
+    #   action: deploy
+    #   module_dir: apps/webapp
+    # secrets: inherit
+    runs-on: ubuntu-latest
+    environment: development
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+
+      - name: Bootstrap WebApp Infrastructure
+        id: webapp-infra
+        uses: Imagimaps/common-actions/.github/actions/s3-static-site@main
+        with:
+          domain: imagimaps.com
+          environment: development
+          environment_short_name: dev
+          aws_role_arn: ${{ secrets.PLATFORM_AWS_ROLE_ARN }}
+          aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+          aws_region: ${{ vars.AWS_REGION }}
+
+      - name: Deploy WebApp to S3
+        run: |
+          aws s3 cp ./${{ env.ARTIFACT_PATH }} s3://${{ steps.webapp-infra.outputs.bucket-name }} --recursive

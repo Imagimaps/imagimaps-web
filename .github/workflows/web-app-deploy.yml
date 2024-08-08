@@ -1,0 +1,28 @@
+name: Deploy Imagimaps Web App
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/imagimaps-cicd.yml'
+      - '.github/actions/imagimaps-platform/**'
+
+permissions:
+  id-token: write
+  contents: read
+  packages: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test-imagimaps-platform-action:
+    runs-on: ubuntu-latest
+    environment: development
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
