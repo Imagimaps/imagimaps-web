@@ -82,12 +82,6 @@ jobs:
     environment: development
 
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.ARTIFACT_PATH }}
-
       - name: Bootstrap WebApp Infrastructure
         id: webapp-infra
         uses: Imagimaps/common-actions/.github/actions/s3-static-site@main
@@ -99,10 +93,17 @@ jobs:
           aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
           aws_region: ${{ vars.AWS_REGION }}
 
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
+
       - name: Deploy WebApp to S3
         run: |
           echo "Deploying WebApp to S3"
           echo "Artifact Path: ${{ env.ARTIFACT_PATH }}"
           echo "Bucket Name: ${{ steps.webapp-infra.outputs.bucket-name }}"
-          echo "Whats here? \n $(ls -la)"
+          echo "Where am i? $(pwd)"
+          echo "Whats here? $(ls -la)"
           aws s3 cp ./${{ env.ARTIFACT_PATH }} s3://${{ steps.webapp-infra.outputs.bucket-name }} --recursive
