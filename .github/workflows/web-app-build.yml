@@ -101,4 +101,8 @@ jobs:
 
       - name: Deploy WebApp to S3
         run: |
+          echo "Deploying WebApp to S3"
+          echo "Artifact Path: ${{ env.ARTIFACT_PATH }}"
+          echo "Bucket Name: ${{ steps.webapp-infra.outputs.bucket-name }}"
+          echo "Whats here? \n $(ls -la)"
           aws s3 cp ./${{ env.ARTIFACT_PATH }} s3://${{ steps.webapp-infra.outputs.bucket-name }} --recursive
