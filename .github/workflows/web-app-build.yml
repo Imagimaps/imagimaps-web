@@ -67,8 +67,8 @@ jobs:
     env:
       # target-platforms: linux/amd64,linux/arm64
       target-platforms: linux/arm64
-    env:
       ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com
+    env:
 
     steps:
       - name: Checkout code
