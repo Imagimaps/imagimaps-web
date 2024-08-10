@@ -30,3 +30,25 @@ jobs:
           aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
           aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
           aws_region: ${{ vars.AWS_REGION }}
+
+  dev-bff-infra:
+    runs-on: ubuntu-latest
+    environment: development
+    env:
+      SERVICE_NAME: webapp-bff
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Bootstrap Infra for Webapp BFF
+        uses: Imagimaps/common-actions/.github/actions/bootstrap-service@main
+        with:
+          service_name: ${{ env.SERVICE_NAME }}
+          environment: development
+          environment_short_name: dev
+          aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+          aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
+          artifacts_aws_account_id: ${{ secrets.ARTIFACTS_AWS_ACCOUNT_ID }}
+          artifacts_aws_role_arn: ${{ secrets.ARTIFACTS_AWS_ROLE_ARN }}
+          aws_region: ${{ vars.AWS_REGION }}
