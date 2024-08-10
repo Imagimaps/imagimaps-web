@@ -80,6 +80,8 @@ jobs:
     # secrets: inherit
     runs-on: ubuntu-latest
     environment: development
+    env:
+      website_bucket: dev.imagimaps.com
 
     steps:
       - name: Download artifact
@@ -88,9 +90,16 @@ jobs:
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ env.ARTIFACT_PATH }}
 
+      - name: Login to AWS
+        id: login-aws
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
       - name: Deploy WebApp to S3
         run: |
           echo "Deploying WebApp to S3"
           echo "Artifact Path: ${{ env.ARTIFACT_PATH }}"
-          echo "Bucket Name: ${{ steps.webapp-infra.outputs.bucket-name }}"
-          aws s3 cp ./${{ env.ARTIFACT_PATH }} s3://dev.imagimaps.com --recursive
+          echo "Bucket Name: ${{ env.website_bucket }}"
+          aws s3 cp ./${{ env.ARTIFACT_PATH }} s3://${{ env.website_bucket }} --recursive
