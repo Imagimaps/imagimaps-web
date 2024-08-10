@@ -63,12 +63,38 @@ jobs:
 
   build-bff:
     runs-on: ubuntu-latest
-    # env:
-    #   ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+    environment: artifacts
+    env:
+      # target-platforms: linux/amd64,linux/arm64
+      target-platforms: linux/arm64
+    env:
+      ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com
 
     steps:
-      - name: Placeholder
-        run: echo TODO
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Container
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.webapp
+          build-args: |
+            run_args: "--api-only"
+          target: final
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: ${{ env.target-platforms }}
+          tags: |
+            ${{ env.ECR_REGISTRY }}/webapp-bff:latest
 
   deploy-webapp:
     needs:

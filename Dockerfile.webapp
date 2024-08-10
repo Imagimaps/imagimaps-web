@@ -1,5 +1,5 @@
 # Prepare workspace
-FROM node:18 AS workspace
+FROM node:20 AS workspace
 WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@8 --activate
 COPY pnpm-lock.yaml .
@@ -16,7 +16,7 @@ RUN pnpm --filter webapp deploy pruned
 # RUN pnpm --filter ${service} deploy --prod pruned # TODO Investigate why --prod doesn't copy over the modern bin from node_modules/.bin
 
 # Final stage
-FROM node:18-slim AS final
+FROM node:20-slim AS final
 ARG run_args=""
 WORKDIR /app
 ENV RUN_ARGS=$run_args
