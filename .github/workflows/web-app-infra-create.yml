@@ -14,10 +14,6 @@ defaults:
   run:
     shell: bash
 
-env:
-  ARTIFACT_NAME: webapp
-  ARTIFACT_PATH: dist/webapp
-
 jobs:
   dev-webapp-infra:
     runs-on: ubuntu-latest
