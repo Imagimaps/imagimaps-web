@@ -36,6 +36,7 @@ jobs:
     environment: development
     env:
       SERVICE_NAME: webapp-bff
+      SERVICE_PATH_IDENTIFIER: bff
 
     steps:
       - name: Checkout code
@@ -45,6 +46,7 @@ jobs:
         uses: Imagimaps/common-actions/.github/actions/bootstrap-service@main
         with:
           service_name: ${{ env.SERVICE_NAME }}
+          service_path_identifier: ${{ env.SERVICE_PATH_IDENTIFIER }}
           environment: development
           environment_short_name: dev
           aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
