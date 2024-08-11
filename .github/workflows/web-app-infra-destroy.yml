@@ -30,4 +30,4 @@ jobs:
           aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
           aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
           aws_region: ${{ vars.AWS_REGION }}
-          soft_destroy: true
+          destroy: true
