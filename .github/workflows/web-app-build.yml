@@ -159,6 +159,6 @@ jobs:
           environment_short_name: dev
           service_name: ${{ env.SERVICE_NAME }}
           aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
-          aws_role_arn: ${{ secrets.PLATFORM_AWS_ROLE_ARN }}
+          aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
           artifacts_aws_account_id: ${{ secrets.ARTIFACTS_AWS_ACCOUNT_ID }}
           aws_region: ${{ vars.AWS_REGION }}
