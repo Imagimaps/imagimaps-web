@@ -105,7 +105,7 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: ${{ env.target-platforms }}
           tags: |
-            ${{ env.ECR_REGISTRY }}/webapp-bff:latest
+            ${{ env.ECR_REGISTRY }}/imagimaps/service/webapp-bff:latest
 
   deploy-webapp:
     needs:
