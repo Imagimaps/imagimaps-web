@@ -139,3 +139,26 @@ jobs:
           echo "Artifact Path: ${{ env.ARTIFACT_PATH }}"
           echo "Bucket Name: ${{ env.website_bucket }}"
           aws s3 cp ./${{ env.ARTIFACT_PATH }} s3://${{ env.website_bucket }} --recursive
+
+  deploy-bff:
+    needs:
+      - build-bff
+    runs-on: ubuntu-latest
+    environment: development
+    env:
+      SERVICE_NAME: webapp-bff
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to development
+        uses: Imagimaps/common-actions/.github/actions/deploy-service@main
+        with:
+          environment: development
+          environment_short_name: dev
+          service_name: ${{ env.SERVICE_NAME }}
+          aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+          aws_role_arn: ${{ secrets.PLATFORM_AWS_ROLE_ARN }}
+          artifacts_aws_account_id: ${{ secrets.ARTIFACTS_AWS_ACCOUNT_ID }}
+          aws_region: ${{ vars.AWS_REGION }}
