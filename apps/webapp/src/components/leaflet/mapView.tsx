@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer } from 'react-leaflet';
 import L, { CRS, Point, latLng } from 'leaflet';
-import GET, { FetchMapResponse } from '@api/map/[world_id]/[map_id]';
+import GET, { FetchMapResponse } from 'api/bff/map/[world_id]/[map_id]';
 
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';

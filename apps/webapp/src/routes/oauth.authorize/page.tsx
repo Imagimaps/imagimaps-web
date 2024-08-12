@@ -1,6 +1,6 @@
 import { useSearchParams } from '@modern-js/runtime/router';
 import { useEffect } from 'react';
-import { post as submitToken } from '@api/auth/[provider]';
+import { post as submitToken } from '@api/bff/auth/[provider]';
 import { OAuth2Providers } from 'paper-glue';
 
 const Callback = () => {

@@ -1,6 +1,6 @@
 import { Helmet } from '@modern-js/runtime/head';
 import { useEffect } from 'react';
-import GetAuthTokenLink from '@api/auth/[provider]';
+import GetAuthTokenLink from '@api/bff/auth/[provider]';
 import { OAuth2Providers } from 'paper-glue';
 import { useNavigate } from '@modern-js/runtime/router';
 

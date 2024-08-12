@@ -8,7 +8,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@shared/*": ["./shared/*"],
-      "@api/*": ["./api/*"],
+      "@api/*": ["api/*"],
       "@assets/*": ["./assets/*"],
       "@ext/*": ["./language-extensions/*"]
     }
