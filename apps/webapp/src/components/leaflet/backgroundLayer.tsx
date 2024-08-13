@@ -12,10 +12,21 @@ import { MapDataModel } from './mapDataModel';
 // }
 
 const BackgroundLayer: FC = () => {
+  const { hostname } = window.location;
+
   const [map] = useModel(MapDataModel);
 
+  const [mapApiHost, setMapApiHost] = useState<string>('http://localhost:8082');
   const [imgSrc, setImgSrc] = useState<string | undefined>();
   const [bounds, setBounds] = useState<LatLngBounds | undefined>();
+
+  useEffect(() => {
+    if (hostname === 'localhost') {
+      setMapApiHost('http://localhost:8082');
+    } else {
+      setMapApiHost(`https://${hostname}`);
+    }
+  }, [hostname]);
 
   useEffect(() => {
     const topology = map.activeTopology;
@@ -26,14 +37,13 @@ const BackgroundLayer: FC = () => {
     );
     setImgSrc(baseImageSrc);
     setBounds(yxBounds);
-    console.log('BGSrc: ', baseImageSrc);
   }, [map.activeTopology]);
 
   return imgSrc && bounds ? (
     <>
       {/* <ImageOverlay url={imgSrc} bounds={bounds} opacity={0.3} /> */}
       <TileLayer
-        url="http://localhost:8082/map/tile/{z}/{x}/{y}"
+        url={`${mapApiHost}/api/map/tile/{z}/{x}/{y}.png`}
         bounds={bounds}
         tms={false}
         opacity={0.3}
