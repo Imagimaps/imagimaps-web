@@ -1,5 +1,5 @@
 # Prepare workspace
-FROM node:18 AS workspace
+FROM node:20 AS workspace
 WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@8 --activate
 COPY pnpm-lock.yaml .

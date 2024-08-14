@@ -4,6 +4,8 @@ import { OAuth2Providers } from 'paper-glue';
 import hash from 'object-hash';
 
 export const getDiscordOAuth2TokenLink = () => {
+  // Get the OAuth2 token link for Discord from ${entrypointUrl}/api/auth/user/authenticate
+
   // TODO: Move to OAuth2 Service. This function becomes a GET call to that service
   const discordOauth2TokenLink = new URL('https://discord.com');
   discordOauth2TokenLink.pathname = '/api/oauth2/authorize';

@@ -7,17 +7,23 @@ import { useNavigate } from '@modern-js/runtime/router';
 import ImagimapsSplash from '@assets/images/imagimaps_compressed.png';
 import ImagimapsIco from '@assets/icons/imagimaps.ico';
 import AuthDiscordCard from '@/components/auth-providers/discord-card';
+import { useAuth } from '@/hooks/auth';
 
 import './index.css';
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
     GetAuthTokenLink(OAuth2Providers.Discord).then(res => {
       console.log(res);
     });
   }, []);
+
+  useEffect(() => {
+    console.log('user', user, isAuthenticated);
+  }, [user, isAuthenticated]);
 
   return (
     <div className="container-box">
@@ -34,15 +40,20 @@ const Index = () => {
         >
           Imagimaps
         </div>
+        {isAuthenticated && (
+          <p className="description">Welcome back, {user?.name}!</p>
+        )}
         <p className="description">
           Start exploring your worlds with Imagimaps!
         </p>
         <button onClick={() => navigate('/map/test_room/leaflet')}>
           Go to map engine dev playground
         </button>
-        <div className="grid">
-          <AuthDiscordCard />
-        </div>
+        {!isAuthenticated && (
+          <div className="grid">
+            <AuthDiscordCard />
+          </div>
+        )}
       </main>
     </div>
   );

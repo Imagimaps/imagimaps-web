@@ -20,7 +20,9 @@
     "modern.config.ts",
     "api",
     "assets",
-    "language-extensions"
+    "language-extensions",
+    "types",
+    "hooks",
   ],
   "exclude": ["**/node_modules"]
 }
