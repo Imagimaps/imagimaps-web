@@ -11,12 +11,19 @@ import { MapDataModel } from './mapDataModel';
 //   offset: WorldSpaceCoords;
 // }
 
+const COMMUNITY_ID = '0';
+const WORLD_ID = '0';
+const MAP_ID = '0';
+const LAYER_ID = '0';
+
 const BackgroundLayer: FC = () => {
   const { hostname } = window.location;
 
   const [map] = useModel(MapDataModel);
 
-  const [mapApiHost, setMapApiHost] = useState<string>('http://localhost:8082');
+  const [mapTileCDNHost, setMapApiHost] = useState<string>(
+    'http://localhost:8082',
+  );
   const [imgSrc, setImgSrc] = useState<string | undefined>();
   const [bounds, setBounds] = useState<LatLngBounds | undefined>();
 
@@ -24,7 +31,7 @@ const BackgroundLayer: FC = () => {
     if (hostname === 'localhost') {
       setMapApiHost('http://localhost:8082');
     } else {
-      setMapApiHost(`https://${hostname}`);
+      setMapApiHost(`https://cdn.${hostname}`);
     }
   }, [hostname]);
 
@@ -43,7 +50,7 @@ const BackgroundLayer: FC = () => {
     <>
       {/* <ImageOverlay url={imgSrc} bounds={bounds} opacity={0.3} /> */}
       <TileLayer
-        url={`${mapApiHost}/api/map/tile/{z}/{x}/{y}.png`}
+        url={`${mapTileCDNHost}/${COMMUNITY_ID}/${WORLD_ID}/${MAP_ID}/${LAYER_ID}/{z}_{x}_{y}.png`}
         bounds={bounds}
         tms={false}
         opacity={0.3}
