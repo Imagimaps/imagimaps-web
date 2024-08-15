@@ -22,6 +22,7 @@
     "nanoid": "3",
     "object-hash": "^3.0.0",
     "paper-glue": "workspace:*",
+    "primereact": "^10.8.2",
     "react": "~18.2.0",
     "react-arborist": "^3.4.0",
     "react-collapse": "^5.1.1",
