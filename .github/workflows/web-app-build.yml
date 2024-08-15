@@ -8,6 +8,8 @@ on:
       - 'apps/webapp/**'
       - 'Dockerfile.webapp'
       - '.github/workflows/web-app-build.yml'
+  schedule:
+    - cron: '30 21 * * *' # 07:30 AEST (9:30pm UTC)
   workflow_dispatch:
 
 permissions:
@@ -24,7 +26,31 @@ env:
   ARTIFACT_PATH: dist/webapp
 
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      webapp: ${{ steps.filter.outputs.webapp }}
+      bff: ${{ steps.filter.outputs.bff }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            webapp:
+              - 'apps/webapp/**'
+              - '!apps/webapp/api/**'
+              - 'Dockerfile.webapp'
+              - '.github/workflows/web-app-build.yml'
+            bff:
+              - 'apps/webapp/api/**'
+
   build-webapp:
+    needs:
+      - detect-changes
+    if: needs.detect-changes.outputs.webapp == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -63,6 +89,9 @@ jobs:
           retention-days: 7
 
   build-bff:
+    needs:
+      - detect-changes
+    if: needs.detect-changes.outputs.bff == 'true'
     runs-on: ubuntu-latest
     environment: artifacts
     env:
