@@ -46,10 +46,6 @@ export const post = async (
   provider: OAuth2Providers,
   { data }: RequestOption<undefined, AuthCodeData>,
 ) => {
-  console.log('Post Handler for Auth');
-  console.log(provider);
-  console.log(`data is`, data);
-  console.log(useContext);
   const ctx = useContext();
   const { cookies } = ctx;
   const idToken = cookies.get('id-token');

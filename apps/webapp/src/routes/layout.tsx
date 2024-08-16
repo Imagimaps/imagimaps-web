@@ -1,5 +1,6 @@
 import { Outlet } from '@modern-js/runtime/router';
 import { Provider } from '@modern-js/runtime/model';
+import { PrimeReactProvider } from 'primereact/api';
 
 import AuthProvider from '../hooks/auth';
 
@@ -11,8 +12,10 @@ export default function Layout() {
     <AuthProvider>
       <div className="layout-root">
         <Provider>
-          <Header />
-          <Outlet />
+          <PrimeReactProvider>
+            <Header />
+            <Outlet />
+          </PrimeReactProvider>
         </Provider>
       </div>
     </AuthProvider>

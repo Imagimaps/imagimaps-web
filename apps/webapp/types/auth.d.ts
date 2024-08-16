@@ -11,3 +11,8 @@ export type AuthCodeResponse = {
   user: User;
   session: Session;
 };
+
+export type UserCredentials = {
+  userId: string;
+  sessionToken: string;
+};
