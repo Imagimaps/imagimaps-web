@@ -84,7 +84,12 @@ export const post = async (
     return;
   }
 
-  console.log('Getting Session', provider, data);
+  console.log(
+    'Getting Session',
+    provider,
+    data,
+    `${authServiceBaseUrl}/api/auth/user/session`,
+  );
   const sessionResponse = await fetch(
     `${authServiceBaseUrl}/api/auth/user/session`,
     {
@@ -98,13 +103,15 @@ export const post = async (
   );
 
   if (!sessionResponse.ok) {
-    throw new Error(`HTTP error! status: ${sessionResponse.status}`);
+    throw new Error(
+      `Error starting session. HTTP Status: ${sessionResponse.status}`,
+    );
   }
 
   const session: Session = await sessionResponse.json();
-  console.log('Session', session);
+  console.log('Established Session', session);
 
-  console.log('Getting UserDetails');
+  console.log('Getting UserDetails from:', `${userServiceBaseUrl}/api/user`);
   const userDetailsResponse = await fetch(`${userServiceBaseUrl}/api/user`, {
     method: 'GET',
     headers: {
@@ -114,7 +121,9 @@ export const post = async (
   });
 
   if (!userDetailsResponse.ok) {
-    throw new Error(`HTTP error! status: ${userDetailsResponse.status}`);
+    throw new Error(
+      `Error retrieving User Details. HTTP Status: ${userDetailsResponse.status}`,
+    );
   }
 
   console.log('Extracting UserDetails from Response', userDetailsResponse);
