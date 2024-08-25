@@ -111,8 +111,8 @@ export const post = async (
   const session: Session = await sessionResponse.json();
   console.log('Established Session', session);
 
-  console.log('Getting UserDetails from:', `${userServiceBaseUrl}/api/user`);
-  const userDetailsResponse = await fetch(`${userServiceBaseUrl}/api/user`, {
+  console.log('Getting UserDetails from:', `${userServiceBaseUrl}/api/user/`);
+  const userDetailsResponse = await fetch(`${userServiceBaseUrl}/api/user/`, {
     method: 'GET',
     headers: {
       'x-source': 'bff-service',
