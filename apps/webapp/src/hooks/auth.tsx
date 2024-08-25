@@ -6,20 +6,19 @@ import {
   useState,
   useEffect,
 } from 'react';
-import { AuthCodeResponse, Session } from 'types/auth';
 import { User } from 'types/user';
 
 export type AuthContexts = {
   user: User | null;
-  session: { id: string; expiry: string } | null;
+  // session: { id: string; expiry: string } | null;
   isAuthenticated: boolean;
-  handleAuth: (auth: AuthCodeResponse) => void;
+  handleAuth: (user: User) => void;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContexts>({
   user: null,
-  session: null,
+  // session: null,
   isAuthenticated: false,
   handleAuth: () => console.warn('No Auth Provider'),
   logout: () => console.warn('No Auth Provider'),
@@ -27,7 +26,7 @@ const AuthContext = createContext<AuthContexts>({
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  // const [session, setSession] = useState<Session | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -37,28 +36,28 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (user && session) {
       console.log('Setting user and session from local storage');
       setUser(JSON.parse(user));
-      setSession(JSON.parse(session));
+      // setSession(JSON.parse(session));
       setIsAuthenticated(true);
     }
 
     window.addEventListener('storage', () => {
       console.log('Storage event listener fired');
       const user = localStorage.getItem('user');
-      const session = localStorage.getItem('session');
+      // const session = localStorage.getItem('session');
       console.log(
-        'User and session set from a different window',
+        'User set from a different window',
         user,
-        session,
+        // session,
       );
 
-      if (!user || !session) {
+      if (!user) {
         setUser(null);
-        setSession(null);
+        // setSession(null);
         setIsAuthenticated(false);
       }
-      if (user && session) {
+      if (user) {
         setUser(JSON.parse(user));
-        setSession(JSON.parse(session));
+        // setSession(JSON.parse(session));
         setIsAuthenticated(true);
       }
     });
@@ -70,22 +69,22 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  const handleAuth = (auth: AuthCodeResponse) => {
-    console.log('Authenticating user', auth);
-    if (auth?.user && auth?.session) {
-      setUser(auth.user);
-      setSession(auth.session);
+  const handleAuth = (user: User) => {
+    console.log('Authenticating user', user);
+    if (user) {
+      setUser(user);
+      // setSession(user);
       setIsAuthenticated(true);
 
-      localStorage.setItem('user', JSON.stringify(auth.user));
-      localStorage.setItem('session', JSON.stringify(auth.session));
+      localStorage.setItem('user', JSON.stringify(user));
+      // localStorage.setItem('session', JSON.stringify(user.session));
     }
   };
 
   const logout = () => {
     console.log('Signing out user');
     setUser(null);
-    setSession(null);
+    // setSession(null);
     setIsAuthenticated(false);
     localStorage.removeItem('user');
     localStorage.removeItem('session');
@@ -93,9 +92,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider
-      value={{ user, session, isAuthenticated, handleAuth, logout }}
-    >
+    <AuthContext.Provider value={{ user, isAuthenticated, handleAuth, logout }}>
       {children}
     </AuthContext.Provider>
   );

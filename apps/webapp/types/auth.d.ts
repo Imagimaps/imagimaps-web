@@ -1,6 +1,9 @@
 import type { User } from './user';
 
-export type AuthCodeData = { provider: string; code: string };
+export type AuthCodeData = {
+  provider: string;
+  code: string;
+};
 
 export type Session = {
   id: string;

@@ -2,7 +2,7 @@ import { useSearchParams } from '@modern-js/runtime/router';
 import { useEffect } from 'react';
 import { post as submitToken } from '@api/bff/auth/[provider]';
 import { OAuth2Providers } from 'paper-glue';
-import { AuthCodeResponse } from 'types/auth';
+import { User } from 'types/user';
 import { useAuth } from '@/hooks/auth';
 
 // Test url http://localhost:8080/auth/callback?code=eZm5KtzG1efj3yBBQci8RYcnTTWFad
@@ -26,8 +26,8 @@ const Callback = () => {
         query: undefined,
         data: request,
       }).then(res => {
-        console.log('Submitted req', res);
-        handleAuth(res as any as AuthCodeResponse);
+        console.log('Auth response', res);
+        handleAuth(res as any as User);
       });
     }
   }, [code]);

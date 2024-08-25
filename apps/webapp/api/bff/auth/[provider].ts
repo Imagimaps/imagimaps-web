@@ -1,10 +1,10 @@
 import { useContext, RequestOption } from '@modern-js/runtime/server';
 import { OAuth2Providers } from 'paper-glue';
 import ServicesConfig from '@api/_config/services';
-import { v4 as uuidv4 } from 'uuid';
-import { AuthCodeData, AuthCodeResponse } from 'types/auth';
+import { AuthCodeData, Session } from 'types/auth';
+import { User } from 'types/user';
 
-const { authServiceBaseUrl } = ServicesConfig();
+const { authServiceBaseUrl, userServiceBaseUrl } = ServicesConfig();
 
 const STUB = false;
 
@@ -21,12 +21,11 @@ export default async (provider: OAuth2Providers) => {
   }
 
   const authLinksResponse = await fetch(
-    `${authServiceBaseUrl}/api/auth/user/authenticate`,
+    `${authServiceBaseUrl}/api/auth/providers`,
     {
       method: 'GET',
       headers: {
-        'Bff-Session-Id': 'test-12345678',
-        Nonce: uuidv4(),
+        'x-source': 'bff-service',
       },
     },
   );
@@ -47,10 +46,6 @@ export const post = async (
   { data }: RequestOption<undefined, AuthCodeData>,
 ) => {
   const ctx = useContext();
-  const { cookies } = ctx;
-  const idToken = cookies.get('id-token');
-  const sessionToken = cookies.get('session-token');
-  console.log(`id-token is ${idToken}, session-token is ${sessionToken}`);
 
   if (STUB) {
     console.log('Stubbing response POST AuthToken');
@@ -86,53 +81,63 @@ export const post = async (
       }),
     );
 
-    return ctx;
+    return;
   }
 
-  const res = await fetch(`${authServiceBaseUrl}/api/auth/user/authenticate`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+  console.log('Getting Session', provider, data);
+  const sessionResponse = await fetch(
+    `${authServiceBaseUrl}/api/auth/user/session`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-source': 'bff-service',
+      },
+      body: JSON.stringify(data),
     },
-    body: JSON.stringify(data),
+  );
+
+  if (!sessionResponse.ok) {
+    throw new Error(`HTTP error! status: ${sessionResponse.status}`);
+  }
+
+  const session: Session = await sessionResponse.json();
+  console.log('Session', session);
+
+  console.log('Getting UserDetails');
+  const userDetailsResponse = await fetch(`${userServiceBaseUrl}/api/user`, {
+    method: 'GET',
+    headers: {
+      'x-source': 'bff-service',
+      'x-session-id': session.id,
+    },
   });
-  console.log(res);
 
-  if (!res.ok) {
-    console.error('Failed to authenticate user', res);
-    ctx.res.statusCode = res.status;
-    return ctx;
+  if (!userDetailsResponse.ok) {
+    throw new Error(`HTTP error! status: ${userDetailsResponse.status}`);
   }
 
-  const userDetails = (await res.json()) as AuthCodeResponse;
-  console.log('User Details', userDetails);
-  if (!userDetails?.user && !userDetails?.session) {
-    ctx.res.statusCode = 500;
-    console.error('Failed to get user details', res);
-    return ctx;
-  }
+  console.log('Extracting UserDetails from Response', userDetailsResponse);
+  const userDetails: User = await userDetailsResponse.json();
+  console.log('UserDetails', userDetails);
 
-  const { id } = userDetails.user;
-  const { id: sessionId, expiry } = userDetails.session;
-  ctx.cookies.set('id-token', id, {
+  ctx.cookies.set('id-token', userDetails.id, {
     httpOnly: false,
     path: '/',
-    expires: new Date(expiry),
+    expires: new Date(session.expiry),
     sameSite: 'strict',
   });
 
-  ctx.cookies.set('session-token', sessionId, {
+  ctx.cookies.set('session-token', session.id, {
     httpOnly: true,
     path: '/',
-    expires: new Date(expiry),
+    expires: new Date(session.expiry),
     sameSite: 'strict',
   });
 
   ctx.res.statusCode = 200;
   ctx.res.setHeader('Content-Type', 'application/json');
-  ctx.res.end(JSON.stringify(userDetails));
+  ctx.response.body = JSON.stringify(userDetails);
 
   console.log('Returning ctx', JSON.stringify(ctx.response));
-
-  return ctx;
 };
