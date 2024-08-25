@@ -8,8 +8,10 @@ import ImagimapsSplash from '@assets/images/imagimaps_compressed.png';
 import ImagimapsIco from '@assets/icons/imagimaps.ico';
 import AuthDiscordCard from '@/components/auth-providers/discord-card';
 import { useAuth } from '@/hooks/auth';
+import JoinCommunities from '@/components/join-communities';
 
 import './index.css';
+import Communities from '@/components/communities';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -54,6 +56,8 @@ const Index = () => {
             <AuthDiscordCard />
           </div>
         )}
+        {isAuthenticated && <Communities />}
+        {isAuthenticated && <JoinCommunities />}
       </main>
     </div>
   );
