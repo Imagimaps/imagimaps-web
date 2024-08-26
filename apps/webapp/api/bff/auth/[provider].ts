@@ -21,7 +21,7 @@ export default async (provider: OAuth2Providers) => {
   }
 
   const authLinksResponse = await fetch(
-    `${authServiceBaseUrl}/api/auth/providers`,
+    `${authServiceBaseUrl}/api/auth/providers/`,
     {
       method: 'GET',
       headers: {

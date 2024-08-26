@@ -1,15 +1,16 @@
 import ServicesConfig from '@api/_config/services';
-import { useContext } from '@modern-js/runtime/server';
-import { JoinableCommunity } from 'types/community';
+import { RequestOption, useContext } from '@modern-js/runtime/server';
 
 const { userServiceBaseUrl } = ServicesConfig();
 
-export default async (): Promise<JoinableCommunity[]> => {
+export const post = async ({
+  data,
+}: RequestOption<undefined, { id: string }>): Promise<string> => {
   const ctx = useContext();
   const { cookies } = ctx;
   const sessionId = cookies.get('session-token');
   const userId = cookies.get('id-token');
-  console.log(ctx.headers);
+  const communityId = data.id;
 
   if (!sessionId || !userId) {
     console.warn('No Session Token or User Id found');
@@ -18,10 +19,12 @@ export default async (): Promise<JoinableCommunity[]> => {
     return Promise.reject(new Error('Unauthorized. No session or user found.'));
   }
 
-  const joinableCommunitiesRes = await fetch(
-    `${userServiceBaseUrl}/api/user/communities/join/`,
+  console.log(`Joining community ${communityId}`);
+
+  const joinCommunityResponse = await fetch(
+    `${userServiceBaseUrl}/api/user/community/${communityId}/join`,
     {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'x-source': 'bff-service',
         'x-session-id': sessionId,
@@ -29,14 +32,12 @@ export default async (): Promise<JoinableCommunity[]> => {
       },
     },
   );
-  if (!joinableCommunitiesRes.ok) {
+
+  if (!joinCommunityResponse.ok) {
     throw new Error(
-      `Failed to get auth links. Status: ${joinableCommunitiesRes.status}`,
+      `Failed to join community. Status: ${joinCommunityResponse.status}`,
     );
   }
-  const joinableCommunities: JoinableCommunity[] =
-    await joinableCommunitiesRes.json();
-  console.log(joinableCommunities);
 
-  return joinableCommunities;
+  return communityId;
 };

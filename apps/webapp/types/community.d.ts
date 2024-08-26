@@ -4,10 +4,12 @@ export type Community = {
   id: string;
   name: string;
   status: CommunityStatus;
+  associatedGuildId: string;
   owner: User;
   admins: User[];
   description?: string;
   banner?: string | null;
+  icon?: string | null;
   games?: string[];
 };
 

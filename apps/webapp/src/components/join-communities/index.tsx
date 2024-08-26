@@ -1,18 +1,18 @@
 import { Panel } from 'primereact/panel';
-import GetCommunitiesToJoin from '@api/bff/communities/join';
+import GetCommunitiesToJoin from '@api/bff/communities/search';
 import { useEffect, useState } from 'react';
-import { JoinableCommunity } from 'types/community';
+import { Community } from 'types/community';
 import JoinableCommunityCard from './joinable-community';
 
 import './index.css';
 
 const JoinCommunities: React.FC = () => {
-  const [joinableCommunities, setJoinableCommunities] = useState<
-    JoinableCommunity[]
-  >([]);
+  const [joinableCommunities, setJoinableCommunities] = useState<Community[]>(
+    [],
+  );
 
   useEffect(() => {
-    GetCommunitiesToJoin().then((res: JoinableCommunity[]) => {
+    GetCommunitiesToJoin().then((res: Community[]) => {
       setJoinableCommunities(res);
     });
   }, []);

@@ -1,17 +1,36 @@
 import { Card } from 'primereact/card';
-import { JoinableCommunity } from 'types/community';
+import { Community } from 'types/community';
+import { Link, useNavigate } from '@modern-js/runtime/router';
+import { post as joinCommunity } from '@api/bff/community/join';
 
 import './index.css';
 
-const JoinableCommunityCard: React.FC<JoinableCommunity> = community => {
+const JoinableCommunityCard: React.FC<Community> = community => {
+  const navigate = useNavigate();
+
+  const handleJoin = async () => {
+    try {
+      await joinCommunity({ query: undefined, data: { id: community.id } });
+      navigate(`community/${community.id}`, {
+        state: { communityId: community.id },
+      });
+    } catch (error) {
+      console.error('Failed to join community', error);
+    }
+  };
+
   return (
     <Card title={community.name} className="joinable-community-card">
       <img
-        src={`https://cdn.discordapp.com/icons/${community.id}/${community.icon}`}
+        src={`https://cdn.discordapp.com/icons/${community.associatedGuildId}/${community.icon}`}
+        onClick={handleJoin}
       />
-      <p>{community.joinable ? 'Joinable' : 'Not Joinable'}</p>
-      <p>{community.isOwner ? 'owner' : 'member'}</p>
-      {community.size && <p>{community.size} members</p>}
+      <Link to={`community/${community.id}`} onClick={handleJoin}>
+        Join
+      </Link>
+      <p>Status: {community.status}</p>
+      <p>Owner is: {community.owner.name}</p>
+      <p>{community.description}</p>
     </Card>
   );
 };
