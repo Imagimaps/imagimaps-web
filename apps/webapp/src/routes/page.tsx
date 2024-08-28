@@ -6,16 +6,17 @@ import { useNavigate } from '@modern-js/runtime/router';
 
 import ImagimapsSplash from '@assets/images/imagimaps_compressed.png';
 import ImagimapsIco from '@assets/icons/imagimaps.ico';
+import { useModel } from '@modern-js/runtime/model';
 import AuthDiscordCard from '@/components/auth-providers/discord-card';
-import { useAuth } from '@/hooks/auth';
 import JoinCommunities from '@/components/join-communities';
+import Communities from '@/components/communities';
+import { AuthModel } from '@/state/authModel';
 
 import './index.css';
-import Communities from '@/components/communities';
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth();
+  const [{ isAuthenticated, user }] = useModel(AuthModel);
 
   useEffect(() => {
     GetAuthTokenLink(OAuth2Providers.Discord).then(res => {

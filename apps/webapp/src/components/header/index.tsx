@@ -1,13 +1,15 @@
 import { Link, useNavigate } from '@modern-js/runtime/router';
 
 import logo from '@assets/icons/imagimaps.ico';
-import { useAuth } from '@/hooks/auth';
+import { useModel } from '@modern-js/runtime/model';
+import { AuthModel } from '@/state/authModel';
 
 import './index.css';
 
 const Header: React.FC = () => {
+  const [{ user, isAuthenticated }, authActions] = useModel(AuthModel);
+
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout } = useAuth();
 
   return (
     <header>
@@ -30,7 +32,7 @@ const Header: React.FC = () => {
         {isAuthenticated ? (
           <>
             <span>{user?.name}</span>
-            <button onClick={() => logout()}>Logout</button>
+            <button onClick={() => authActions.clearAuth()}>Logout</button>
           </>
         ) : (
           <div>No User</div>

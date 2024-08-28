@@ -3,21 +3,22 @@ import { Provider } from '@modern-js/runtime/model';
 import { PrimeReactProvider } from 'primereact/api';
 
 import AuthProvider from '../hooks/auth';
+import Header from '@/components/header';
 
 import './reset.css';
-import Header from '@/components/header';
+import 'primereact/resources/themes/lara-light-cyan/theme.css';
 
 export default function Layout() {
   return (
-    <AuthProvider>
-      <div className="layout-root">
-        <Provider>
+    <Provider config={{}}>
+      <AuthProvider>
+        <div className="layout-root">
           <PrimeReactProvider>
             <Header />
             <Outlet />
           </PrimeReactProvider>
-        </Provider>
-      </div>
-    </AuthProvider>
+        </div>
+      </AuthProvider>
+    </Provider>
   );
 }

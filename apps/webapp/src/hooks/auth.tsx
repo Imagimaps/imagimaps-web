@@ -1,52 +1,30 @@
+import { useModel } from '@modern-js/runtime/model';
 import { useLocation, useNavigate } from '@modern-js/runtime/router';
-import {
-  useContext,
-  createContext,
-  ReactNode,
-  useState,
-  useEffect,
-} from 'react';
-import { User } from 'types/user';
+import { useContext, createContext, ReactNode, useEffect } from 'react';
+import { Session } from 'types/auth';
+import { AuthModel } from '@/state/authModel';
 
-export type AuthContexts = {
-  user: User | null;
-  isAuthenticated: boolean;
-  handleAuth: (user: User) => void;
-  logout: () => void;
-};
-
-const AuthContext = createContext<AuthContexts>({
-  user: null,
-  isAuthenticated: false,
-  handleAuth: () => console.warn('No Auth Provider'),
-  logout: () => console.warn('No Auth Provider'),
-});
+const AuthContext = createContext({});
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [{ user, isAuthenticated }, authActions] = useModel(AuthModel);
 
   useEffect(() => {
     const user = localStorage.getItem('user');
 
     if (user) {
       console.log('Setting user and session from local storage');
-      setUser(JSON.parse(user));
-      setIsAuthenticated(true);
+      authActions.setAuth(JSON.parse(user), {} as Session);
     }
 
     window.addEventListener('storage', () => {
-      console.log('Storage event listener fired');
       const user = localStorage.getItem('user');
       console.log('User set from a different window', user);
 
       if (!user) {
-        setUser(null);
-        setIsAuthenticated(false);
-      }
-      if (user) {
-        setUser(JSON.parse(user));
-        setIsAuthenticated(true);
+        authActions.clearAuth();
+      } else {
+        authActions.setAuth(JSON.parse(user), {} as Session);
       }
     });
 
@@ -57,30 +35,23 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  const handleAuth = (user: User) => {
-    console.log('Authenticating user', user);
-    if (user) {
-      setUser(user);
-      setIsAuthenticated(true);
+  useEffect(() => {
+    console.log('Auth User changed', user);
+    localStorage.setItem('user', JSON.stringify(user));
+  }, [user]);
 
+  useEffect(() => {
+    console.log('Auth state changed to', isAuthenticated);
+    if (isAuthenticated) {
+      console.log('Setting user in local storage');
       localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      console.log('Clearing user from local storage');
+      localStorage.removeItem('user');
     }
-  };
+  }, [isAuthenticated]);
 
-  const logout = () => {
-    console.log('Signing out user');
-    setUser(null);
-    setIsAuthenticated(false);
-    localStorage.removeItem('user');
-    localStorage.removeItem('session');
-    // TODO: Post back invalidate session to auth service
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, isAuthenticated, handleAuth, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{}}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;
@@ -90,7 +61,7 @@ export const useAuth = () => {
 };
 
 export const RequireAuth = ({ children }: { children: ReactNode }) => {
-  const { isAuthenticated } = useAuth();
+  const [{ isAuthenticated }] = useModel(AuthModel);
   const navigate = useNavigate();
   const location = useLocation();
 
