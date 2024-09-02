@@ -1,5 +1,5 @@
 import { Card } from 'primereact/card';
-import { Community } from 'types/community';
+import { Community } from '@shared/types/community';
 import { Link, useNavigate } from '@modern-js/runtime/router';
 import { post as joinCommunity } from '@api/bff/community/join';
 

@@ -1,6 +1,6 @@
 import ServicesConfig from '@api/_config/services';
-import { UserCredentials } from 'types/auth';
-import { MapApiContext } from 'types/map';
+import { UserCredentials } from '@shared/types/auth';
+import { MapApiContext } from '@shared/types/map';
 
 const { mapServiceBaseUrl } = ServicesConfig();
 

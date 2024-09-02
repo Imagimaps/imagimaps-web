@@ -1,18 +1,6 @@
 {
   "folders": [
     {
-      "name": "oauth2-service",
-      "path": "services/oauth2-service/"
-    },
-    {
-      "name": "map-resources",
-      "path": "services/map-resources/"
-    },
-    {
-      "name": "paper-glue",
-      "path": "packages/paper-glue/"
-    },
-    {
       "name": "webapp",
       "path": "apps/webapp/"
     },

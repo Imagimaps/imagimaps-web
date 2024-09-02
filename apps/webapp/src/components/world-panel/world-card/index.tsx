@@ -1,4 +1,4 @@
-import { World } from 'types/world';
+import { World } from '@shared/types/world';
 import { Card } from 'primereact/card';
 
 import { useNavigate } from '@modern-js/runtime/router';

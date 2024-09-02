@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import GetAuthTokenLink from '@api/bff/auth/[provider]';
-import { OAuth2Providers } from 'paper-glue';
 import { Blocks } from 'react-loader-spinner';
+import { OAuth2Providers } from '@shared/types/auth.enums';
 
 const AuthDiscordCard: React.FC = () => {
   const [linkUrl, setLinkUrl] = useState<string>('');

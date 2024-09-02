@@ -1,7 +1,7 @@
 import { useModel } from '@modern-js/runtime/model';
 import { useLocation, useNavigate } from '@modern-js/runtime/router';
 import { useContext, createContext, ReactNode, useEffect } from 'react';
-import { Session } from 'types/auth';
+import { Session } from '@shared/types/auth';
 import { AuthModel } from '@/state/authModel';
 
 const AuthContext = createContext({});

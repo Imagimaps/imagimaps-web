@@ -1,8 +1,8 @@
 import { useContext, RequestOption } from '@modern-js/runtime/server';
-import { OAuth2Providers } from 'paper-glue';
 import ServicesConfig from '@api/_config/services';
-import { AuthCodeData, Session } from 'types/auth';
-import { User } from 'types/user';
+import { AuthCodeData, Session } from '@shared/types/auth';
+import { User } from '@shared/types/user';
+import { OAuth2Providers } from '@shared/types/auth.enums';
 
 const { authServiceBaseUrl, userServiceBaseUrl } = ServicesConfig();
 

@@ -10,7 +10,7 @@
       "@shared/*": ["./shared/*"],
       "@api/*": ["api/*"],
       "@assets/*": ["./assets/*"],
-      "@ext/*": ["./language-extensions/*"]
+      "@ext/*": ["./language-extensions/*"],
     }
   },
   "include": [
@@ -21,7 +21,7 @@
     "api",
     "assets",
     "language-extensions",
-    "types",
+    "shared/types",
     "hooks",
   ],
   "exclude": ["**/node_modules"]

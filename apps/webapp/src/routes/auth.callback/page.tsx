@@ -1,10 +1,10 @@
 import { useSearchParams } from '@modern-js/runtime/router';
 import { useEffect } from 'react';
 import { post as submitToken } from '@api/bff/auth/[provider]';
-import { OAuth2Providers } from 'paper-glue';
-import { User } from 'types/user';
+import { User } from '@shared/types/user';
 import { useModel } from '@modern-js/runtime/model';
-import { Session } from 'types/auth';
+import { Session } from '@shared/types/auth';
+import { OAuth2Providers } from '@shared/types/auth.enums';
 import { AuthModel } from '@/state/authModel';
 
 // Test url http://localhost:8080/auth/callback?code=eZm5KtzG1efj3yBBQci8RYcnTTWFad

@@ -40,8 +40,8 @@
     "@modern-js/eslint-config": "2.49.4",
     "@modern-js/monorepo-tools": "2.49.4",
     "@modern-js/tsconfig": "2.49.4",
-    "husky": "^9.1.4",
-    "lint-staged": "~15.2.8",
+    "husky": "^9.1.5",
+    "lint-staged": "~15.2.10",
     "prettier": "^3.3.3",
     "typescript": "~5.3.3"
   },

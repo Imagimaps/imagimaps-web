@@ -1,5 +1,5 @@
 import { Panel } from 'primereact/panel';
-import { World } from 'types/world';
+import { World } from '@shared/types/world';
 import WorldCard from './world-card';
 
 import './index.scss';

@@ -1,7 +1,7 @@
 import { Link } from '@modern-js/runtime/router';
 
 import GetJoinedCommunities from '@api/bff/communities/member';
-import { Community } from 'types/community';
+import { Community } from '@shared/types/community';
 import { useEffect, useState } from 'react';
 
 const CommunitiesPage: React.FC = () => {

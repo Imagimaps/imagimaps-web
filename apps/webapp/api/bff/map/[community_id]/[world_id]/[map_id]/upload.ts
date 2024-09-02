@@ -1,7 +1,7 @@
 import AuthClient from '@api/_clients/authClient';
 import MapClient from '@api/_clients/mapClient';
 import { useContext } from '@modern-js/runtime/server';
-import { AuthorisationScopes } from 'types/authScopes.enums';
+import { AuthorisationScopes } from '@shared/types/auth.enums';
 
 export default async (
   communityId: string,

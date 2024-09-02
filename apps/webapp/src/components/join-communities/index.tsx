@@ -1,7 +1,7 @@
 import { Panel } from 'primereact/panel';
 import GetCommunitiesToJoin from '@api/bff/communities/search';
 import { useEffect, useState } from 'react';
-import { Community } from 'types/community';
+import { Community } from '@shared/types/community';
 import JoinableCommunityCard from './joinable-community';
 
 import './index.css';

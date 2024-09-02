@@ -1,6 +1,6 @@
 import { model } from '@modern-js/runtime/model';
-import { Session } from 'types/auth';
-import { User } from 'types/user';
+import { Session } from '@shared/types/auth';
+import { User } from '@shared/types/user';
 
 type AuthModelState = {
   user?: User;

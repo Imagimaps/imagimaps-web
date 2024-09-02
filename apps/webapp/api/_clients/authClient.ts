@@ -1,6 +1,10 @@
 import ServicesConfig from '@api/_config/services';
-import { AuthCodeData, AuthCodeResponse, UserCredentials } from 'types/auth';
-import { AuthorisationScopes } from 'types/authScopes.enums';
+import {
+  AuthCodeData,
+  AuthCodeResponse,
+  UserCredentials,
+} from '@shared/types/auth';
+import { AuthorisationScopes } from '@shared/types/auth.enums';
 
 const { authServiceBaseUrl } = ServicesConfig();
 

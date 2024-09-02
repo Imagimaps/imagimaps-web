@@ -1,6 +1,6 @@
 import { model } from '@modern-js/runtime/model';
-import { Community } from 'types/community';
-import { World } from 'types/world';
+import { Community } from '@shared/types/community';
+import { World } from '@shared/types/world';
 
 type CommunityModelState = {
   community?: Community;

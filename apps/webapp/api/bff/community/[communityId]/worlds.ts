@@ -1,6 +1,6 @@
 import ServicesConfig from '@api/_config/services';
 import { useContext } from '@modern-js/runtime/server';
-import { World } from 'types/world';
+import { World } from '@shared/types/world';
 
 const { userServiceBaseUrl } = ServicesConfig();
 

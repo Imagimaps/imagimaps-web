@@ -1,9 +1,9 @@
 import { Helmet } from '@modern-js/runtime/head';
 import { useEffect } from 'react';
 import GetAuthTokenLink from '@api/bff/auth/[provider]';
-import { OAuth2Providers } from 'paper-glue';
 import { useNavigate } from '@modern-js/runtime/router';
 
+import { OAuth2Providers } from '@shared/types/auth.enums';
 import ImagimapsSplash from '@assets/images/imagimaps_compressed.png';
 import ImagimapsIco from '@assets/icons/imagimaps.ico';
 import { useModel } from '@modern-js/runtime/model';
