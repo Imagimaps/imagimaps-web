@@ -1,8 +1,8 @@
 name: Create WebApp Infrastructure
 
 on:
-  schedule:
-    # - cron: "0 21 * * *" # 07:00 AEST (9pm UTC)
+  # schedule:
+  # - cron: "0 21 * * *" # 07:00 AEST (9pm UTC)
   workflow_dispatch:
 
 permissions:

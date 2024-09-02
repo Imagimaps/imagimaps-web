@@ -8,8 +8,8 @@ on:
       - 'apps/webapp/**'
       - 'Dockerfile.webapp'
       - '.github/workflows/web-app-build.yml'
-  schedule:
-    # - cron: '30 21 * * *' # 07:30 AEST (9:30pm UTC)
+  # schedule:
+  # - cron: '30 21 * * *' # 07:30 AEST (9:30pm UTC)
   workflow_dispatch:
 
 permissions:
