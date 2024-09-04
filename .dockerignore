@@ -6,3 +6,6 @@ dist
 .github
 .vscode
 infrastructure
+.git
+.gitignore
+.github

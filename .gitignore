@@ -75,3 +75,5 @@ terraform.rc
 *.drawio.bkp
 
 !.github/actions/imagimaps-platform/dist
+
+.output
