@@ -1,24 +1,22 @@
-# Prepare workspace
-FROM node:20 AS workspace
+# Prepare base
+FROM node:20 AS base
 WORKDIR /app
-RUN corepack enable && corepack prepare pnpm@8 --activate
-COPY pnpm-lock.yaml .
-RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store pnpm fetch
+ENV HUSKY=0
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable pnpm && corepack install -g pnpm@latest-9
 COPY . .
-RUN pnpm install --recursive --frozen-lockfile
-
-# Build stage
-FROM workspace AS build
-ARG service
-WORKDIR /app
-RUN pnpm --recursive run build
-# RUN pnpm --filter ${service} deploy --prod pruned
-RUN pnpm --filter webapp deploy --prod pruned
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm run build
+RUN pnpm run deploy pruned
 
 # Final stage
-FROM nginx
-WORKDIR /usr/share/nginx/html
-RUN rm -rf ./*
-COPY --from=build /app/dist/html/main .
-COPY --from=build /app/dist/static .
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+FROM node:20-slim AS final
+WORKDIR /app
+ARG run_args=""
+ENV RUN_ARGS=$run_args
+ENV NODE_ENV=production
+ENV HUSKY=0
+COPY --from=base /app/.output/ ./
+EXPOSE 80
+ENTRYPOINT ["sh", "-c", "node index.js $RUN_ARGS"]

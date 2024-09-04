@@ -10,5 +10,14 @@ export default defineConfig({
   server: {
     port: process.env.NODE_ENV === 'production' ? 80 : 8080,
   },
-  plugins: [appTools(), bffPlugin(), koaPlugin()],
+  plugins: [
+    appTools({
+      bundler: 'experimental-rspack',
+    }),
+    bffPlugin(),
+    koaPlugin(),
+  ],
+  tools: {
+    styledComponents: false,
+  },
 });
