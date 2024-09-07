@@ -40,6 +40,7 @@ export const post = async (
       'x-session-id': sessionId,
       'x-user-id': userId,
       'x-community-id': communityId,
+      'x-world-id': worldId,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(formData),

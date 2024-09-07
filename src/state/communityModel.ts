@@ -20,8 +20,10 @@ export const CommunityModel = model<CommunityModelState>('community').define(
       state: CommunityModelStateDefault,
       computed: {
         activeWorld: (state: CommunityModelState) => {
-          console.log('Recalculating activeWorld');
           return state.worlds?.find(w => w.viewing === true);
+        },
+        activeMap: (state: CommunityModelState) => {
+          return state.maps?.find(m => m.viewing === true);
         },
       },
       actions: {
@@ -35,10 +37,8 @@ export const CommunityModel = model<CommunityModelState>('community').define(
           state.worlds = worlds;
         },
         setViewingWorld: (state: CommunityModelState, world: World) => {
-          console.log('Called setViewingWorld:', world);
           state.worlds = state.worlds.map(w => {
             if (w.id === world.id) {
-              console.log('Setting viewing world:', w);
               return { ...w, viewing: true };
             } else {
               return { ...w, viewing: false };
@@ -56,6 +56,7 @@ export const CommunityModel = model<CommunityModelState>('community').define(
         },
         addMap: (state: CommunityModelState, map: Map) => {
           state.maps = [...state.maps, map];
+          state.worlds?.find(w => w.viewing === true)?.mapIds.push(map.id);
         },
         clearMaps: (state: CommunityModelState) => {
           state.maps = [];
@@ -63,9 +64,9 @@ export const CommunityModel = model<CommunityModelState>('community').define(
         setViewingMap: (state: CommunityModelState, map: Map) => {
           state.maps = state.maps.map(m => {
             if (m.id === map.id) {
-              return { ...m, currentlyAccessed: true };
+              return { ...m, viewing: true };
             } else {
-              return { ...m, currentlyAccessed: false };
+              return { ...m, viewing: false };
             }
           });
         },

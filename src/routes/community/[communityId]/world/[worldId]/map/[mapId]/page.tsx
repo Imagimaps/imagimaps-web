@@ -1,20 +1,35 @@
-import { Link, useParams } from '@modern-js/runtime/router';
+import { Link, useNavigate, useParams } from '@modern-js/runtime/router';
 import { FileUpload, FileUploadHandlerEvent } from 'primereact/fileupload';
 import { ProgressBar } from 'primereact/progressbar';
 import { Dialog } from 'primereact/dialog';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.css';
 import { useEffect, useRef, useState } from 'react';
+import { useModel } from '@modern-js/runtime/model';
 
 import GetUploadUrl from '@api/bff/map/[community_id]/[world_id]/[map_id]/upload';
+import { CommunityModel } from '@/state/communityModel';
 
 const MapPage: React.FC = () => {
+  const navigate = useNavigate();
+  const [{ activeWorld, activeMap, community }] = useModel(CommunityModel);
   const { communityId, worldId, mapId } = useParams();
-  console.log('MapPage', communityId, worldId, mapId);
 
   const fileRef = useRef<FileUpload>(null);
   const [uploadTilePanelVisible, setUploadTilePanelVisible] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+
+  useEffect(() => {
+    if (!activeWorld || !activeMap || !community) {
+      console.log('No active world, map, or community', activeWorld, activeMap);
+      if (!communityId || !worldId || !mapId) {
+        console.log('Missing community, world, or map ID');
+        navigate('/communities');
+        // TODO: Cascading redirects based on what's missing
+      }
+      // TODO: Actions to hydrate community, world and map data from ID's
+    }
+  }, []);
 
   useEffect(() => {
     console.log(`Upload Progress: ${uploadProgress}%`);
@@ -76,7 +91,10 @@ const MapPage: React.FC = () => {
   return (
     <div>
       <h1>Map Page</h1>
-      <p>Details of the map</p>
+      {activeMap && <h2>{activeMap.name}</h2>}
+      <p>{activeMap?.description}</p>
+      <p>Map ID: {mapId}</p>
+      <br />
       <p>Grid List of Layers contained in this map</p>
       <Link to="workspace">Jump into Map Workspace</Link>
       <button onClick={() => setUploadTilePanelVisible(true)}>+</button>
