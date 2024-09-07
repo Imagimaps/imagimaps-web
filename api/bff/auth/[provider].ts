@@ -1,4 +1,5 @@
-import { useContext, RequestOption } from '@modern-js/runtime/server';
+import { useContext } from '@modern-js/runtime/koa';
+import { RequestOption } from '@modern-js/runtime/server';
 import ServicesConfig from '@api/_config/services';
 import { AuthCodeData, Session } from '@shared/types/auth';
 import { User } from '@shared/types/user';
@@ -45,6 +46,7 @@ export const post = async (
   provider: OAuth2Providers,
   { data }: RequestOption<undefined, AuthCodeData>,
 ) => {
+  console.log('use context', useContext);
   const ctx = useContext();
 
   if (STUB) {

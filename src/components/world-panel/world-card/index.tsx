@@ -17,7 +17,7 @@ const WorldCard: React.FC<WorldCardProps> = ({ world }) => {
 
   const goToWorld = () => {
     console.log('Go to world', world?.id);
-    actions.setActiveWorld(world);
+    actions.setViewingWorld(world);
     navigate(`/community/${community?.id}/world/${world.id}`);
   };
 

@@ -6,39 +6,46 @@ const { userServiceBaseUrl } = ServicesConfig();
 
 export const post = async ({
   data,
-}: RequestOption<undefined, { id: string }>): Promise<string> => {
+}: RequestOption<
+  undefined,
+  { name: string; description: string; communityId: string; worldId: string }
+>): Promise<string> => {
   const ctx = useContext();
   const { cookies } = ctx;
   const sessionId = cookies.get('session-token');
   const userId = cookies.get('id-token');
-  const communityId = data.id;
+  const { name, description, communityId } = data;
 
   if (!sessionId || !userId) {
     console.warn('No Session Token or User Id found');
     ctx.res.statusCode = 401;
-    ctx.throw('Unauthorized. No session or user found.');
     return Promise.reject(new Error('Unauthorized. No session or user found.'));
   }
 
-  console.log(`Joining community ${communityId}`);
+  console.log(`Creating World in Community: ${communityId} with name ${name}`);
 
-  const joinCommunityResponse = await fetch(
-    `${userServiceBaseUrl}/api/user/community/${communityId}/join`,
+  const createWorldResponse = await fetch(
+    `${userServiceBaseUrl}/api/user/community/${communityId}/world`,
     {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'x-source': 'bff-service',
         'x-session-id': sessionId,
         'x-user-id': userId,
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({ name, description }),
     },
   );
 
-  if (!joinCommunityResponse.ok) {
+  if (!createWorldResponse.ok) {
     throw new Error(
-      `Failed to join community. Status: ${joinCommunityResponse.status}`,
+      `Failed to create world. Status: ${createWorldResponse.status}`,
     );
   }
 
-  return communityId;
+  const newlyCreatedWorld = await createWorldResponse.json();
+  console.log('New World created', newlyCreatedWorld);
+
+  return newlyCreatedWorld;
 };

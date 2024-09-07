@@ -1,10 +1,15 @@
+import { URLSearchParams } from 'url';
 import ServicesConfig from '@api/_config/services';
 import { useContext } from '@modern-js/runtime/koa';
-import { Community } from '@shared/types/community';
+import { Map } from '@shared/types/map';
 
-const { userServiceBaseUrl } = ServicesConfig();
+const { mapServiceBaseUrl } = ServicesConfig();
 
-export default async (communityId: string): Promise<Community> => {
+export default async (
+  communityId: string,
+  worldId: string,
+  mapIds: string,
+): Promise<Map[]> => {
   const ctx = useContext();
   const { cookies } = ctx;
   const sessionId = cookies.get('session-token');
@@ -17,26 +22,27 @@ export default async (communityId: string): Promise<Community> => {
     return Promise.reject(new Error('Unauthorized. No session or user found.'));
   }
 
-  const communityDetailsResponse = await fetch(
-    `${userServiceBaseUrl}/api/user/community/${communityId}/`,
+  const searchParams = new URLSearchParams([['mapIds', mapIds]]).toString();
+  const mapResponse = await fetch(
+    `${mapServiceBaseUrl}/api/map?${searchParams}`,
     {
       method: 'GET',
       headers: {
         'x-source': 'bff-service',
         'x-session-id': sessionId,
         'x-user-id': userId,
+        'x-community-id': communityId,
+        'x-world-id': worldId,
       },
     },
   );
 
-  if (!communityDetailsResponse.ok) {
-    throw new Error(
-      `Failed to fetch community details. Status: ${communityDetailsResponse.status}`,
-    );
+  if (!mapResponse.ok) {
+    throw new Error(`Failed to fetch map. Status: ${mapResponse.status}`);
   }
 
-  const communityDetails = (await communityDetailsResponse.json()) as Community;
-  console.log('Community details:', communityDetails);
+  const maps = (await mapResponse.json()) as Map[];
+  console.log('Map:', maps);
 
-  return communityDetails;
+  return maps;
 };

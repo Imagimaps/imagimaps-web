@@ -9,13 +9,13 @@ import { CommunityModel } from '@/state/communityModel';
 import './index.scss';
 
 const NewCard: React.FC = () => {
-  const [{ community }] = useModel(CommunityModel);
-  const [visible, setVisible] = useState(false);
+  const [{ community }, actions] = useModel(CommunityModel);
+  const [dialogVisible, setDialogVisible] = useState(false);
   const [worldName, setWorldName] = useState('');
   const [worldDescription, setWorldDescription] = useState('');
 
   const openNewWorldDialog = () => {
-    setVisible(true);
+    setDialogVisible(true);
   };
 
   const createNewWorld = () => {
@@ -35,8 +35,11 @@ const NewCard: React.FC = () => {
         description: worldDescription,
         communityId: community.id,
       },
+    }).then(newWorld => {
+      console.log('New world created', newWorld);
+      actions.addWorld(newWorld);
+      setDialogVisible(false);
     });
-    setVisible(false);
   };
 
   return (
@@ -51,9 +54,9 @@ const NewCard: React.FC = () => {
       <Dialog
         header={'Create a new World'}
         modal
-        visible={visible}
+        visible={dialogVisible}
         onHide={() => {
-          setVisible(false);
+          setDialogVisible(false);
         }}
         content={() => (
           <form className="new-world-form">

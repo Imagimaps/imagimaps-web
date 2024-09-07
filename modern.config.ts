@@ -3,7 +3,7 @@ import { bffPlugin } from '@modern-js/plugin-bff';
 import { koaPlugin } from '@modern-js/plugin-koa';
 
 // https://modernjs.dev/en/configure/app/usage
-export default defineConfig({
+export default defineConfig<'rspack'>({
   runtime: {
     router: true,
   },
@@ -12,12 +12,12 @@ export default defineConfig({
   },
   plugins: [
     appTools({
-      bundler: 'experimental-rspack',
+      bundler: 'rspack',
     }),
     bffPlugin(),
     koaPlugin(),
   ],
   tools: {
-    styledComponents: false,
+    styledComponents: {},
   },
 });

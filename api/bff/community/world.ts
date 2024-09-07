@@ -1,5 +1,7 @@
 import ServicesConfig from '@api/_config/services';
-import { RequestOption, useContext } from '@modern-js/runtime/server';
+import { useContext } from '@modern-js/runtime/koa';
+import { RequestOption } from '@modern-js/runtime/server';
+import { World } from '@shared/types/world';
 
 const { userServiceBaseUrl } = ServicesConfig();
 
@@ -8,7 +10,7 @@ export const post = async ({
 }: RequestOption<
   undefined,
   { name: string; description: string; communityId: string }
->): Promise<string> => {
+>): Promise<World> => {
   const ctx = useContext();
   const { cookies } = ctx;
   const sessionId = cookies.get('session-token');
@@ -43,7 +45,7 @@ export const post = async ({
     );
   }
 
-  const newlyCreatedWorld = await createWorldResponse.json();
+  const newlyCreatedWorld: World = await createWorldResponse.json();
   console.log('New World created', newlyCreatedWorld);
 
   return newlyCreatedWorld;

@@ -77,3 +77,4 @@ terraform.rc
 !.github/actions/imagimaps-platform/dist
 
 .output
+.local

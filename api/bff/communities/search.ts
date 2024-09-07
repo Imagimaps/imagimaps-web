@@ -1,5 +1,5 @@
 import ServicesConfig from '@api/_config/services';
-import { useContext } from '@modern-js/runtime/server';
+import { useContext } from '@modern-js/runtime/koa';
 import { Community } from '@shared/types/community';
 
 const { userServiceBaseUrl } = ServicesConfig();
@@ -31,7 +31,7 @@ export default async (): Promise<Community[]> => {
   );
   if (!joinableCommunitiesRes.ok) {
     throw new Error(
-      `Failed to get auth links. Status: ${joinableCommunitiesRes.status}`,
+      `Failed to get available communities. Status: ${joinableCommunitiesRes.status}`,
     );
   }
   const joinableCommunities: Community[] = await joinableCommunitiesRes.json();

@@ -3,7 +3,7 @@ import { Card } from 'primereact/card';
 import { Dialog } from 'primereact/dialog';
 import { useModel } from '@modern-js/runtime/model';
 
-import { post as createMap } from '@api/bff/community/[communityId]/world/[worldId]/map';
+import { post as createMap } from '@api/bff/community/[communityId]/world';
 import { CommunityModel } from '@/state/communityModel';
 
 import './index.scss';

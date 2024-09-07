@@ -8,6 +8,6 @@ export type World = {
   owner: User;
   community: Community;
   mapIds: string[];
-  currentlyAccessed?: boolean;
+  viewing?: boolean;
   lastAccessed?: Date;
 };

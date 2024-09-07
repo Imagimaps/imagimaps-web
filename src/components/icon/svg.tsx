@@ -1,5 +1,5 @@
 import styled from '@modern-js/runtime/styled';
-import { CSSProperties, FC, MouseEventHandler } from 'react';
+import { CSSProperties, MouseEventHandler } from 'react';
 
 interface SvgIconProps {
   src: string;
@@ -10,21 +10,28 @@ interface SvgIconProps {
   onHover?: MouseEventHandler<HTMLDivElement>;
 }
 
-const SvgIcon: FC<SvgIconProps> = ({
+const SvgIcon = ({
   src,
   alt,
   style,
   className,
   onClick,
   onHover,
-}) => {
+}: SvgIconProps) => {
   return (
-    <div className={className} onClick={onClick} onMouseOver={onHover}>
+    <IconContainer
+      as="div"
+      className={className}
+      onClick={onClick}
+      onMouseOver={onHover}
+    >
       <IconImg as="img" src={src} alt={alt} style={style} />
-    </div>
+    </IconContainer>
   );
 };
 
 export default SvgIcon;
 
 const IconImg = styled.img``;
+
+const IconContainer = styled.div``;

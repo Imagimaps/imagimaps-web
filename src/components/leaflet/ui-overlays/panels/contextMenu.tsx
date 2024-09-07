@@ -153,7 +153,7 @@ const DisabledButton = styled(SvgIcon)`
   }
 `;
 
-const ContextMenuBar = styled(Popup)`
+const ContextMenuBar = styled(Popup as any)`
   border-radius: 2px;
 
   .leaflet-popup-content {
