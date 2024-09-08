@@ -6,7 +6,6 @@ import { World } from '@shared/types/world';
 import GridPanel from '@components/grid-panel';
 import GridPanelCard from '@components/grid-panel/panel-card';
 import NewItemCard from '@components/grid-panel/new-item-card';
-// import { post as createWorld } from '@api/bff/community/world';
 import NewWorldDialog from './dialog-new-world';
 import { CommunityModel } from '@/state/communityModel';
 
@@ -20,8 +19,6 @@ const WorldPanel: React.FC<WorldPanelProps> = ({ worlds }) => {
   const navigate = useNavigate();
   const [{ community }, actions] = useModel(CommunityModel);
   const [newItemDialogVisible, setNewItemDialogVisible] = useState(false);
-  // const [worldName, setWorldName] = useState('');
-  // const [worldDescription, worldMapDescription] = useState('');
 
   const handleWorldClicked = (world: World) => {
     console.log('Go to world', world?.id);
