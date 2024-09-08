@@ -1,0 +1,32 @@
+header {
+  display: flex;
+  background-color: #a4c991;
+  padding: 10px 20px;
+  justify-content: space-between;
+  align-items: center;
+
+  nav {
+    display: flex;
+
+    ul {
+      display: flex;
+      list-style: none;
+
+      li {
+        margin-right: 20px;
+      }
+    }
+  }  
+
+  img {
+    border-radius: 50%;
+    margin-right: 20px;
+    max-width: 50px;
+    cursor: pointer;
+  }
+
+  .left {
+    display: flex;
+    align-items: center;
+  }
+}

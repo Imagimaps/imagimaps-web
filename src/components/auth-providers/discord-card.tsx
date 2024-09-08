@@ -22,7 +22,7 @@ const AuthDiscordCard: React.FC = () => {
       className="card"
     >
       <h2>
-        Sign in with Discord
+        Log in with Discord
         <img
           className="arrow-right"
           src="https://lf3-static.bytednsdoc.com/obj/eden-cn/zq-uylkvT/ljhwZthlaukjlkulzlp/arrow-right.svg"

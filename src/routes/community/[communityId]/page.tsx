@@ -1,4 +1,4 @@
-import { Link, useParams } from '@modern-js/runtime/router';
+import { useParams } from '@modern-js/runtime/router';
 import GetCommunityDetails from '@api/bff/community/[communityId]';
 import { useEffect } from 'react';
 import { useModel } from '@modern-js/runtime/model';
@@ -12,9 +12,9 @@ const CommunityPage: React.FC = () => {
 
   useEffect(() => {
     if (communityId) {
-      GetCommunityDetails(communityId).then(cmnty => {
-        console.log('Community details retrieved', cmnty);
-        actions.setCommunity(cmnty);
+      GetCommunityDetails(communityId).then(c => {
+        console.log('Community details retrieved', c);
+        actions.setCommunity(c);
       });
     } else {
       console.error('No community id found');
@@ -22,7 +22,7 @@ const CommunityPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (communityId) {
+    if (communityId && communityId !== community?.id) {
       GetWorlds(communityId).then((worlds: any) => {
         console.log('Worlds retrieved', worlds);
         actions.setWorlds(worlds);
@@ -32,11 +32,7 @@ const CommunityPage: React.FC = () => {
 
   return (
     <div>
-      <h1>Community Page</h1>
-      <div>
-        <h2>Test World</h2>
-        <Link to="0">Go to world</Link>
-      </div>
+      <h1>Community: {community?.name}</h1>
       <div>
         <h2>Community Details</h2>
         {community ? (
@@ -47,8 +43,8 @@ const CommunityPage: React.FC = () => {
         ) : (
           <p>Loading...</p>
         )}
-        {worlds ? <WorldPanel worlds={worlds} /> : <p>Loading Worlds...</p>}
       </div>
+      <WorldPanel worlds={worlds} />
     </div>
   );
 };

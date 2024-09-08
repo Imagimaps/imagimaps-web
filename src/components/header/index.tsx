@@ -4,7 +4,7 @@ import logo from '@assets/icons/imagimaps.ico';
 import { useModel } from '@modern-js/runtime/model';
 import { AuthModel } from '@/state/authModel';
 
-import './index.css';
+import './index.scss';
 
 const Header: React.FC = () => {
   const [{ user, isAuthenticated }, authActions] = useModel(AuthModel);
@@ -25,18 +25,26 @@ const Header: React.FC = () => {
             <li>
               <Link to="/about">About</Link>
             </li>
+            <li>
+              <Link to="/pricing">Pricing</Link>
+            </li>
+            <li>
+              <Link to="/map/test_room/leaflet">Map Engine</Link>
+            </li>
           </ul>
         </nav>
       </div>
-      <div id="user-head">
-        {isAuthenticated ? (
-          <>
-            <span>{user?.name}</span>
-            <button onClick={() => authActions.clearAuth()}>Logout</button>
-          </>
-        ) : (
-          <div>No User</div>
-        )}
+      <div className="right">
+        <div id="user-head">
+          {isAuthenticated ? (
+            <>
+              <span>{user?.name}</span>
+              <button onClick={() => authActions.clearAuth()}>Logout</button>
+            </>
+          ) : (
+            <Link to="/login">Log In</Link>
+          )}
+        </div>
       </div>
     </header>
   );

@@ -1,11 +1,11 @@
 import { FC, useState } from 'react';
 import { Dialog } from 'primereact/dialog';
+import { Panel } from 'primereact/panel';
 
 import { post as createWorld } from '@api/bff/community/world';
 import { Community } from '@shared/types/community';
 
 import './index.scss';
-import { Panel } from 'primereact/panel';
 
 type NewWorldDialogProps = {
   community: Community;
