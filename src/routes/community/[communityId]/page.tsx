@@ -1,10 +1,14 @@
-import { useParams } from '@modern-js/runtime/router';
-import GetCommunityDetails from '@api/bff/community/[communityId]';
 import { useEffect } from 'react';
+import { useParams } from '@modern-js/runtime/router';
 import { useModel } from '@modern-js/runtime/model';
+import { Panel } from 'primereact/panel';
+
+import GetCommunityDetails from '@api/bff/community/[communityId]';
 import GetWorlds from '@api/bff/community/[communityId]/worlds';
 import WorldPanel from '@/components/world-panel';
 import { CommunityModel } from '@/state/communityModel';
+
+import './page.scss';
 
 const CommunityPage: React.FC = () => {
   const { communityId } = useParams<{ communityId: string }>();
@@ -31,21 +35,18 @@ const CommunityPage: React.FC = () => {
   }, [communityId]);
 
   return (
-    <div>
-      <h1>Community: {community?.name}</h1>
-      <div>
-        <h2>Community Details</h2>
-        {community ? (
-          <div>
-            <h3>{community.name}</h3>
-            <p>{community.description}</p>
-          </div>
-        ) : (
-          <p>Loading...</p>
-        )}
-      </div>
+    <>
+      <Panel
+        className="community-details-panel"
+        header={`Community: ${community?.name}`}
+      >
+        <p>Status: {community?.status}</p>
+        <p>Owner: {community?.owner.displayName}</p>
+        <p>Admins: {community?.admins.map(u => u.displayName)}</p>
+        <p>{community?.description}</p>
+      </Panel>
       <WorldPanel worlds={worlds} />
-    </div>
+    </>
   );
 };
 

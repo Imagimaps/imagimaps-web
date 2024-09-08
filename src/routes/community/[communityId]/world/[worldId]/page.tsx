@@ -1,9 +1,13 @@
-import { useModel } from '@modern-js/runtime/model';
-import { Link, useNavigate, useParams } from '@modern-js/runtime/router';
 import { useEffect } from 'react';
+import { useNavigate, useParams } from '@modern-js/runtime/router';
+import { useModel } from '@modern-js/runtime/model';
+import { Panel } from 'primereact/panel';
+
 import GetMaps from '@api/bff/community/[communityId]/world/[worldId]/maps';
 import { CommunityModel } from '@/state/communityModel';
 import MapPanel from '@/components/map-panel';
+
+import './page.scss';
 
 const WorldPage: React.FC = () => {
   const [{ activeWorld, community, maps }, actions] = useModel(CommunityModel);
@@ -46,13 +50,17 @@ const WorldPage: React.FC = () => {
   }
 
   return (
-    <div>
-      <h1>World Page</h1>
-      <h2>{activeWorld.name}</h2>
-      <p>{activeWorld.description}</p>
-      <Link to="edit">Edit</Link>
+    <>
+      <Panel
+        className="world-details-panel"
+        header={`World: ${activeWorld?.name}`}
+      >
+        <p>Status: {activeWorld?.status}</p>
+        <p>Owner: {activeWorld?.owner.displayName}</p>
+        <p>{activeWorld?.description}</p>
+      </Panel>
       <MapPanel maps={maps} />
-    </div>
+    </>
   );
 };
 

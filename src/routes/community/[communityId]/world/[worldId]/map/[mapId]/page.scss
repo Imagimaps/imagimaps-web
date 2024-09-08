@@ -1,0 +1,18 @@
+.map-details-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  margin: 0 auto;
+  max-width: 1200px;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+
+  .p-panel-header {
+    padding: 0.5rem 1rem;
+  }
+
+  .p-panel-content {
+    padding: 1rem;
+  }
+}

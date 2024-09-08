@@ -1,14 +1,15 @@
+import { useEffect, useRef, useState } from 'react';
+import { useModel } from '@modern-js/runtime/model';
 import { Link, useNavigate, useParams } from '@modern-js/runtime/router';
 import { FileUpload, FileUploadHandlerEvent } from 'primereact/fileupload';
 import { ProgressBar } from 'primereact/progressbar';
 import { Dialog } from 'primereact/dialog';
-import 'primereact/resources/themes/saga-blue/theme.css';
-import 'primereact/resources/primereact.css';
-import { useEffect, useRef, useState } from 'react';
-import { useModel } from '@modern-js/runtime/model';
+import { Panel } from 'primereact/panel';
 
 import GetUploadUrl from '@api/bff/map/[community_id]/[world_id]/[map_id]/upload';
 import { CommunityModel } from '@/state/communityModel';
+
+import './page.scss';
 
 const MapPage: React.FC = () => {
   const navigate = useNavigate();
@@ -88,14 +89,19 @@ const MapPage: React.FC = () => {
     xhr.send(formData);
   };
 
+  console.log('Active Map:', activeMap);
+  // TODO: Tree Split View for Managing Layers
+
   return (
-    <div>
+    <>
+      <Panel className="map-details-panel" header={`Map: ${activeMap?.name}`}>
+        <p>Id: {activeMap?.id}</p>
+        <p>Owner: {activeMap?.owner}</p>
+        <p>{activeMap?.description}</p>
+      </Panel>
       <h1>Map Page</h1>
       {activeMap && <h2>{activeMap.name}</h2>}
       <p>{activeMap?.description}</p>
-      <p>Map ID: {mapId}</p>
-      <br />
-      <p>Grid List of Layers contained in this map</p>
       <Link to="workspace">Jump into Map Workspace</Link>
       <button onClick={() => setUploadTilePanelVisible(true)}>+</button>
       <Dialog
@@ -130,7 +136,7 @@ const MapPage: React.FC = () => {
           </div>
         </div>
       </Dialog>
-    </div>
+    </>
   );
 };
 

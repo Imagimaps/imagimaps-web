@@ -26,10 +26,6 @@ const WorldPanel: React.FC<WorldPanelProps> = ({ worlds }) => {
     navigate(`/community/${community?.id}/world/${world.id}`);
   };
 
-  const openNewItemDialog = () => {
-    setNewItemDialogVisible(true);
-  };
-
   return (
     <>
       <GridPanel header={'Community Worlds'} toggleable={{ open: true }}>
@@ -43,7 +39,10 @@ const WorldPanel: React.FC<WorldPanelProps> = ({ worlds }) => {
             onClick={() => handleWorldClicked(world)}
           />
         ))}
-        <NewItemCard prompt="Add New World" onClick={openNewItemDialog} />
+        <NewItemCard
+          prompt="Add New World"
+          onClick={() => setNewItemDialogVisible(true)}
+        />
       </GridPanel>
       {community && (
         <NewWorldDialog
