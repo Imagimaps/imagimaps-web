@@ -1,0 +1,17 @@
+.grid-panel {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: 1200px;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+}
+
+.grid-panel-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-gap: 1rem;
+  padding: 1rem;
+  width: 100%;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+}

@@ -8,9 +8,8 @@ import ImagimapsSplash from '@assets/images/imagimaps_compressed.png';
 import ImagimapsIco from '@assets/icons/imagimaps.ico';
 import { useModel } from '@modern-js/runtime/model';
 import AuthDiscordCard from '@/components/auth-providers/discord-card';
-import JoinCommunities from '@/components/join-communities';
-import Communities from '@/components/communities';
 import { AuthModel } from '@/state/authModel';
+import CommunityGridPanel from '@/components/communities-grid-panel';
 
 import './index.css';
 
@@ -57,8 +56,7 @@ const Index = () => {
             <AuthDiscordCard />
           </div>
         )}
-        {isAuthenticated && <Communities />}
-        {isAuthenticated && <JoinCommunities />}
+        {isAuthenticated && <CommunityGridPanel />}
       </main>
     </div>
   );

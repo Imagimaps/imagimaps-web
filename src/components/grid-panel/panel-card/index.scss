@@ -1,0 +1,57 @@
+.grid-panel-card {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  transition: box-shadow 0.3s;
+  width: 100%;
+  height: 300px;
+
+  &:hover {
+    cursor: pointer;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    transform: scale(1.02);
+  }
+
+  .p-card-header {
+    height: 200px;
+    overflow: clip;
+  }
+
+  .splash-image {
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+  }
+
+  .p-card-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 0 0.2rem 0.2rem 0.2rem;
+  }
+
+  .p-card-title {
+    line-height: 1.5;
+    font-size: 1.2rem;
+    font-weight: 1000;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .p-card-subtitle {
+    color: #666;
+    line-height: 1.5;
+    font-size: 0.8rem;
+    font-style: italic;
+    margin-top: -0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
