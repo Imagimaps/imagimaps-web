@@ -37,6 +37,10 @@ export const CommunityModel = model<CommunityModelState>('community').define(
           state.worlds = worlds;
         },
         setViewingWorld: (state: CommunityModelState, world: World) => {
+          const currentActiveWorld = state.worlds.find(w => w.viewing === true);
+          if (currentActiveWorld?.id !== world.id) {
+            state.maps = [];
+          }
           state.worlds = state.worlds.map(w => {
             if (w.id === world.id) {
               return { ...w, viewing: true };

@@ -1,3 +1,6 @@
+import type { User } from './user';
+import type { Community } from './community';
+
 export type World = {
   id: string;
   name: string;
