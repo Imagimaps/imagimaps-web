@@ -12,11 +12,17 @@ import Node from './node';
 
 interface TreeViewProps {
   data: TreeNode[];
+  updateData?: (data: TreeNode[]) => void;
+  nodeClicked?: (node: TreeNode) => void;
   style?: any;
 }
 
-const TreeView: FC<TreeViewProps> = ({ data, style }) => {
-  // TODO: Fix issue where updating data out of band does not automatically update the tree. May need to raise an issue on GH.
+const TreeView: FC<TreeViewProps> = ({
+  data,
+  updateData,
+  nodeClicked,
+  style,
+}) => {
   const treeRef = useRef<TreeApi<TreeNode> | null>();
 
   useEffect(() => {
@@ -37,6 +43,28 @@ const TreeView: FC<TreeViewProps> = ({ data, style }) => {
   };
   const onMove: MoveHandler<TreeNode> = ({ dragIds, parentId, index }) => {
     console.log('Move Handler', dragIds, parentId, index);
+    const originalIndex = data.findIndex(node => node.id === dragIds[0]);
+    const draggedNode = data[originalIndex];
+    const dragDirection = originalIndex < index ? 'down' : 'up';
+    console.log('Dragged Node', dragDirection, draggedNode);
+    let updatedData = [];
+    if (dragDirection === 'down') {
+      updatedData = [
+        ...data.slice(0, originalIndex),
+        ...data.slice(originalIndex + 1, index),
+        draggedNode,
+        ...data.slice(index),
+      ];
+    } else {
+      updatedData = [
+        ...data.slice(0, index),
+        draggedNode,
+        ...data.slice(index, originalIndex),
+        ...data.slice(originalIndex + 1),
+      ];
+    }
+    console.log('Updated Data', updatedData);
+    updateData?.(updatedData);
   };
   const onDelete: DeleteHandler<TreeNode> = ({ ids }) => {
     console.log('Delete Handler', ids);
@@ -47,15 +75,20 @@ const TreeView: FC<TreeViewProps> = ({ data, style }) => {
       <Tree
         ref={treeRef}
         data={data}
-        width={style.width ?? '100%'}
-        height={style.height ?? 1000}
+        width={style?.width ?? '100%'}
+        height={style?.height ?? 1000}
         onCreate={onCreate}
         onRename={onRename}
         onMove={onMove}
         onDelete={onDelete}
         onSelect={node => console.log('Selected Node', node)}
-        onActivate={node => console.log('Activated Node', node)}
-        onClick={node => console.log('Clicked Node', node)}
+        onActivate={node => {
+          console.log('Activated Node', node);
+          nodeClicked?.(node.data);
+        }}
+        onClick={node => {
+          console.log('Clicked Node', node);
+        }}
         onContextMenu={node => console.log('Context Menu Node', node)}
         onFocus={node => console.log('Focused Node', node)}
       >

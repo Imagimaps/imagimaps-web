@@ -1,0 +1,17 @@
+// Define variables for spacing and colors
+$spacing: 20px;
+$primaryColor: #007bff;
+
+// Define the main layout structure
+#root {
+  display: grid;
+  grid-template-rows: 60px 40px 1fr; // Set the height of each row
+  grid-template-columns: 10% 80% 10%; // Set the width of each column
+  min-height: 100vh;
+}
+
+.content {
+  grid-row: 3;
+  grid-column: 2;
+  padding: $spacing;
+}

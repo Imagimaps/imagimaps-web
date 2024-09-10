@@ -1,0 +1,112 @@
+.uploads-panel {
+  border: 1px solid red;
+  width: 100%;
+
+  .file-upload {
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+  }
+
+  .p-fileupload-content {
+    background-color: #f9f9f9;
+    border-radius: 3px;
+  }
+}
+
+.upload-item-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  align-content: center;
+  vertical-align: middle;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+
+  .upload-item-preview {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    vertical-align: middle;
+    margin-right: 1rem;
+    width: 40%;
+  }
+
+  .upload-item-details {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-left: 1rem;
+  }
+
+  .upload-item-size {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.upload-controls-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: center;
+  vertical-align: middle;
+  margin-bottom: 1rem;
+
+  .upload-controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 0.5rem;
+  }
+
+  .status-bars {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    margin-left: 1rem;
+    align-items: center;
+
+    .file-size-limit-meter-group {
+      width: 100%;
+    }
+
+    .file-size-meter-marker {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      .limit-display {
+        margin: auto;
+      }
+    }
+
+    .upload-progress-bar {
+      width: 100%;
+      height: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      overflow: hidden;
+    }
+  }
+}
+
+.file-drop {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  min-height: 200px;
+  background-color: #f9f9f9;
+  font-size: 1.2em;
+  transition: all 0.3s;
+}

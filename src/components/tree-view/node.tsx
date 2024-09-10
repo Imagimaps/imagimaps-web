@@ -15,6 +15,7 @@ const Node: FC<NodeRendererProps<TreeNode>> = ({ node, style, dragHandle }) => {
   if (node.isInternal) {
     ExpandIcon = node.isOpen ? MdArrowDropDown : MdArrowRight;
   }
+  console.log('Node:', node);
   // switch (node.data.treeType) {
   //   case 'topography':
   //     icon = '🗺️'; // Make Mountain Icon

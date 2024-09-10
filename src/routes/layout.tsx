@@ -1,4 +1,5 @@
-import './reset.scss';
+// import './reset.scss';
+import './layout.scss';
 // import 'primereact/resources/themes/lara-light-cyan/theme.css';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.css';
@@ -21,7 +22,9 @@ export default function Layout() {
           <PrimeReactProvider>
             <Header />
             <BreadcrumbMenu />
-            <Outlet />
+            <div className="content">
+              <Outlet />
+            </div>
           </PrimeReactProvider>
         </PersistState>
       </AuthProvider>
