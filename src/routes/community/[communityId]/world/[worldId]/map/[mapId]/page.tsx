@@ -5,14 +5,15 @@ import { Panel } from 'primereact/panel';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { Button } from 'primereact/button';
 
+import { MapLayer } from '@shared/types/map';
 import LayersSvg from '@shared/svg/layers.svg';
 import SvgIcon from '@/components/icon/svg';
 import TreeView from '@/components/tree-view/treeView';
 import { TreeNode } from '@/components/tree-view/types';
 import { CommunityModel } from '@/state/communityModel';
+import NewMapLayer from '@/components/new-map-layer';
 
 import './page.scss';
-import UploadsPanel from '@/components/upload-panel';
 
 const MapPage: React.FC = () => {
   const navigate = useNavigate();
@@ -20,9 +21,8 @@ const MapPage: React.FC = () => {
   const { communityId, worldId, mapId } = useParams();
 
   const [treeData, setTreeData] = useState<TreeNode[]>([]);
-  const [selectedNode, setSelectedNode] = useState<TreeNode | undefined>(
-    undefined,
-  );
+  const [selectedNode, setSelectedNode] = useState<TreeNode | undefined>();
+  const [stagedLayer, setStagedLayer] = useState<MapLayer | undefined>();
 
   useEffect(() => {
     if (!activeWorld || !activeMap || !community) {
@@ -40,16 +40,50 @@ const MapPage: React.FC = () => {
     console.log('Selected Node:', selectedNode);
   }, [selectedNode]);
 
+  useEffect(() => {
+    if (stagedLayer) {
+      console.log('Staged Layer:', stagedLayer);
+      let staged = treeData.find(td => td.id === 'new-layer');
+      if (staged) {
+        staged.name = stagedLayer.name;
+        setTreeData([...treeData]);
+      } else {
+        staged = {
+          id: 'new-layer',
+          type: 'layer',
+          name: stagedLayer.name,
+        };
+        setTreeData([...treeData, staged]);
+      }
+    }
+  }, [stagedLayer]);
+
   console.log('Active Map:', activeMap);
+
+  const createLayer = () => {
+    console.log('Create Layer');
+    console.log('Staged Layer:', stagedLayer);
+  };
 
   const addLayerNode = () => {
     console.log('Add Tree Node');
-    const newTreeData = [...treeData];
-    newTreeData.push({
-      id: `new-node-${newTreeData.length}`,
-      name: `new node ${newTreeData.length}`,
-    });
-    setTreeData(newTreeData);
+    const newLayer: MapLayer = {
+      id: 'new-layer',
+      name: 'New Layer',
+      description: 'New Layer Description',
+      parameters: {
+        position: {
+          x: 0,
+          y: 0,
+        },
+        scale: {
+          x: 1,
+          y: 1,
+        },
+      },
+      markers: [],
+    };
+    setStagedLayer(newLayer);
   };
 
   return (
@@ -90,7 +124,14 @@ const MapPage: React.FC = () => {
             />
           </SplitterPanel>
           <SplitterPanel size={75} minSize={10}>
-            <UploadsPanel />
+            <NewMapLayer
+              model={stagedLayer}
+              onModelChange={(model: MapLayer) => {
+                console.log('Model Changed', model);
+                setStagedLayer(model);
+              }}
+              onLayerCreated={createLayer}
+            />
           </SplitterPanel>
         </Splitter>
       </Panel>

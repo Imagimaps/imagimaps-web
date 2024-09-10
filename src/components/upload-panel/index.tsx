@@ -1,9 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import {
-  FileUpload,
-  FileUploadHandlerEvent,
-  ItemTemplateOptions,
-} from 'primereact/fileupload';
+import { FC, useEffect, useRef, useState } from 'react';
+import { FileUpload, ItemTemplateOptions } from 'primereact/fileupload';
 import { Tag } from 'primereact/tag';
 import { Toast } from 'primereact/toast';
 import { Panel } from 'primereact/panel';
@@ -13,13 +9,13 @@ import { useModel } from '@modern-js/runtime/model';
 import { MeterGroup } from 'primereact/metergroup';
 import { PrimeIcons } from 'primereact/api';
 
-import GetUploadUrl from '@api/bff/map/[community_id]/[world_id]/[map_id]/upload';
+import s3UploadHandler from './s3-upload-handlers';
 import { CommunityModel } from '@/state/communityModel';
 
 import './index.scss';
 
 const MAX_FILE_SIZE_BYTES = 100000000;
-enum UploadStatus {
+export enum UploadStatus {
   IDLE = 'IDLE',
   PREPARING = 'PREPARING',
   UPLOADING = 'UPLOADING',
@@ -27,7 +23,21 @@ enum UploadStatus {
   ERROR = 'ERROR',
 }
 
-const UploadsPanel = () => {
+type UploadsPanelProps = {
+  enableUserUpload?: boolean;
+  triggerUpload?: boolean;
+  onUploadStarted?: () => void;
+  onUploadComplete?: () => void;
+  onUploadError?: () => void;
+};
+
+const UploadsPanel: FC<UploadsPanelProps> = ({
+  enableUserUpload,
+  triggerUpload,
+  onUploadStarted,
+  onUploadComplete,
+  onUploadError,
+}) => {
   const fileRef = useRef<FileUpload>(null);
   const toastRef = useRef<Toast>(null);
   const [{ activeWorld, activeMap, community }] = useModel(CommunityModel);
@@ -38,11 +48,33 @@ const UploadsPanel = () => {
   const [totalSize, setTotalSize] = useState(0);
 
   useEffect(() => {
+    if (triggerUpload) {
+      console.log('Triggering Upload');
+      fileRef.current?.upload();
+    }
+  }, [triggerUpload]);
+
+  useEffect(() => {
     console.log(`Upload Progress: ${uploadProgress}%`);
   }, [uploadProgress]);
 
   useEffect(() => {
     console.log('Upload Status:', uploadStatus);
+    if (uploadStatus === UploadStatus.UPLOADING) {
+      console.log('Upload Started');
+      onUploadStarted?.();
+    }
+    if (uploadStatus === UploadStatus.COMPLETE) {
+      console.log('Upload Complete');
+      toastRef.current?.show({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Upload Complete',
+        life: 3000,
+      });
+      setUploadStatus(UploadStatus.IDLE);
+      onUploadComplete?.();
+    }
     if (uploadStatus === UploadStatus.ERROR) {
       console.error('Upload Failed');
       toastRef.current?.show({
@@ -52,88 +84,19 @@ const UploadsPanel = () => {
         life: 3000,
       });
       setUploadStatus(UploadStatus.IDLE);
+      onUploadError?.();
     }
   }, [uploadStatus]);
 
-  const uploadHandler = async (event: FileUploadHandlerEvent) => {
-    console.log('uploadHandler', event);
-    const communityId = community?.id;
-    const worldId = activeWorld?.id;
-    const mapId = activeMap?.id;
-
-    console.log('Preparing Upload');
-    setUploadStatus(UploadStatus.PREPARING);
-
-    if (!fileRef.current) {
-      console.error('FileUpload ref not set');
-      return;
-    }
-    if (!communityId || !worldId || !mapId) {
-      console.error('Not enough Map context provided');
-      // TODO: Show Error Toast
-      return;
-    }
-    if (!event.files || event.files.length === 0) {
-      console.error('No files selected');
-      return;
-    }
-
-    const file = event.files[0];
-
-    const getUploadUrlPromise = GetUploadUrl(communityId, worldId, mapId);
-
-    const xhr = new XMLHttpRequest();
-    const formData = new FormData();
-
-    formData.append('layer', file, file.name);
-
-    xhr.upload.addEventListener('progress', event => {
-      if (event.lengthComputable) {
-        const progress = Math.round((event.loaded * 100) / event.total);
-        setUploadProgress(progress);
-      }
-    });
-
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState === 4) {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          console.log('File Uploaded');
-          fileRef.current?.clear();
-          fileRef.current?.setUploadedFiles([file]);
-          setUploadStatus(UploadStatus.COMPLETE);
-        }
-      }
-    };
-
-    try {
-      const url = await getUploadUrlPromise;
-      if (!url) {
-        console.error('Upload URL Generation Failed');
-        setUploadStatus(UploadStatus.ERROR);
-        return;
-      }
-      console.log('Upload URL:', url);
-
-      xhr.open('PUT', url, true);
-      xhr.send(formData);
-      console.log('Uploading File');
-      setUploadStatus(UploadStatus.UPLOADING);
-    } catch (error) {
-      console.error('Upload URL Generation Failed', error);
-      setUploadStatus(UploadStatus.ERROR);
-    }
-  };
-
   const chooseOptions = {
     icon: PrimeIcons.IMAGES,
-    // iconOnly: true,
     className: 'custom-choose-btn p-button-rounded p-button-outlined',
   };
   const uploadOptions = {
     icon: PrimeIcons.CLOUD_UPLOAD,
-    // iconOnly: true,
     className:
       'custom-upload-btn p-button-success p-button-rounded p-button-outlined',
+    style: enableUserUpload ? undefined : { display: 'none' },
   };
   const cancelOptions = {
     icon: PrimeIcons.TIMES,
@@ -252,6 +215,7 @@ const UploadsPanel = () => {
           </span>
         </div>
         <Tag
+          // eslint-disable-next-line react/prop-types
           value={props.formatSize}
           severity="warning"
           className="upload-item-size"
@@ -260,6 +224,7 @@ const UploadsPanel = () => {
           type="button"
           icon="pi pi-times"
           className="p-button-outlined p-button-rounded p-button-danger ml-auto"
+          // eslint-disable-next-line react/prop-types
           onClick={() => onTemplateRemove(file, props.onRemove)}
         />
       </div>
@@ -321,7 +286,14 @@ const UploadsPanel = () => {
         onError={e => {
           console.log('onError', e);
         }}
-        uploadHandler={uploadHandler}
+        uploadHandler={s3UploadHandler(
+          community,
+          activeWorld,
+          activeMap,
+          fileRef,
+          setUploadStatus,
+          setUploadProgress,
+        )}
       />
     </Panel>
   );

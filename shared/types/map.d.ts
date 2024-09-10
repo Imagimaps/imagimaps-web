@@ -14,3 +14,24 @@ export type Map = {
   layers: MapLayer[];
   viewing: boolean;
 };
+
+export type MapLayer = {
+  id: string;
+  name: string;
+  description?: string;
+  owner?: string;
+  icon?: string;
+  parameters: MapLayerParameters;
+  markers: MapMarker[];
+};
+
+export type MapLayerParameters = {
+  position: {
+    x: number;
+    y: number;
+  };
+  scale: {
+    x: number;
+    y: number;
+  };
+};
