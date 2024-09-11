@@ -1,14 +1,20 @@
 import AuthClient from '@api/_clients/authClient';
 import MapClient from '@api/_clients/mapClient';
-import { useContext } from '@modern-js/runtime/koa';
+import { GetImageUploadUrlResponse } from '@api/_clients/mapclient.types';
+import { RequestOption, useContext } from '@modern-js/runtime/koa';
 import { AuthorisationScopes } from '@shared/types/auth.enums';
 
 export default async (
   communityId: string,
   worldId: string,
   mapId: string,
-): Promise<string | undefined> => {
-  console.log(`Getting Upload URL for ${communityId}.${worldId}.${mapId}`);
+  { query }: RequestOption<{ filename: string }, undefined>,
+): Promise<GetImageUploadUrlResponse | undefined> => {
+  const { filename } = query || {};
+  console.log(
+    `Getting Upload URL for ${communityId}.${worldId}.${mapId}.${filename}`,
+  );
+  console.log('Filename', filename);
   const ctx = useContext();
   const { cookies } = ctx;
   const idToken = cookies.get('id-token');
@@ -34,12 +40,12 @@ export default async (
   }
 
   const mapClient = MapClient({ userId: idToken, sessionToken });
-  const uploadUrl = await mapClient.getMapLayerUploadUrl({
+  const mapCtx = {
     communityId,
     worldId,
     mapId,
-    mapLayerId: '0',
-  });
+  };
+  const uploadCtx = await mapClient.getMapLayerUploadUrl(mapCtx, filename);
 
-  return uploadUrl;
+  return uploadCtx;
 };

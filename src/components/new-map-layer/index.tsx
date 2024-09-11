@@ -1,15 +1,18 @@
 import { FC, useEffect, useState } from 'react';
 import { Panel } from 'primereact/panel';
+import { useModel } from '@modern-js/runtime/model';
 
+import { post as CreateLayer } from '@api/bff/community/[communityId]/world/[worldId]/map/[mapId]/layer';
 import UploadsPanel from '@components/upload-panel';
 import { MapLayer } from '@shared/types/map';
+import { CommunityModel } from '@/state/communityModel';
 
 import './index.scss';
 
 type NewMapLayerProps = {
   model?: MapLayer;
   onModelChange?: (model: MapLayer) => void;
-  onLayerCreated?: () => void;
+  onLayerCreated?: (layer: MapLayer) => void;
 };
 
 const NewMapLayer: FC<NewMapLayerProps> = ({
@@ -17,6 +20,7 @@ const NewMapLayer: FC<NewMapLayerProps> = ({
   onModelChange,
   onLayerCreated,
 }) => {
+  const [{ activeWorld, activeMap, community }] = useModel(CommunityModel);
   const [triggerUpload, setTriggerUpload] = useState(false);
   const [layer, setLayer] = useState<MapLayer | undefined>(model);
 
@@ -30,7 +34,7 @@ const NewMapLayer: FC<NewMapLayerProps> = ({
     }
   }, [layer]);
 
-  const handleSubmit = (event: any) => {
+  const beginFileUpload = (event: any) => {
     event.preventDefault();
     console.log('Submit New Map Layer', layer);
     if (!layer?.name) {
@@ -38,6 +42,25 @@ const NewMapLayer: FC<NewMapLayerProps> = ({
       return;
     }
     setTriggerUpload(true);
+  };
+
+  const createNewLayer = async (uploadKey: string) => {
+    console.log('Create New Layer', layer);
+    setTriggerUpload(false);
+    if (!layer || !community || !activeWorld || !activeMap) {
+      console.error('Not enough context to create layer');
+      return;
+    }
+    const newLayer = await CreateLayer(
+      community?.id,
+      activeWorld?.id,
+      activeMap?.id,
+      {
+        query: undefined,
+        data: { uploadKey, layer },
+      },
+    );
+    onLayerCreated?.(newLayer);
   };
 
   if (!layer) {
@@ -87,7 +110,6 @@ const NewMapLayer: FC<NewMapLayerProps> = ({
                 id="origin-offset-x"
                 name="origin-offset-x"
                 placeholder="X Offset"
-                defaultValue={0}
                 value={layer.parameters.position.x}
                 onChange={event => {
                   layer.parameters.position.x = Number(event.target.value);
@@ -102,7 +124,6 @@ const NewMapLayer: FC<NewMapLayerProps> = ({
                 id="origin-offset-y"
                 name="origin-offset-y"
                 placeholder="Y Offset"
-                defaultValue={0}
                 value={layer.parameters.position.y}
                 onChange={event => {
                   layer.parameters.position.y = Number(event.target.value);
@@ -122,7 +143,6 @@ const NewMapLayer: FC<NewMapLayerProps> = ({
                 id="scale-x"
                 name="scale-x"
                 placeholder="X Scale"
-                defaultValue={1}
                 value={layer.parameters.scale.x}
                 onChange={event => {
                   layer.parameters.scale.x = Number(event.target.value);
@@ -137,7 +157,6 @@ const NewMapLayer: FC<NewMapLayerProps> = ({
                 id="scale-y"
                 name="scale-y"
                 placeholder="Y Scale"
-                defaultValue={1}
                 value={layer.parameters.scale.y}
                 onChange={event => {
                   layer.parameters.scale.y = Number(event.target.value);
@@ -150,13 +169,15 @@ const NewMapLayer: FC<NewMapLayerProps> = ({
       </form>
       <UploadsPanel
         triggerUpload={triggerUpload}
-        onUploadComplete={() => {
-          setTriggerUpload(false);
-          onLayerCreated?.();
-        }}
+        onUploadComplete={createNewLayer}
         onUploadError={() => setTriggerUpload(false)}
       />
-      <button className="new-layer-submit" type="submit" onClick={handleSubmit}>
+      <button
+        className="new-layer-submit"
+        type="submit"
+        // onClick={createNewLayer}
+        onClick={beginFileUpload}
+      >
         Add Layer
       </button>
     </Panel>

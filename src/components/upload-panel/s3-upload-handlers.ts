@@ -1,7 +1,7 @@
 import { SetStateAction } from 'react';
 import { FileUploadHandlerEvent } from 'primereact/fileupload';
 
-import GetUploadUrl from '@api/bff/map/[community_id]/[world_id]/[map_id]/upload';
+import GetUploadUrl from '@api/bff/community/[communityId]/world/[worldId]/map/[mapId]/upload';
 import { Community } from '@shared/types/community';
 import { Map } from '@shared/types/map';
 import { World } from '@shared/types/world';
@@ -15,6 +15,7 @@ const s3UploadHandler =
     fileRef: React.RefObject<any>,
     setUploadStatus: (value: SetStateAction<UploadStatus>) => void,
     setUploadProgress: (value: SetStateAction<number>) => void,
+    setUploadKey: (value: SetStateAction<string>) => void,
   ) =>
   async (event: FileUploadHandlerEvent) => {
     console.log('uploadHandler', event);
@@ -41,8 +42,12 @@ const s3UploadHandler =
     }
 
     const file = event.files[0];
+    console.log('Selected File:', file);
 
-    const getUploadUrlPromise = GetUploadUrl(communityId, worldId, mapId);
+    const getUploadUrlPromise = GetUploadUrl(communityId, worldId, mapId, {
+      query: { filename: file.name },
+      data: undefined,
+    });
 
     const xhr = new XMLHttpRequest();
     const formData = new FormData();
@@ -68,15 +73,16 @@ const s3UploadHandler =
     };
 
     try {
-      const url = await getUploadUrlPromise;
-      if (!url) {
+      const uploadCtx = await getUploadUrlPromise;
+      if (!uploadCtx) {
         console.error('Upload URL Generation Failed');
         setUploadStatus(UploadStatus.ERROR);
         return;
       }
-      console.log('Upload URL:', url);
+      console.log('Upload Context:', uploadCtx);
+      setUploadKey(uploadCtx.key);
 
-      xhr.open('PUT', url, true);
+      xhr.open('PUT', uploadCtx.url, true);
       xhr.send(formData);
       console.log('Uploading File');
       setUploadStatus(UploadStatus.UPLOADING);

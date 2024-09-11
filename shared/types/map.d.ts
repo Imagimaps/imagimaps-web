@@ -19,10 +19,10 @@ export type MapLayer = {
   id: string;
   name: string;
   description?: string;
-  owner?: string;
   icon?: string;
+  previewImage?: string;
   parameters: MapLayerParameters;
-  markers: MapMarker[];
+  markers?: MapMarker[];
 };
 
 export type MapLayerParameters = {

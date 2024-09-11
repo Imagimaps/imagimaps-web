@@ -27,7 +27,7 @@ type UploadsPanelProps = {
   enableUserUpload?: boolean;
   triggerUpload?: boolean;
   onUploadStarted?: () => void;
-  onUploadComplete?: () => void;
+  onUploadComplete?: (uploadKey: string) => void;
   onUploadError?: () => void;
 };
 
@@ -45,6 +45,7 @@ const UploadsPanel: FC<UploadsPanelProps> = ({
     UploadStatus.IDLE,
   );
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadKey, setUploadKey] = useState('');
   const [totalSize, setTotalSize] = useState(0);
 
   useEffect(() => {
@@ -73,7 +74,7 @@ const UploadsPanel: FC<UploadsPanelProps> = ({
         life: 3000,
       });
       setUploadStatus(UploadStatus.IDLE);
-      onUploadComplete?.();
+      onUploadComplete?.(uploadKey);
     }
     if (uploadStatus === UploadStatus.ERROR) {
       console.error('Upload Failed');
@@ -293,6 +294,7 @@ const UploadsPanel: FC<UploadsPanelProps> = ({
           fileRef,
           setUploadStatus,
           setUploadProgress,
+          setUploadKey,
         )}
       />
     </Panel>
