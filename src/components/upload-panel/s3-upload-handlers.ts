@@ -50,9 +50,6 @@ const s3UploadHandler =
     });
 
     const xhr = new XMLHttpRequest();
-    const formData = new FormData();
-
-    formData.append('layer', file, file.name);
 
     xhr.upload.addEventListener('progress', event => {
       if (event.lengthComputable) {
@@ -83,7 +80,7 @@ const s3UploadHandler =
       setUploadKey(uploadCtx.key);
 
       xhr.open('PUT', uploadCtx.url, true);
-      xhr.send(formData);
+      xhr.send(file);
       console.log('Uploading File');
       setUploadStatus(UploadStatus.UPLOADING);
     } catch (error) {
