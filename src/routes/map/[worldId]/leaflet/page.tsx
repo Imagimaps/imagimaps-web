@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useParams } from '@modern-js/runtime/router';
 import { MdOutlinePerson } from 'react-icons/md';
 
-import MapView from '@/components/leaflet/mapView';
+// import MapView from '@/components/leaflet/mapView';
 
 import './page.scss';
 
@@ -27,7 +27,7 @@ const MapPage = () => {
           <MdOutlinePerson />
         </div>
       </header>
-      {worldId && mapId && <MapView worldId={worldId} mapId={mapId} />}
+      {/* {worldId && mapId && <MapView worldId={worldId} mapId={mapId} />} */}
     </div>
   );
 };

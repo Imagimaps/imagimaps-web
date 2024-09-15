@@ -3,7 +3,7 @@ import { FileUploadHandlerEvent } from 'primereact/fileupload';
 
 import GetUploadUrl from '@api/bff/community/[communityId]/world/[worldId]/map/[mapId]/upload';
 import { Community } from '@shared/types/community';
-import { Map } from '@shared/types/map';
+import { Map } from '@shared/_types';
 import { World } from '@shared/types/world';
 import { UploadStatus } from '.';
 

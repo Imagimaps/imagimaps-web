@@ -1,7 +1,7 @@
 import ServicesConfig from '@api/_config/services';
 import { useContext } from '@modern-js/runtime/koa';
 import { RequestOption } from '@modern-js/runtime/server';
-import { Map } from '@shared/types/map';
+import { Map } from '@shared/_types';
 
 const { mapServiceBaseUrl } = ServicesConfig();
 

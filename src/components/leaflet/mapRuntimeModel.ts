@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid/non-secure';
-import { DisplayTemplate, MapMarker, MapOverlay } from '@shared/_types';
+import { DisplayTemplate, MapMarker, Overlay } from '@shared/_types';
 import { model } from '@modern-js/runtime/model';
 import { LatLng } from 'leaflet';
 import { MapData, MapDataModel } from './mapDataModel';
@@ -12,7 +12,7 @@ export type MapRuntime = {
   stagedMarker?: Partial<MapMarker>;
   recentOverlayId?: string;
   lastUsedTemplate?: DisplayTemplate;
-  lastUsedOverlay?: MapOverlay;
+  lastUsedOverlay?: Overlay;
   ghostTargetPosition?: LatLng;
 };
 
@@ -32,22 +32,22 @@ export const MapRuntimeModel = model('mapRuntime').define((_, { onMount }) => {
       selectedOverlay: [
         MapDataModel,
         (state: MapRuntime, dataState: MapData) => {
+          const overlays = dataState.map.layers.flatMap(l => l.overlays);
           if (state.selectedMarkerIsNew) {
             console.log(
               'Computing selected overlay for new marker',
               state.recentOverlayId,
             );
-            const overlay = dataState.map.topology.overlays.find(
-              overlay => overlay.id === state.recentOverlayId,
+            const selectedOverlay = overlays.find(
+              o => o?.id === state.recentOverlayId,
             );
-            if (overlay) {
-              console.log('Selected overlay for new marker', overlay);
-              return overlay;
+            if (selectedOverlay) {
+              console.log('Selected overlay for new marker', selectedOverlay);
+              return selectedOverlay;
             }
-            return dataState.map.topology.overlays[0];
           }
-          return dataState.map.topology.overlays.find(overlay =>
-            overlay.markers.some(m => m.id === state.selectedMarker?.id),
+          return overlays.find(overlay =>
+            overlay?.markers.some(m => m.id === state.selectedMarker?.id),
           );
         },
       ],
@@ -55,7 +55,7 @@ export const MapRuntimeModel = model('mapRuntime').define((_, { onMount }) => {
         MapDataModel,
         (state: MapRuntime, dataState: MapData) => {
           if (state.selectedMarker) {
-            return dataState.map.templateGroups
+            return (dataState.map.templateGroups ?? [])
               .flatMap(group => group.templates)
               .find(
                 template => template.id === state.selectedMarker?.refTemplateid,
@@ -81,7 +81,7 @@ export const MapRuntimeModel = model('mapRuntime').define((_, { onMount }) => {
         state.templateIdHistory.push(template.id);
         state.lastUsedTemplate = template;
       },
-      overlayInteracted: (state: MapRuntime, overlay: MapOverlay) => {
+      overlayInteracted: (state: MapRuntime, overlay: Overlay) => {
         console.log('Overlay interacted with', overlay.id);
         state.recentOverlayId = overlay.id;
         state.lastUsedOverlay = overlay;

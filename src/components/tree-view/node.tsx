@@ -8,7 +8,7 @@ import { TreeNode } from './types';
 import './node.scss';
 
 const Node: FC<NodeRendererProps<TreeNode>> = ({ node, style, dragHandle }) => {
-  const icon = '🗀';
+  let icon = '🗺️';
   const contextText = '';
   const tooltipText = `node id: ${node.data.id}`;
   let ExpandIcon: IconType | undefined;
@@ -18,7 +18,7 @@ const Node: FC<NodeRendererProps<TreeNode>> = ({ node, style, dragHandle }) => {
   console.log('Node:', node);
   // switch (node.data.treeType) {
   //   case 'topography':
-  //     icon = '🗺️'; // Make Mountain Icon
+  //     icon = '🗺️'; // Make Mountain Icon 🗀
   //     contextText = ` - ${node.data.id.slice(0, 7)}`;
   //     break;
   //   case 'overlay':
@@ -30,9 +30,14 @@ const Node: FC<NodeRendererProps<TreeNode>> = ({ node, style, dragHandle }) => {
   //   default:
   //     break;
   // }
+
+  if (node.data.editing) {
+    icon = '🖉';
+  }
+
   return (
     <div
-      className="tree-node"
+      className={`tree-node ${node.isSelected ? 'selected' : ''}`}
       title={tooltipText}
       style={style}
       ref={dragHandle}

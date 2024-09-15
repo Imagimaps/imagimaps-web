@@ -4,13 +4,13 @@ import { useModel } from '@modern-js/runtime/model';
 import { Panel } from 'primereact/panel';
 
 import GetMaps from '@api/bff/community/[communityId]/world/[worldId]/maps';
-import { CommunityModel } from '@/state/communityModel';
+import { AppModel } from '@/state/appModel';
 import MapPanel from '@/components/map-panel';
 
 import './page.scss';
 
 const WorldPage: React.FC = () => {
-  const [{ activeWorld, community, maps }, actions] = useModel(CommunityModel);
+  const [{ activeWorld, community, maps }, actions] = useModel(AppModel);
   const params = useParams();
   const navigate = useNavigate();
 

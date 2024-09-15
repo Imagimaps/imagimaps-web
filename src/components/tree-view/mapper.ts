@@ -1,4 +1,4 @@
-import type { MapLayer } from '@shared/types/map';
+import { MapLayer } from '@shared/_types';
 import { TreeNode } from './types';
 
 export const MapLayerToTreeNode = (layer: MapLayer): TreeNode => {
@@ -6,10 +6,10 @@ export const MapLayerToTreeNode = (layer: MapLayer): TreeNode => {
     id: layer.id,
     name: layer.name,
     type: 'layer',
-    children: layer.markers?.map(marker => ({
-      id: marker.id,
-      name: marker.name,
-      type: 'marker',
+    children: layer.overlays?.map(overlay => ({
+      id: overlay.id,
+      name: overlay.name,
+      type: 'overlay',
     })),
   };
 };

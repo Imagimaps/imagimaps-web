@@ -3,7 +3,7 @@ import { ChangeEventHandler, FC, useEffect, useState } from 'react';
 import { useModel } from '@modern-js/runtime/model';
 import styled from '@modern-js/runtime/styled';
 import LayersSvg from '@shared/svg/layers.svg';
-import { MapOverlay } from '@shared/_types';
+import { Overlay } from '@shared/_types';
 import {
   ActionButtonContainer,
   ContentRow,
@@ -19,10 +19,10 @@ import {
 } from '@/components/icon/buttons';
 
 interface LayersRowProps {
-  activeOverlay?: MapOverlay;
+  activeOverlay?: Overlay;
   openEditable?: boolean;
   onEditing?: (propName: string, isEditing: boolean) => void;
-  onSave?: (overlay: MapOverlay) => void;
+  onSave?: (overlay: Overlay) => void;
   onCancel?: (propName: string) => void;
 }
 
@@ -43,10 +43,10 @@ const LayersRow: FC<LayersRowProps> = ({
 
   const [showEdit, setShowEdit] = useState(!openEditable);
   const [isEditing, setIsEditing] = useState(openEditable);
-  const [selectedOverlay, setSelectedOverlay] = useState<MapOverlay>();
+  const [selectedOverlay, setSelectedOverlay] = useState<Overlay>();
 
   const [mapData] = useModel(MapDataModel, model => ({
-    overlays: model.map.topology.overlays,
+    overlays: model.overlays,
   }));
 
   useEffect(() => {

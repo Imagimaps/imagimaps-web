@@ -16,7 +16,7 @@ const TemplatePicker: FC<TemplatePickerProps> = ({
 }) => {
   const [templateGroups] = useModel(
     MapDataModel,
-    model => model.map.templateGroups,
+    model => model.map.templateGroups ?? [],
   );
 
   const [showGroup, setShowGroup] = useState<Record<string, boolean>>({});

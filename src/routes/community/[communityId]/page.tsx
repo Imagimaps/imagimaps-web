@@ -6,13 +6,13 @@ import { Panel } from 'primereact/panel';
 import GetCommunityDetails from '@api/bff/community/[communityId]';
 import GetWorlds from '@api/bff/community/[communityId]/worlds';
 import WorldPanel from '@/components/world-panel';
-import { CommunityModel } from '@/state/communityModel';
+import { AppModel } from '@/state/appModel';
 
 import './page.scss';
 
 const CommunityPage: React.FC = () => {
   const { communityId } = useParams<{ communityId: string }>();
-  const [{ community, worlds }, actions] = useModel(CommunityModel);
+  const [{ community, worlds }, actions] = useModel(AppModel);
 
   useEffect(() => {
     if (communityId) {

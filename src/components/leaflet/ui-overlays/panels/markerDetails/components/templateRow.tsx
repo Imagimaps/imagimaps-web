@@ -22,7 +22,7 @@ const TemplateRow: FC<TemplateRowProps<string>> = ({
 }) => {
   const [templateGroups] = useModel(
     MapDataModel,
-    model => model.map.templateGroups,
+    model => model.map.templateGroups ?? [],
   );
   const [selectedTemplate] = useModel(MapRuntimeModel, m => m.selectedTemplate);
 

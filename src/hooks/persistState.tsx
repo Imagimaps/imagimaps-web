@@ -1,12 +1,12 @@
 import { createContext, ReactNode, useEffect } from 'react';
 import { useModel } from '@modern-js/runtime/model';
 
-import { CommunityModel } from '@/state/communityModel';
+import { AppModel } from '@/state/appModel';
 
 const AppStateContext = createContext({});
 
 const AppStateProvider = ({ children }: { children: ReactNode }) => {
-  const [{ community, worlds, maps }, actions] = useModel(CommunityModel);
+  const [{ community, worlds, maps }, actions] = useModel(AppModel);
 
   useEffect(() => {
     const community = localStorage.getItem('community');

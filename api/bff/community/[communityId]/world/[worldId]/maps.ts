@@ -1,7 +1,7 @@
 import { URLSearchParams } from 'url';
 import ServicesConfig from '@api/_config/services';
 import { RequestOption, useContext } from '@modern-js/runtime/koa';
-import { Map } from '@shared/types/map';
+import { Map } from '@shared/_types';
 
 const { mapServiceBaseUrl } = ServicesConfig();
 
@@ -58,7 +58,7 @@ export default async (
   );
 
   if (!mapResponse.ok) {
-    throw new Error(`Failed to fetch map. Status: ${mapResponse.status}`);
+    throw new Error(`Failed to fetch maps. Status: ${mapResponse.status}`);
   }
 
   const maps = (await mapResponse.json()) as Map[];

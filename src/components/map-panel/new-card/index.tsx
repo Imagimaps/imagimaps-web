@@ -4,12 +4,12 @@ import { Dialog } from 'primereact/dialog';
 import { useModel } from '@modern-js/runtime/model';
 
 import { post as createMap } from '@api/bff/community/[communityId]/world/[worldId]/map';
-import { CommunityModel } from '@/state/communityModel';
+import { AppModel } from '@/state/appModel';
 
 import './index.scss';
 
 const NewCard: React.FC = () => {
-  const [{ community, activeWorld }, actions] = useModel(CommunityModel);
+  const [{ community, activeWorld }, actions] = useModel(AppModel);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');

@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { MapMarker, MapOverlay } from '@shared/_types';
+import { MapMarker, Overlay } from '@shared/_types';
 import { useModel, useStaticModel } from '@modern-js/runtime/model';
 import styled from '@modern-js/runtime/styled';
 import equal from 'deep-equal';
@@ -27,7 +27,7 @@ const MarkerDetails: FC<MarkerDetailsProps> = () => {
   const [editMarker, setEditMarker] = useState<MapMarker>();
   const [modelEditted, setModelEditted] = useState<boolean>(false);
   const [overlayEditted, setOverlayEditted] = useState<boolean>(false);
-  const [editOverlay, setEditOverlay] = useState<MapOverlay>();
+  const [editOverlay, setEditOverlay] = useState<Overlay>();
 
   useEffect(() => {
     if (selectedMarkerIsNew) {

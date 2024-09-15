@@ -7,7 +7,7 @@ import GridPanel from '@components/grid-panel';
 import GridPanelCard from '@components/grid-panel/panel-card';
 import NewItemCard from '@components/grid-panel/new-item-card';
 import NewWorldDialog from './dialog-new-world';
-import { CommunityModel } from '@/state/communityModel';
+import { AppModel } from '@/state/appModel';
 
 import './index.scss';
 
@@ -17,7 +17,7 @@ interface WorldPanelProps {
 
 const WorldPanel: React.FC<WorldPanelProps> = ({ worlds }) => {
   const navigate = useNavigate();
-  const [{ community }, actions] = useModel(CommunityModel);
+  const [{ community }, actions] = useModel(AppModel);
   const [newItemDialogVisible, setNewItemDialogVisible] = useState(false);
 
   const handleWorldClicked = (world: World) => {

@@ -3,7 +3,8 @@ import { IdObj } from 'react-arborist/dist/module/types/utils';
 export interface TreeNode extends IdObj {
   name: string;
   editing?: boolean;
-  type: 'layer' | 'group' | 'marker';
+  selected?: boolean;
+  type: 'layer' | 'overlay' | 'group' | 'marker';
   children?: TreeNode[];
 }
 

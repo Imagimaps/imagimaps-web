@@ -10,7 +10,7 @@ import { MeterGroup } from 'primereact/metergroup';
 import { PrimeIcons } from 'primereact/api';
 
 import s3UploadHandler from './s3-upload-handlers';
-import { CommunityModel } from '@/state/communityModel';
+import { AppModel } from '@/state/appModel';
 
 import './index.scss';
 
@@ -40,7 +40,7 @@ const UploadsPanel: FC<UploadsPanelProps> = ({
 }) => {
   const fileRef = useRef<FileUpload>(null);
   const toastRef = useRef<Toast>(null);
-  const [{ activeWorld, activeMap, community }] = useModel(CommunityModel);
+  const [{ activeWorld, activeMap, community }] = useModel(AppModel);
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>(
     UploadStatus.IDLE,
   );

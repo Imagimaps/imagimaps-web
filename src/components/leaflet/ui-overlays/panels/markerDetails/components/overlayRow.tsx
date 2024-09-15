@@ -1,5 +1,5 @@
 import styled from '@modern-js/runtime/styled';
-import { MapOverlay } from '@shared/_types';
+import { Overlay } from '@shared/_types';
 import { ChangeEventHandler, FC, useEffect, useState } from 'react';
 import { useModel } from '@modern-js/runtime/model';
 import LayersSvg from '@shared/svg/layers.svg';
@@ -10,23 +10,20 @@ import { MapRuntimeModel } from '@/components/leaflet/mapRuntimeModel';
 import SvgIcon from '@/components/icon/svg';
 
 interface OverlayRowProps<T> {
-  overlay?: MapOverlay;
+  overlay?: Overlay;
   editMode: boolean;
   onValueChange?: (value: T) => void;
 }
 
-const OverlayRow: FC<OverlayRowProps<MapOverlay>> = ({
+const OverlayRow: FC<OverlayRowProps<Overlay>> = ({
   overlay,
   editMode,
   onValueChange,
 }) => {
-  const [overlays] = useModel(
-    MapDataModel,
-    model => model.map.topology.overlays,
-  );
+  const [overlays] = useModel(MapDataModel, model => model.overlays);
   const [selectedOverlay] = useModel(MapRuntimeModel, m => m.selectedOverlay);
 
-  const [updatedOverlay, setUpdatedOverlay] = useState<MapOverlay>();
+  const [updatedOverlay, setUpdatedOverlay] = useState<Overlay>();
   const [localChanges, setLocalChanges] = useState<boolean>(false);
 
   useEffect(() => {

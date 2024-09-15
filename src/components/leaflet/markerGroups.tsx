@@ -8,7 +8,7 @@ import { MapRuntimeModel } from './mapRuntimeModel';
 
 const MarkerGroups: FC = () => {
   const [mapData] = useModel(MapDataModel, data => ({
-    overlays: data.map.topology.overlays,
+    overlays: data.overlays,
     templateGroups: data.map.templateGroups,
   }));
   const [, runtimeActions] = useModel(

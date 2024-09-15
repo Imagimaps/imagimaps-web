@@ -1,9 +1,10 @@
 import { FC, useEffect, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
+// import { useNavigate } from '@modern-js/runtime/router';
 import { MapContainer } from 'react-leaflet';
 import L, { CRS, Point, latLng } from 'leaflet';
-import GET, { FetchMapResponse } from 'api/bff/map/[world_id]/[map_id]';
 
+// import GetMapDetails from '@api/bff/community/[communityId]/world/[worldId]/map/[mapId]';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
@@ -13,9 +14,10 @@ import BackgroundLayer from './backgroundLayer';
 import { MapDataModel } from './mapDataModel';
 import PanelLayouts from './ui-overlays/panelLayouts';
 import MarkerGroups from './markerGroups';
-import { MapRuntimeModel } from './mapRuntimeModel';
+// import { MapRuntimeModel } from './mapRuntimeModel';
 import StagedMarker from './stagedMarker';
 import GhostTargetMarker from './ghostTargetMarker';
+// import { AppModel } from '@/state/appModel';
 
 const DefaultIcon = L.icon({
   iconRetinaUrl: iconRetina,
@@ -36,48 +38,70 @@ export const xy = (x: number, y: number) => {
 };
 
 interface MapViewProps {
-  worldId: string;
-  mapId: string;
+  selectedLayerId?: string;
 }
 
-const MapView: FC<MapViewProps> = ({ worldId, mapId }) => {
-  const [, mapActions] = useModel(MapDataModel);
-  const [, runtimeActions] = useModel(MapRuntimeModel);
-  const [ready, setReady] = useState(false);
+const MapView: FC<MapViewProps> = () => {
+  // const [{ activeWorld, activeMap, community }, appStateActions] =
+  //   useModel(AppModel);
+  const [{ userConfig }] = useModel(MapDataModel);
   const [pos, setPos] = useState(latLng([500, 500]));
 
   useEffect(() => {
-    GET(worldId, mapId).then((res: FetchMapResponse) => {
-      console.log('Map data: ', res);
-      const { map, defaults, user } = res;
-      mapActions.setMap(map);
-      mapActions.setDefaultConfig(defaults);
-      mapActions.setUserConfig(user);
+    if (userConfig?.position) {
+      setPos(xy(userConfig.position.x, userConfig.position.y));
+    }
+  }, [userConfig]);
 
-      if (
-        map.templateGroups.length > 0 &&
-        map.templateGroups[0].templates.length > 0
-      ) {
-        runtimeActions.templateInteracted(map.templateGroups[0].templates[0]);
-      }
-      if (map.topology.overlays.length > 0) {
-        runtimeActions.overlayInteracted(map.topology.overlays[0]);
-      }
+  // useEffect(() => {
+  //   if (!community) {
+  //     navigate(`/communities`);
+  //   }
+  //   if (!activeWorld) {
+  //     navigate(`/communities/${community?.id}/worlds`);
+  //   }
+  //   if (!activeMap) {
+  //     navigate(`/communities/${community?.id}/worlds/${activeWorld?.id}/maps`);
+  //   }
 
-      const viewPos = xy(
-        user?.viewPosition?.x ?? defaults.viewPosition.x,
-        user?.viewPosition?.y ?? defaults.viewPosition.y,
-      );
-      setPos(viewPos);
-      setReady(true);
-    });
-  }, []);
+  //   // mapActions.setMap(activeMap!);
+
+  //   GetMapDetails(community!.id, activeWorld!.id, activeMap!.id, {
+  //     query: { eagerLoad: true },
+  //     data: undefined,
+  //   }).then(res => {
+  //     const { map, userMetadata } = res;
+  //     console.log('Map:', map);
+  //     appStateActions.updateMap(map);
+  //     mapActions.setMap(map);
+  //     mapActions.setUserConfig({
+  //       viewPosition: {
+  //         x: userMetadata.position.x,
+  //         y: userMetadata.position.y,
+  //       },
+  //       viewZoom: userMetadata.zoom,
+  //       activeLayer: map.layers.find(l => l.id === selectedLayerId),
+  //     });
+  //     console.log('Do something with runtimeActions', runtimeActions);
+  //     //   if (
+  //     //     map.templateGroups.length > 0 &&
+  //     //     map.templateGroups[0].templates.length > 0
+  //     //   ) {
+  //     //     runtimeActions.templateInteracted(map.templateGroups[0].templates[0]);
+  //     //   }
+  //     //   if (map.boundingTopography.overlays.length > 0) {
+  //     //     runtimeActions.overlayInteracted(map.boundingTopography.overlays[0]);
+  //     //   }
+  //     setPos(xy(userMetadata.position.x, userMetadata.position.y));
+  //     setReady(true);
+  //   });
+  // }, []);
 
   const CustomCRS = L.Util.extend({}, CRS.Simple, {
     transformation: new L.Transformation(1, 0, 1, 0),
   });
 
-  return ready ? (
+  return (
     <ViewPane>
       <MapContainer
         center={pos}
@@ -96,8 +120,6 @@ const MapView: FC<MapViewProps> = ({ worldId, mapId }) => {
         <GhostTargetMarker />
       </MapContainer>
     </ViewPane>
-  ) : (
-    <div>Loading...</div>
   );
 };
 

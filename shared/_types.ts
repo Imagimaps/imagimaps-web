@@ -1,4 +1,7 @@
+import { User } from './types/user';
+
 export type WorldSpace = number;
+export type Scalar = number;
 export type WorldSpaceCoords = {
   x: WorldSpace;
   y: WorldSpace;
@@ -20,6 +23,15 @@ export type MapMarker = {
   refTemplateid: string;
 };
 
+export type MarkerGroup = {
+  id: string;
+  type: 'MarkerGroup';
+  name: string;
+  description: string;
+  icon?: string;
+  markers: MapMarker[];
+};
+
 export type MapRegion = {
   id: string;
   type: 'Region';
@@ -32,19 +44,18 @@ export type MapRegion = {
   refTemplateid: string;
 };
 
-export type MapOverlay = {
+export type Overlay = {
   id: string;
   type: 'Overlay';
   name: string;
   description: string;
+  icon?: string;
   markers: MapMarker[];
+  markerGroups: MarkerGroup[];
   regions: MapRegion[];
 };
 
-export type MapTopology = {
-  id: string;
-  name: string;
-  description: string;
+export type MapTopography = {
   position: WorldSpaceCoords;
   bounds: {
     top: WorldSpace;
@@ -52,8 +63,10 @@ export type MapTopology = {
     bottom: WorldSpace;
     right: WorldSpace;
   };
-  baseImageSrc: string;
-  overlays: MapOverlay[];
+  scale: {
+    x: Scalar;
+    y: Scalar;
+  };
 };
 
 export type DisplayTemplate = {
@@ -79,17 +92,50 @@ export type TemplateGroup = {
   templates: DisplayTemplate[];
 };
 
+export enum LayerStatus {
+  PROCESSING = 'PROCESSING',
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  LOCKED = 'LOCKED',
+  ERROR = 'ERROR',
+}
+
+export type MapLayer = {
+  id: string;
+  type: 'Layer';
+  name: string;
+  status: LayerStatus;
+  imagePath: string;
+  topography: MapTopography;
+  description?: string;
+  icon?: string;
+  previewImage?: string;
+  overlays?: Overlay[];
+  active?: boolean;
+};
+
 export type Map = {
   id: string;
+  type: 'Map';
   name: string;
   description: string;
-  topology: MapTopology;
-  templateGroups: TemplateGroup[];
-  originOffset: WorldSpaceCoords;
+  boundingTopography: MapTopography;
+  icon?: string;
+  splashImage?: string;
+  owner?: User | string;
+  layers: MapLayer[];
+  templateGroups?: TemplateGroup[];
+  active?: boolean;
+};
+
+export type UserMapMetadata = {
+  layerId: string;
+  position: WorldSpaceCoords;
+  zoom: number;
 };
 
 export type MapMetadata = {
-  activeTopologyId: string;
   viewPosition: WorldSpaceCoords;
   viewZoom: number;
+  activeLayer?: MapLayer;
 };

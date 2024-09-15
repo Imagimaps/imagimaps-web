@@ -1,7 +1,7 @@
 import { useModel } from '@modern-js/runtime/model';
 import styled from '@modern-js/runtime/styled';
 import { FC, useEffect, useState } from 'react';
-import { DisplayTemplate, MapMarker, MapOverlay } from '@shared/_types';
+import { DisplayTemplate, MapMarker, Overlay } from '@shared/_types';
 import LayersRow from './layersRow';
 import NameRow from './nameRow';
 import PointLocationRow from './pointLocationRow';
@@ -26,7 +26,7 @@ const MarkerDetails: FC<MarkerDetailsProps> = () => {
 
   const [editModel, setEditModel] = useState<MapMarker>();
   const [activeTemplate, setActiveTemplate] = useState<DisplayTemplate>();
-  const [activeOverlay, setActiveOverlay] = useState<MapOverlay>();
+  const [activeOverlay, setActiveOverlay] = useState<Overlay>();
   const [isNewMarker, setIsNewMarker] = useState(false);
 
   const resetState = () => {
@@ -66,10 +66,9 @@ const MarkerDetails: FC<MarkerDetailsProps> = () => {
         setActiveOverlay(mapData.overlays[0]);
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const lastValidTemplate = mapData.map.templateGroups
-        .flatMap(tg => tg.templates)
-        .find(template => template.id === lastUsedTemplate?.id);
+      // const lastValidTemplate = (mapData.map.templateGroups ?? [])
+      //   .flatMap(tg => tg.templates)
+      //   .find(template => template.id === lastUsedTemplate?.id);
 
       setEditModel({ ...stagedMarker } as MapMarker);
       setActiveTemplate(lastUsedTemplate);
@@ -95,7 +94,7 @@ const MarkerDetails: FC<MarkerDetailsProps> = () => {
     }
   };
 
-  const saveOverlay = (overlay: MapOverlay) => {
+  const saveOverlay = (overlay: Overlay) => {
     // console.log('saveOverlay', overlay);
     runtimeActions.overlayInteracted(overlay);
     mapActions.moveMarkerToOverlay(editModel!, overlay);

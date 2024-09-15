@@ -4,8 +4,8 @@ import { useModel } from '@modern-js/runtime/model';
 
 import { post as CreateLayer } from '@api/bff/community/[communityId]/world/[worldId]/map/[mapId]/layer';
 import UploadsPanel from '@components/upload-panel';
-import { MapLayer } from '@shared/types/map';
-import { CommunityModel } from '@/state/communityModel';
+import { MapLayer } from '@shared/_types';
+import { AppModel } from '@/state/appModel';
 
 import './index.scss';
 
@@ -20,7 +20,7 @@ const NewMapLayer: FC<NewMapLayerProps> = ({
   onModelChange,
   onLayerCreated,
 }) => {
-  const [{ activeWorld, activeMap, community }] = useModel(CommunityModel);
+  const [{ activeWorld, activeMap, community }] = useModel(AppModel);
   const [triggerUpload, setTriggerUpload] = useState(false);
   const [layer, setLayer] = useState<MapLayer | undefined>(model);
 
@@ -110,9 +110,9 @@ const NewMapLayer: FC<NewMapLayerProps> = ({
                 id="origin-offset-x"
                 name="origin-offset-x"
                 placeholder="X Offset"
-                value={layer.parameters.position.x}
+                value={layer.topography.position.x}
                 onChange={event => {
-                  layer.parameters.position.x = Number(event.target.value);
+                  layer.topography.position.x = Number(event.target.value);
                   setLayer({ ...layer });
                 }}
               />
@@ -124,9 +124,9 @@ const NewMapLayer: FC<NewMapLayerProps> = ({
                 id="origin-offset-y"
                 name="origin-offset-y"
                 placeholder="Y Offset"
-                value={layer.parameters.position.y}
+                value={layer.topography.position.y}
                 onChange={event => {
-                  layer.parameters.position.y = Number(event.target.value);
+                  layer.topography.position.y = Number(event.target.value);
                   setLayer({ ...layer });
                 }}
               />
@@ -143,9 +143,9 @@ const NewMapLayer: FC<NewMapLayerProps> = ({
                 id="scale-x"
                 name="scale-x"
                 placeholder="X Scale"
-                value={layer.parameters.scale.x}
+                value={layer.topography.scale.x}
                 onChange={event => {
-                  layer.parameters.scale.x = Number(event.target.value);
+                  layer.topography.scale.x = Number(event.target.value);
                   setLayer({ ...layer });
                 }}
               />
@@ -157,9 +157,9 @@ const NewMapLayer: FC<NewMapLayerProps> = ({
                 id="scale-y"
                 name="scale-y"
                 placeholder="Y Scale"
-                value={layer.parameters.scale.y}
+                value={layer.topography.scale.y}
                 onChange={event => {
-                  layer.parameters.scale.y = Number(event.target.value);
+                  layer.topography.scale.y = Number(event.target.value);
                   setLayer({ ...layer });
                 }}
               />

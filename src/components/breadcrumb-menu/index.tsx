@@ -5,14 +5,14 @@ import { BreadCrumb } from 'primereact/breadcrumb';
 import { MenuItem } from 'primereact/menuitem';
 import { PrimeIcons } from 'primereact/api';
 
-import { CommunityModel } from '@/state/communityModel';
+import { AppModel } from '@/state/appModel';
 
 import './index.scss';
 
 const BreadcrumbMenu: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [{ community, activeWorld, activeMap }] = useModel(CommunityModel);
+  const [{ community, activeWorld, activeMap }] = useModel(AppModel);
   const [crumbs, setCrumbs] = useState<MenuItem[]>([]);
 
   const currentRoute = location.pathname;

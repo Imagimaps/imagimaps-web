@@ -11,6 +11,6 @@ export type World = {
   owner: User;
   community: Community;
   mapIds: string[];
-  viewing?: boolean;
+  active?: boolean;
   lastAccessed?: Date;
 };

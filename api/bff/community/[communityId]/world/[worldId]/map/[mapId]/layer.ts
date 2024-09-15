@@ -2,7 +2,7 @@ import { URLSearchParams } from 'url';
 import { RequestOption, useContext } from '@modern-js/runtime/koa';
 
 import ServicesConfig from '@api/_config/services';
-import { MapLayer } from '@shared/types/map';
+import { MapLayer } from '@shared/_types';
 
 const { mapServiceBaseUrl } = ServicesConfig();
 

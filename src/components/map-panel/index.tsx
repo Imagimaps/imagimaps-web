@@ -2,12 +2,12 @@ import { FC, useState } from 'react';
 import { useModel } from '@modern-js/runtime/model';
 import { useNavigate } from '@modern-js/runtime/router';
 
-import { Map } from '@shared/types/map';
+import { Map } from '@shared/_types';
 import GridPanel from '@components/grid-panel';
 import GridPanelCard from '@components/grid-panel/panel-card';
 import NewItemCard from '@components/grid-panel/new-item-card';
 import NewMapDialog from './dialog-new-map';
-import { CommunityModel } from '@/state/communityModel';
+import { AppModel } from '@/state/appModel';
 
 import './index.scss';
 
@@ -17,12 +17,12 @@ interface MapPanelProps {
 
 const MapPanel: FC<MapPanelProps> = ({ maps }) => {
   const navigate = useNavigate();
-  const [{ community, activeWorld }, actions] = useModel(CommunityModel);
+  const [{ community, activeWorld }, actions] = useModel(AppModel);
   const [newItemDialogVisible, setNewItemDialogVisible] = useState(false);
 
   const handleCardClicked = (map: Map) => {
     console.log('Go to map', map?.id);
-    actions.setViewingMap(map);
+    actions.setActiveMap(map);
     navigate(
       `/community/${community?.id}/world/${activeWorld?.id}/map/${map?.id}`,
     );
@@ -41,7 +41,7 @@ const MapPanel: FC<MapPanelProps> = ({ maps }) => {
 
   return (
     <>
-      <GridPanel header={'Community Worlds'} toggleable={{ open: true }}>
+      <GridPanel header={'Community Maps'} toggleable={{ open: true }}>
         {maps.map(map => (
           <GridPanelCard
             key={map.id}
