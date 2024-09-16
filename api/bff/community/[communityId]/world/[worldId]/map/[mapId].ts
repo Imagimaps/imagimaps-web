@@ -78,6 +78,7 @@ export default async (
     zoom: userMetadataDto.lastZoom,
   };
   console.log('Map:', map);
+  console.log('User Metadata:', userMetadata);
 
   return { map, userMetadata };
 };

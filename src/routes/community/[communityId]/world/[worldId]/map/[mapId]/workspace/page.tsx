@@ -3,17 +3,20 @@ import { useModel } from '@modern-js/runtime/model';
 import { useNavigate } from '@modern-js/runtime/router';
 
 import GetMapDetails from '@api/bff/community/[communityId]/world/[worldId]/map/[mapId]';
-import { UserMapMetadata } from '@shared/_types';
-import MapView from '@/components/leaflet/mapView';
+// import { UserMapMetadata } from '@shared/_types';
+// import MapView from '@/components/leaflet/mapView';
 import { AppModel } from '@/state/appModel';
-import { MapDataModel } from '@/components/leaflet/mapDataModel';
+// import { MapDataModel } from '@/components/leaflet/mapDataModel';
+import ImagiMapper from '@/components/imagimapper';
+import { EngineDataModel } from '@/components/imagimapper/state/engineData';
 // import { MapRuntimeModel } from '@/components/leaflet/mapRuntimeModel';
 
 const MapWorkspacePage = () => {
   const navigate = useNavigate();
   const [{ community, activeWorld, activeMap, activeLayer }] =
     useModel(AppModel);
-  const [, mapActions] = useModel(MapDataModel);
+  const [, engineDataActions] = useModel(EngineDataModel);
+  // const [, mapActions] = useModel(MapDataModel);
   // const [, runtimeActions] = useModel(MapRuntimeModel);
   const [ready, setReady] = useState(false);
 
@@ -33,19 +36,26 @@ const MapWorkspacePage = () => {
       data: undefined,
     }).then(res => {
       const { map, userMetadata } = res;
-      console.log('Map:', map);
+      console.log('Map on Page:', map);
+      engineDataActions.initialise(
+        map,
+        { ...userMetadata, layerId: userMetadata.layerId ?? '' },
+        map.layers.find(l => l.id === activeLayer?.id) ??
+          activeLayer ??
+          map.layers[0],
+      );
       // appStateActions.updateMap(map);
-      mapActions.setMap(map);
-      const userConfig: UserMapMetadata = {
-        ...userMetadata,
-        layerId:
-          userMetadata.layerId ?? activeLayer?.id ?? map.layers[0].id ?? '', // Does this not work for the type checker?!
-      };
-      console.log('userMetadata', userConfig);
-      mapActions.setUserConfig({
-        ...userMetadata,
-        layerId: userMetadata.layerId ?? '',
-      });
+      // mapActions.setMap(map);
+      // const userConfig: UserMapMetadata = {
+      //   ...userMetadata,
+      //   layerId:
+      //     userMetadata.layerId ?? activeLayer?.id ?? map.layers[0].id ?? '', // Does this not work for the type checker?!
+      // };
+      // console.log('userMetadata', userConfig);
+      // mapActions.setUserConfig({
+      //   ...userMetadata,
+      //   layerId: userMetadata.layerId ?? '',
+      // });
       // console.log('Do something with runtimeActions', runtimeActions);
       //   if (
       //     map.templateGroups.length > 0 &&
@@ -60,7 +70,7 @@ const MapWorkspacePage = () => {
     });
   }, []);
 
-  return <>{ready ? <MapView /> : <div>Loading</div>}</>;
+  return <>{ready ? <ImagiMapper /> : <div>Loading</div>}</>;
 };
 
 export default MapWorkspacePage;

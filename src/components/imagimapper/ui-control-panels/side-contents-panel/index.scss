@@ -1,0 +1,26 @@
+// Look at this cool "Old Map" effect later: https://stackoverflow.com/a/63615485
+.side-contents-panel {
+  pointer-events: all;
+  cursor: default;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3),
+    0 2px 6px 2px rgba(60, 64, 67, 0.15);
+}
+
+.side-contents-panel-close-wrapper {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 0.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  cursor: pointer;
+  background: white;
+}

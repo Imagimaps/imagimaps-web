@@ -28,9 +28,6 @@ const Header: React.FC = () => {
             <li>
               <Link to="/pricing">Pricing</Link>
             </li>
-            <li>
-              <Link to="/map/test_room/leaflet">Map Engine</Link>
-            </li>
           </ul>
         </nav>
       </div>

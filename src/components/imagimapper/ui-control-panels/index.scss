@@ -1,0 +1,19 @@
+.layout-overlay {
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 999;
+
+  .panel-dock-top {
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+  }
+}

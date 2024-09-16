@@ -24,7 +24,7 @@ const MarkerDetails: FC<MarkerDetailsProps> = () => {
   const [, mapActions] = useStaticModel(MapDataModel);
 
   const [editMode, setEditMode] = useState<boolean>(false);
-  const [editMarker, setEditMarker] = useState<MapMarker>();
+  const [stagedMarkerEdits, setStagedMarkerEdits] = useState<MapMarker>();
   const [modelEditted, setModelEditted] = useState<boolean>(false);
   const [overlayEditted, setOverlayEditted] = useState<boolean>(false);
   const [editOverlay, setEditOverlay] = useState<Overlay>();
@@ -38,15 +38,15 @@ const MarkerDetails: FC<MarkerDetailsProps> = () => {
   useEffect(() => {
     // console.log('MarkerDetails: selectedMarker', selectedMarker);
     if (selectedMarker) {
-      setEditMarker({ ...selectedMarker });
+      setStagedMarkerEdits({ ...selectedMarker });
       setEditOverlay(selectedOverlay);
     }
   }, [selectedMarker]);
 
   useEffect(() => {
-    console.log('MarkerDetails: editMarker', editMarker);
-    setModelEditted(!equal(editMarker, selectedMarker));
-  }, [editMarker, selectedMarker]);
+    console.log('MarkerDetails: editMarker', stagedMarkerEdits);
+    setModelEditted(!equal(stagedMarkerEdits, selectedMarker));
+  }, [stagedMarkerEdits, selectedMarker]);
 
   useEffect(() => {
     console.log('MarkerDetails: editOverlay', editOverlay);
@@ -55,10 +55,10 @@ const MarkerDetails: FC<MarkerDetailsProps> = () => {
 
   const activateEditMode = () => setEditMode(true);
   const saveChanges = () => {
-    if (!editMarker || !editOverlay) {
+    if (!stagedMarkerEdits || !editOverlay) {
       console.error(
         'Cannot save changes, missing marker or overlay',
-        editMarker,
+        stagedMarkerEdits,
         editOverlay,
       );
       return;
@@ -66,33 +66,33 @@ const MarkerDetails: FC<MarkerDetailsProps> = () => {
 
     runtimeActions.overlayInteracted(editOverlay);
     // runtimeActions.templateInteracted(selectedTemplate);
-    runtimeActions.markerSelected(editMarker);
+    runtimeActions.markerSelected(stagedMarkerEdits);
     setEditMode(false);
 
     if (selectedMarkerIsNew) {
-      console.log('Creating new marker', editMarker, editOverlay);
-      mapActions.addNewMarker(editMarker, editOverlay);
-      runtimeActions.markerSelected(editMarker);
+      console.log('Creating new marker', stagedMarkerEdits, editOverlay);
+      mapActions.addNewMarker(stagedMarkerEdits, editOverlay);
+      runtimeActions.markerSelected(stagedMarkerEdits);
       return;
     }
     if (modelEditted) {
-      console.log('Saving changes to marker', editMarker);
-      mapActions.updateMarker(editMarker);
+      console.log('Saving changes to marker', stagedMarkerEdits);
+      mapActions.updateMarker(stagedMarkerEdits);
     }
     if (overlayEditted) {
       console.log('Moving marker to overlay', editOverlay);
-      mapActions.moveMarkerToOverlay(editMarker, editOverlay);
+      mapActions.moveMarkerToOverlay(stagedMarkerEdits, editOverlay);
     }
   };
   const undoChanges = () => {
     if (selectedMarker) {
       console.log('Undoing changes to marker', selectedMarker);
-      setEditMarker({ ...selectedMarker });
+      setStagedMarkerEdits({ ...selectedMarker });
     }
     setEditMode(false);
   };
 
-  return editMarker ? (
+  return stagedMarkerEdits ? (
     <div>
       <HeroArea template={selectedTemplate} />
       <ContentArea>
@@ -105,17 +105,19 @@ const MarkerDetails: FC<MarkerDetailsProps> = () => {
           undoChanges={undoChanges}
         />
         <TitleRow
-          marker={editMarker}
+          marker={stagedMarkerEdits}
           editMode={editMode}
           onValueChange={value => {
-            editMarker && setEditMarker({ ...editMarker, name: value });
+            stagedMarkerEdits &&
+              setStagedMarkerEdits({ ...stagedMarkerEdits, name: value });
           }}
         />
         <LocationRow
-          marker={editMarker}
+          marker={stagedMarkerEdits}
           editMode={editMode}
           onValueChange={value => {
-            editMarker && setEditMarker({ ...editMarker, position: value });
+            stagedMarkerEdits &&
+              setStagedMarkerEdits({ ...stagedMarkerEdits, position: value });
           }}
         />
         <OverlayRow
@@ -126,18 +128,25 @@ const MarkerDetails: FC<MarkerDetailsProps> = () => {
           }}
         />
         <TemplateRow
-          marker={editMarker}
+          marker={stagedMarkerEdits}
           editMode={editMode}
           onValueChange={value => {
-            editMarker &&
-              setEditMarker({ ...editMarker, refTemplateid: value });
+            stagedMarkerEdits &&
+              setStagedMarkerEdits({
+                ...stagedMarkerEdits,
+                refTemplateid: value,
+              });
           }}
         />
         <DetailsRow
-          marker={editMarker}
+          marker={stagedMarkerEdits}
           editMode={editMode}
           onValueChange={value => {
-            editMarker && setEditMarker({ ...editMarker, description: value });
+            stagedMarkerEdits &&
+              setStagedMarkerEdits({
+                ...stagedMarkerEdits,
+                description: value,
+              });
           }}
         />
       </ContentArea>
