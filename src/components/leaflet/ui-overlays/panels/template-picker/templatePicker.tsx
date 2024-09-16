@@ -26,7 +26,7 @@ const TemplatePicker: FC<TemplatePickerProps> = ({
       const groups: Record<string, boolean> = {};
       templateGroups.forEach((group, index) => {
         if (selectedTemplate) {
-          const selectedTemplateInGroup = group.templates.some(
+          const selectedTemplateInGroup = group.markerTemplates.some(
             template => template.id === selectedTemplate.id,
           );
           if (selectedTemplateInGroup) {

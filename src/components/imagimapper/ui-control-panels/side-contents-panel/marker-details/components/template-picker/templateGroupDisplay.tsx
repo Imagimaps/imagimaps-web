@@ -39,7 +39,7 @@ const TemplateGroupDisplay: FC<TemplateGroupDisplayProps> = ({
       </TemplateGroupHeader>
       <Collapse isOpened={showGroup}>
         <div className="template-group-items">
-          {templateGroup.templates.map(template => {
+          {templateGroup.markerTemplates.map(template => {
             return (
               <TemplateElement
                 key={template.id}

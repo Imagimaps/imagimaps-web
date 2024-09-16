@@ -89,7 +89,7 @@ export type TemplateGroup = {
   id: string;
   name: string;
   description: string;
-  templates: DisplayTemplate[];
+  markerTemplates: DisplayTemplate[];
 };
 
 export enum LayerStatus {

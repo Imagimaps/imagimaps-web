@@ -4,7 +4,6 @@ import { FC, useState, useEffect } from 'react';
 import styled from '@modern-js/runtime/styled';
 import { Metadata } from './styles';
 import TemplatePicker from './template-picker/templatePicker';
-import { MapDataModel } from '@/components/leaflet/mapDataModel';
 import SvgIcon from '@/components/icon/svg';
 import { UndoIconButton } from '@/components/icon/buttons';
 import { EngineDataModel } from '@/components/imagimapper/state/engineData';
@@ -20,13 +19,14 @@ const TemplateRow: FC<TemplateRowProps<string>> = ({
   editMode,
   onValueChange,
 }) => {
-  const [templateGroups] = useModel(
-    MapDataModel,
-    model => model.map.templateGroups ?? [],
-  );
-  const [selectedTemplate] = useModel(
+  const [{ selectedTemplate, templateGroups }] = useModel(
     EngineDataModel,
-    m => m.runtime.selectedTemplate,
+    m => {
+      return {
+        selectedTemplate: m.runtime.selectedTemplate,
+        templateGroups: m.map.templateGroups ?? [],
+      };
+    },
   );
 
   const [updatedTemplateId, setUpdatedTemplateId] = useState<string>(
@@ -46,7 +46,7 @@ const TemplateRow: FC<TemplateRowProps<string>> = ({
 
   const displayIconSrc = (templateId: string) => {
     const template = templateGroups
-      .map(group => group.templates)
+      .map(group => group.markerTemplates)
       .flat()
       .find(template => template.id === templateId);
     return template?.imgSrc ?? '';
@@ -54,7 +54,7 @@ const TemplateRow: FC<TemplateRowProps<string>> = ({
 
   const templateFromId = (templateId: string) => {
     return templateGroups
-      .map(group => group.templates)
+      .map(group => group.markerTemplates)
       .flat()
       .find(template => template.id === templateId);
   };

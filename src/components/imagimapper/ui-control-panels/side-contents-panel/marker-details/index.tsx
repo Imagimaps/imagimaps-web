@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from 'react';
 import { useModel } from '@modern-js/runtime/model';
 import equal from 'deep-equal';
 
-import Info from '@shared/svg/info.svg';
+// import Info from '@shared/svg/info.svg';
 
 import { MapMarker, Overlay } from '@shared/_types';
 import ActionsBar from './components/actionsBar';
@@ -10,6 +10,8 @@ import TitleRow from './components/titleRow';
 import LocationRow from './components/locationRow';
 import OverlayRow from './components/overlayRow';
 import DetailsRow from './components/detailsRow';
+import HeroArea from './components/heroArea';
+import TemplateRow from './components/templateRow';
 import { EngineDataModel } from '@/components/imagimapper/state/engineData';
 
 import './index.scss';
@@ -17,11 +19,7 @@ import './index.scss';
 const MarkerDetails: FC = () => {
   const [
     {
-      runtime: {
-        selectedMarker,
-        // selectedTemplate,
-        selectedMarkerIsNew,
-      },
+      runtime: { selectedMarker, selectedTemplate, selectedMarkerIsNew },
       selectedMarkerOverlay,
     },
     runtimeActions,
@@ -103,10 +101,10 @@ const MarkerDetails: FC = () => {
   return (
     stagedMarkerEdits && (
       <div className="marker-details">
-        {/* <HeroArea template={selectedTemplate} /> */}
-        <div className="hero-area">
+        <HeroArea template={selectedTemplate} />
+        {/* <div className="hero-area">
           <img src={Info} />
-        </div>
+        </div> */}
         <div className="marker-details-content">
           <ActionsBar
             editMode={editMode}
@@ -139,17 +137,17 @@ const MarkerDetails: FC = () => {
               setTargetOverlay(value);
             }}
           />
-          {/* <TemplateRow
-          marker={stagedMarkerEdits}
-          editMode={editMode}
-          onValueChange={value => {
-            stagedMarkerEdits &&
-              setStagedMarkerEdits({
-                ...stagedMarkerEdits,
-                refTemplateid: value,
-              });
-          }}
-        /> */}
+          <TemplateRow
+            marker={stagedMarkerEdits}
+            editMode={editMode}
+            onValueChange={value => {
+              stagedMarkerEdits &&
+                setStagedMarkerEdits({
+                  ...stagedMarkerEdits,
+                  refTemplateid: value,
+                });
+            }}
+          />
           <DetailsRow
             marker={stagedMarkerEdits}
             editMode={editMode}

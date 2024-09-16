@@ -87,6 +87,7 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
         activeLayer?: MapLayer,
       ) => {
         state.map = map;
+        state.templateGroups = map.templateGroups ?? [];
         state.userConfig = userConfig;
         state.activeLayer =
           activeLayer ??

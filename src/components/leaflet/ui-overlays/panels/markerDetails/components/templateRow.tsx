@@ -43,7 +43,7 @@ const TemplateRow: FC<TemplateRowProps<string>> = ({
 
   const displayIconSrc = (templateId: string) => {
     const template = templateGroups
-      .map(group => group.templates)
+      .map(group => group.markerTemplates)
       .flat()
       .find(template => template.id === templateId);
     return template?.imgSrc ?? '';
@@ -51,7 +51,7 @@ const TemplateRow: FC<TemplateRowProps<string>> = ({
 
   const templateFromId = (templateId: string) => {
     return templateGroups
-      .map(group => group.templates)
+      .map(group => group.markerTemplates)
       .flat()
       .find(template => template.id === templateId);
   };

@@ -56,7 +56,7 @@ export const MapRuntimeModel = model('mapRuntime').define((_, { onMount }) => {
         (state: MapRuntime, dataState: MapData) => {
           if (state.selectedMarker) {
             return (dataState.map.templateGroups ?? [])
-              .flatMap(group => group.templates)
+              .flatMap(group => group.markerTemplates)
               .find(
                 template => template.id === state.selectedMarker?.refTemplateid,
               );
