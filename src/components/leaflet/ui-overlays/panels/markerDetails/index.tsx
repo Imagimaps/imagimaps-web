@@ -134,7 +134,7 @@ const MarkerDetails: FC<MarkerDetailsProps> = () => {
             stagedMarkerEdits &&
               setStagedMarkerEdits({
                 ...stagedMarkerEdits,
-                refTemplateid: value,
+                templateId: value,
               });
           }}
         />

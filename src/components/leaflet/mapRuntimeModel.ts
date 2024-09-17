@@ -58,7 +58,7 @@ export const MapRuntimeModel = model('mapRuntime').define((_, { onMount }) => {
             return (dataState.map.templateGroups ?? [])
               .flatMap(group => group.markerTemplates)
               .find(
-                template => template.id === state.selectedMarker?.refTemplateid,
+                template => template.id === state.selectedMarker?.templateId,
               );
           }
           return undefined;
@@ -99,7 +99,7 @@ export const MapRuntimeModel = model('mapRuntime').define((_, { onMount }) => {
           name: initialTemplate?.name ?? placeholder,
           description: initialTemplate?.description ?? placeholder,
           position: { ...position },
-          refTemplateid: initialTemplate?.id ?? placeholder,
+          templateId: initialTemplate?.id ?? placeholder,
         };
         console.log('Adding new Point Marker', marker, state.selectedMarker);
         state.stagedMarker = marker;

@@ -27,13 +27,13 @@ const TemplateRow: FC<TemplateRowProps<string>> = ({
   const [selectedTemplate] = useModel(MapRuntimeModel, m => m.selectedTemplate);
 
   const [updatedTemplateId, setUpdatedTemplateId] = useState<string>(
-    marker.refTemplateid,
+    marker.templateId,
   );
   const [localChanges, setLocalChanges] = useState<boolean>(false);
 
   useEffect(() => {
-    setUpdatedTemplateId(marker.refTemplateid);
-  }, [marker.refTemplateid]);
+    setUpdatedTemplateId(marker.templateId);
+  }, [marker.templateId]);
 
   useEffect(() => {
     const hasChanges = updatedTemplateId !== selectedTemplate?.id;

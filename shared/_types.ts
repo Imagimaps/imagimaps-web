@@ -20,7 +20,7 @@ export type MapMarker = {
     x: number;
     y: number;
   };
-  refTemplateid: string;
+  templateId: string;
 };
 
 export type MarkerGroup = {
@@ -41,7 +41,7 @@ export type MapRegion = {
     x: number;
     y: number;
   }[];
-  refTemplateid: string;
+  templateId: string;
 };
 
 export type Overlay = {

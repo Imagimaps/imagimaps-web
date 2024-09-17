@@ -169,7 +169,7 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
           name: initialTemplate?.name ?? placeholder,
           description: initialTemplate?.description ?? placeholder,
           position: { ...position },
-          refTemplateid: initialTemplate?.id ?? placeholder,
+          templateId: initialTemplate?.id ?? placeholder,
         };
         console.log(
           'Adding new Point Marker',

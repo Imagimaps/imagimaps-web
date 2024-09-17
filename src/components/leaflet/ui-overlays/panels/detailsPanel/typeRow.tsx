@@ -58,7 +58,7 @@ const TypeRow: FC<TypeRowProps> = ({ onEditing, onSave, onCancel }) => {
 
   const save = () => {
     if (runtime.marker && selectedTemplate) {
-      runtime.marker.refTemplateid = selectedTemplate.id;
+      runtime.marker.templateId = selectedTemplate.id;
       onSave?.(propName);
     }
     setIsEditing(false);
