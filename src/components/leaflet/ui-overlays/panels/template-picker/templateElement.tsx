@@ -33,7 +33,7 @@ const TemplateElement: FC<TemplateElementProps> = ({
     >
       <MapIconContainer>
         <SvgIcon
-          src={templateData.imgSrc}
+          src={templateData.iconData || ''}
           alt={templateData.name}
           style={{ ...metaDataIconStyle, ...markerStyle }}
         />

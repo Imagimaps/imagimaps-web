@@ -11,7 +11,7 @@ const HeroArea: FC<HeroAreaProps> = ({ template }) => {
     <HeroAreaContainer>
       <TemplateIcon
         as="img"
-        src={template?.imgSrc}
+        src={template?.iconData}
         width={template?.maxSize.width}
         height={template?.maxSize.height}
       />

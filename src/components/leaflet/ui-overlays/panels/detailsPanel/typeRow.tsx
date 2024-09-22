@@ -84,7 +84,7 @@ const TypeRow: FC<TypeRowProps> = ({ onEditing, onSave, onCancel }) => {
         >
           <img
             style={{ ...metaDataIconStyle }}
-            src={selectedTemplate?.imgSrc}
+            src={selectedTemplate?.iconData}
           />
           <Metadata>{selectedTemplate?.name}</Metadata>
           {showEdit && <EditIconButton alt="Edit Marker Type" onClick={edit} />}

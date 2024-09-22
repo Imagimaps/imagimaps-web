@@ -105,7 +105,7 @@ const MarkerDetails: FC<MarkerDetailsProps> = () => {
       <PreviewPane>
         <PreviewImg
           as="img"
-          src={activeTemplate?.imgSrc}
+          src={activeTemplate?.iconData}
           width={activeTemplate?.maxSize.width}
           height={activeTemplate?.maxSize.height}
         />

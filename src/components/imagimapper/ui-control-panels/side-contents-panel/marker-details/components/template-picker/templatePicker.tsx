@@ -1,9 +1,10 @@
 import { FC, useEffect, useState } from 'react';
-import styled from '@modern-js/runtime/styled';
 import { useModel } from '@modern-js/runtime/model';
 import { DisplayTemplate } from '@shared/_types';
 import TemplateGroupDisplay from './templateGroupDisplay';
 import { EngineDataModel } from '@/components/imagimapper/state/engineData';
+
+import './styles.scss';
 
 interface TemplatePickerProps {
   selectedTemplate?: DisplayTemplate;
@@ -45,7 +46,7 @@ const TemplatePicker: FC<TemplatePickerProps> = ({
   }, [templateGroups]);
 
   return (
-    <TemplatePickerBox>
+    <div className="template-picker">
       {templateGroups.map(group => {
         const groupOpen = showGroup[group.id];
         return (
@@ -58,12 +59,8 @@ const TemplatePicker: FC<TemplatePickerProps> = ({
           />
         );
       })}
-    </TemplatePickerBox>
+    </div>
   );
 };
 
 export default TemplatePicker;
-
-const TemplatePickerBox = styled.div`
-  width: 100%;
-`;

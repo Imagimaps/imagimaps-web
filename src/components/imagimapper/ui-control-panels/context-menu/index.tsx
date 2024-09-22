@@ -71,7 +71,7 @@ const ContextMenu: FC = () => {
       return;
     }
     event.stopPropagation();
-    actions.createMarkerAt({ x: position.lng, y: position.lat });
+    actions.stageNewMarkerAt({ x: position.lng, y: position.lat });
     setPosition(undefined);
   };
 

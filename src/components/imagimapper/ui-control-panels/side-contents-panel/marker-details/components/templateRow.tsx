@@ -1,8 +1,6 @@
 import { useModel } from '@modern-js/runtime/model';
 import { DisplayTemplate, MapMarker } from '@shared/_types';
 import { FC, useState, useEffect } from 'react';
-import styled from '@modern-js/runtime/styled';
-import { Metadata } from './styles';
 import TemplatePicker from './template-picker/templatePicker';
 import SvgIcon from '@/components/icon/svg';
 import { UndoIconButton } from '@/components/icon/buttons';
@@ -40,6 +38,7 @@ const TemplateRow: FC<TemplateRowProps<string>> = ({
 
   useEffect(() => {
     const hasChanges = updatedTemplateId !== selectedTemplate?.id;
+    console.log('TemplateRow: hasChanges', hasChanges);
     setLocalChanges(hasChanges);
     onValueChange?.(updatedTemplateId);
   }, [updatedTemplateId, selectedTemplate]);
@@ -49,7 +48,9 @@ const TemplateRow: FC<TemplateRowProps<string>> = ({
       .map(group => group.markerTemplates)
       .flat()
       .find(template => template.id === templateId);
-    return template?.imgSrc ?? '';
+    return template?.iconLink
+      ? `https://cdn.dev.imagimaps.com/${template?.iconLink}`
+      : 'default';
   };
 
   const templateFromId = (templateId: string) => {
@@ -61,15 +62,16 @@ const TemplateRow: FC<TemplateRowProps<string>> = ({
 
   return (
     <>
-      <Row>
-        <Content>
-          <MetaIcon
+      <div className="details-panel-row">
+        <div className="detail-item">
+          <SvgIcon
+            className="meta-icon"
             src={displayIconSrc(updatedTemplateId)}
             alt="Current Template Display Icon"
           />
-          <Metadata>{templateFromId(updatedTemplateId)?.name}</Metadata>
-        </Content>
-        <Controls>
+          <p className="meta-data">{templateFromId(updatedTemplateId)?.name}</p>
+        </div>
+        <div className="controls">
           {localChanges && (
             <UndoIconButton
               alt="Undo edits made to marker template type"
@@ -78,49 +80,20 @@ const TemplateRow: FC<TemplateRowProps<string>> = ({
               }}
             />
           )}
-        </Controls>
-      </Row>
+        </div>
+      </div>
       {editMode && (
-        <Row>
-          <Content>
-            <Metadata>
-              <TemplatePicker
-                selectedTemplate={templateFromId(updatedTemplateId)}
-                onTemplateSelected={(template: DisplayTemplate) => {
-                  setUpdatedTemplateId(template.id);
-                }}
-              />
-            </Metadata>
-          </Content>
-        </Row>
+        <div className="details-panel-row">
+          <TemplatePicker
+            selectedTemplate={templateFromId(updatedTemplateId)}
+            onTemplateSelected={(template: DisplayTemplate) => {
+              setUpdatedTemplateId(template.id);
+            }}
+          />
+        </div>
       )}
     </>
   );
 };
 
 export default TemplateRow;
-
-const Row = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 0.5rem 0;
-`;
-
-const Content = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-`;
-
-const Controls = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-`;
-
-const MetaIcon = styled(SvgIcon)`
-  width: 1rem;
-  height: 1rem;
-  margin-right: 0.5rem;
-`;

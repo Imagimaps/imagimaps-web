@@ -1,9 +1,10 @@
-import styled from '@modern-js/runtime/styled';
 import { MapMarker } from '@shared/_types';
 import { FC, useEffect, useState } from 'react';
 import { useModel } from '@modern-js/runtime/model';
 import { UndoIconButton } from '@/components/icon/buttons';
 import { MapRuntimeModel } from '@/components/leaflet/mapRuntimeModel';
+
+import './styles.scss';
 
 interface TitleRowProps<T> {
   marker: MapMarker;
@@ -46,11 +47,11 @@ const TitleRow: FC<TitleRowProps<string>> = ({
   };
 
   return (
-    <Row>
-      <Content>
+    <div className="details-panel-row">
+      <div className="detail-item">
         {editMode ? (
-          <NameInput
-            as="input"
+          <input
+            className="h1-edit"
             type="text"
             autoFocus={true}
             value={name}
@@ -59,10 +60,10 @@ const TitleRow: FC<TitleRowProps<string>> = ({
             onKeyDown={processKeyPress}
           />
         ) : (
-          <Name>{marker?.name}</Name>
+          <h1>{marker?.name}</h1>
         )}
-      </Content>
-      <Controls>
+      </div>
+      <div className="controls">
         {localChanges && (
           <UndoIconButton
             alt="Undo edits made to name"
@@ -71,50 +72,9 @@ const TitleRow: FC<TitleRowProps<string>> = ({
             }}
           />
         )}
-      </Controls>
-    </Row>
+      </div>
+    </div>
   );
 };
 
 export default TitleRow;
-
-const Row = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 0.5rem 0;
-`;
-
-const Content = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-`;
-
-const Controls = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-`;
-
-const Name = styled.h1`
-  font-size: 2rem;
-  line-height: 2.5rem;
-  font-weight: bold;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const NameInput = styled.input`
-  font-size: 2rem;
-  line-height: 2.5rem;
-  font-weight: bold;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  border: none;
-  box-shadow: none;
-  display: inline-block;
-  width: 100%;
-`;

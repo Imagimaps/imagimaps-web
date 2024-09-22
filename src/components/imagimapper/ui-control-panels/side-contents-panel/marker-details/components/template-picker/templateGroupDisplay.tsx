@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from 'react';
-import styled from '@modern-js/runtime/styled';
 import { MdOutlineUnfoldLess, MdOutlineUnfoldMore } from 'react-icons/md';
 import { Collapse } from 'react-collapse';
 import {
@@ -7,6 +6,8 @@ import {
   TemplateGroup as MapTemplateGroup,
 } from '@shared/_types';
 import TemplateElement from './templateElement';
+
+import './styles.scss';
 
 interface TemplateGroupDisplayProps {
   templateGroup: MapTemplateGroup;
@@ -32,11 +33,15 @@ const TemplateGroupDisplay: FC<TemplateGroupDisplayProps> = ({
   };
 
   return (
-    <TemplateGroupBox>
-      <TemplateGroupHeader as="div" onClick={toggleGroup}>
-        {showGroup ? <MdOutlineUnfoldLess /> : <MdOutlineUnfoldMore />}
-        <GroupName>{templateGroup.name}</GroupName>
-      </TemplateGroupHeader>
+    <div className="template-group">
+      <div className="template-group-header" onClick={toggleGroup}>
+        {showGroup ? (
+          <MdOutlineUnfoldLess className="fold-action-icon" />
+        ) : (
+          <MdOutlineUnfoldMore className="fold-action-icon" />
+        )}
+        <p>{templateGroup.name}</p>
+      </div>
       <Collapse isOpened={showGroup}>
         <div className="template-group-items">
           {templateGroup.markerTemplates.map(template => {
@@ -51,23 +56,8 @@ const TemplateGroupDisplay: FC<TemplateGroupDisplayProps> = ({
           })}
         </div>
       </Collapse>
-    </TemplateGroupBox>
+    </div>
   );
 };
 
 export default TemplateGroupDisplay;
-
-const TemplateGroupBox = styled.div`
-  padding: 5px;
-  margin: 5px;
-`;
-
-const TemplateGroupHeader = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 5px 0;
-  margin-bottom: 5px;
-`;
-
-const GroupName = styled.p``;

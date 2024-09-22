@@ -46,7 +46,7 @@ const TemplateRow: FC<TemplateRowProps<string>> = ({
       .map(group => group.markerTemplates)
       .flat()
       .find(template => template.id === templateId);
-    return template?.imgSrc ?? '';
+    return template?.iconData ?? '';
   };
 
   const templateFromId = (templateId: string) => {

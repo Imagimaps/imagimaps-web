@@ -1,4 +1,3 @@
-import styled from '@modern-js/runtime/styled';
 import { Overlay } from '@shared/_types';
 import { ChangeEventHandler, FC, useEffect, useState } from 'react';
 import { useModel } from '@modern-js/runtime/model';
@@ -70,13 +69,12 @@ const OverlayRow: FC<OverlayRowProps<Overlay>> = ({
   console.log('OverlayRow: selectedOverlay', selectedMarkerOverlay, overlays);
 
   return (
-    <Row>
-      <Content>
-        <MetaIcon src={LayersSvg} alt="" />
+    <div className="details-panel-row">
+      <div className="detail-item">
+        <SvgIcon className="meta-icon" src={LayersSvg} alt="" />
         {editMode ? (
           <>
-            <OverlaySelect
-              as="select"
+            <select
               id="select-overlay"
               value={updatedOverlay?.id}
               onChange={overlaySelected}
@@ -87,13 +85,13 @@ const OverlayRow: FC<OverlayRowProps<Overlay>> = ({
                   {overlay.name}
                 </option>
               ))}
-            </OverlaySelect>
+            </select>
           </>
         ) : (
           <Metadata>{updatedOverlay?.name}</Metadata>
         )}
-      </Content>
-      <Controls>
+      </div>
+      <div className="controls">
         {localChanges && (
           <UndoIconButton
             alt="Undo changes made to assigned overlay"
@@ -102,36 +100,9 @@ const OverlayRow: FC<OverlayRowProps<Overlay>> = ({
             }
           />
         )}
-      </Controls>
-    </Row>
+      </div>
+    </div>
   );
 };
 
 export default OverlayRow;
-
-const Row = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 0.5rem 0;
-`;
-
-const Content = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-`;
-
-const Controls = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-`;
-
-const OverlaySelect = styled.select``;
-
-const MetaIcon = styled(SvgIcon)`
-  width: 1rem;
-  height: 1rem;
-  margin-right: 0.5rem;
-`;

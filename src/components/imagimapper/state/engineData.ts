@@ -52,6 +52,7 @@ const EngineDataDefaults: EngineData = {
   },
 };
 
+// TODO: Split into separate models
 export const EngineDataModel = model('engineData').define((_, { onMount }) => {
   onMount(() => {
     console.log('EngineDataModel mounted');
@@ -93,16 +94,21 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
           activeLayer ??
           map.layers.find(l => l.id === userConfig.layerId) ??
           map.layers[0];
+        state.runtime.lastUsedTemplate =
+          map.templateGroups?.[0]?.markerTemplates[0];
+        state.runtime.selectedTemplate = state.runtime.lastUsedTemplate;
       },
       createPointMarker: (
         state: EngineData,
         marker: MapMarker,
-        overlay: Overlay,
+        overlay: Overlay | string,
       ) => {
         // TODO: Revisit this logic if lists get big
+        console.log('Creating Point Marker', marker, overlay);
+        const overlayId = typeof overlay === 'string' ? overlay : overlay.id;
         const updatedLayers = state.map.layers.map(layer => {
           const overlays = layer.overlays?.map(o => {
-            if (o.id === overlay.id) {
+            if (o.id === overlayId) {
               o.markers.push(marker);
             }
             return o;
@@ -157,7 +163,7 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
         }
         state.map.layers = updatedLayers;
       },
-      createMarkerAt: (state: EngineData, position: Point) => {
+      stageNewMarkerAt: (state: EngineData, position: Point) => {
         console.log('Data available to create new Point Marker', position, {
           ...state,
         });
@@ -187,6 +193,20 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
       deselectMarker: (state: EngineData) => {
         state.runtime.selectedMarker = undefined;
         state.runtime.selectedMarkerIsNew = false;
+      },
+      deleteMarker: (state: EngineData, marker: MapMarker) => {
+        const updatedLayers = state.map.layers.map(layer => {
+          const overlays = layer.overlays?.map(o => {
+            const index = o.markers.findIndex(m => m.id === marker.id);
+            if (index >= 0) {
+              o.markers.splice(index, 1);
+            }
+            return o;
+          });
+          return { ...layer, overlays };
+        });
+        state.map.layers = updatedLayers;
+        state.runtime.selectedMarker = undefined;
       },
       cancelCreatePointMarker: (state: EngineData) => {
         state.runtime.stagedMarker = undefined;

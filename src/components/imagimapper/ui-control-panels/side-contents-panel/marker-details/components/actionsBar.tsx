@@ -1,10 +1,11 @@
 import { FC } from 'react';
-import styled from '@modern-js/runtime/styled';
 import {
   EditIconButton,
   SaveIconButton,
   UndoIconButton,
 } from '@/components/icon/buttons';
+
+import './styles.scss';
 
 interface ActionsBarProps {
   editMode: boolean;
@@ -25,7 +26,7 @@ const ActionsBar: FC<ActionsBarProps> = ({
 }) => {
   const size = '1.5rem';
   return (
-    <ActionsBarContainer as="div" iconSize={size}>
+    <div className="details-panel-segment actions-bar">
       {editMode ? (
         <>
           {(modelHasEdits || modelIsNew) && (
@@ -50,21 +51,8 @@ const ActionsBar: FC<ActionsBarProps> = ({
           onClick={activateEditMode}
         />
       )}
-    </ActionsBarContainer>
+    </div>
   );
 };
 
 export default ActionsBar;
-
-const ActionsBarContainer = styled.div<{ iconSize: string }>`
-  position: absolute;
-  top: ${props => `calc(-1 * (${props.iconSize} + 0.5rem) / 2)`};
-  right: 0;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 0.5rem;
-  gap: 5px;
-  background-color: white;
-`;

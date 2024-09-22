@@ -73,7 +73,8 @@ export type DisplayTemplate = {
   id: string;
   name: string;
   description: string;
-  imgSrc: string;
+  iconLink?: string;
+  iconData?: string;
   imgAnchor?: { x: Scalar; y: Scalar }; // Normalised point within image
   targetSize: Size<Pixel>;
   minSize: Size<Pixel>;

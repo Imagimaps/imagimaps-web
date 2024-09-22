@@ -1,6 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { useModel } from '@modern-js/runtime/model';
 import equal from 'deep-equal';
+import useWebSocket from 'react-use-websocket';
 
 // import Info from '@shared/svg/info.svg';
 
@@ -19,16 +20,25 @@ import './index.scss';
 const MarkerDetails: FC = () => {
   const [
     {
-      runtime: { selectedMarker, selectedTemplate, selectedMarkerIsNew },
+      runtime: { selectedMarker, selectedMarkerIsNew, lastTouchedOverlay },
       selectedMarkerOverlay,
+      templateGroups,
+      overlays,
+      map,
     },
-    runtimeActions,
+    actions,
   ] = useModel(EngineDataModel, model => {
     return {
       runtime: model.runtime,
       selectedMarkerOverlay: model.selectedMarkerOverlay,
+      templateGroups: model.map.templateGroups ?? [],
+      overlays: model.overlays,
+      map: model.map,
     };
   });
+  const { sendJsonMessage } = useWebSocket(
+    `ws://localhost:8082/api/map/${map.id}/ws`,
+  );
   const [editMode, setEditMode] = useState<boolean>(false);
   const [stagedMarkerEdits, setStagedMarkerEdits] = useState<MapMarker>();
   const [modelHasEdits, setModelHasEdits] = useState<boolean>(false);
@@ -42,12 +52,18 @@ const MarkerDetails: FC = () => {
   }, [selectedMarkerIsNew]);
 
   useEffect(() => {
-    // console.log('MarkerDetails: selectedMarker', selectedMarker);
+    console.log(
+      'MarkerDetails: selectedMarker',
+      selectedMarker,
+      selectedMarkerOverlay,
+    );
     if (selectedMarker) {
       setStagedMarkerEdits({ ...selectedMarker });
-      setTargetOverlay(selectedMarkerOverlay);
+      setTargetOverlay(
+        selectedMarkerOverlay ?? lastTouchedOverlay ?? overlays[0],
+      );
     }
-  }, [selectedMarker]);
+  }, [selectedMarker, selectedMarkerOverlay]);
 
   useEffect(() => {
     console.log('MarkerDetails: editMarker', stagedMarkerEdits);
@@ -69,24 +85,44 @@ const MarkerDetails: FC = () => {
       return;
     }
 
-    runtimeActions.overlayTouched(targetOverlay);
+    actions.overlayTouched(targetOverlay);
     // runtimeActions.templateInteracted(selectedTemplate);
-    runtimeActions.selectMarker(stagedMarkerEdits);
+    actions.selectMarker(stagedMarkerEdits);
     setEditMode(false);
 
     if (selectedMarkerIsNew) {
       console.log('Creating new marker', stagedMarkerEdits, targetOverlay);
-      runtimeActions.createPointMarker(stagedMarkerEdits, targetOverlay);
-      runtimeActions.selectMarker(stagedMarkerEdits);
+      actions.createPointMarker(stagedMarkerEdits, targetOverlay);
+      actions.selectMarker(stagedMarkerEdits);
+      sendJsonMessage({
+        type: 'CREATE_MARKER',
+        payload: {
+          marker: stagedMarkerEdits,
+          overlayId: targetOverlay.id,
+        },
+      });
       return;
     }
     if (modelHasEdits) {
       console.log('Saving changes to marker', stagedMarkerEdits);
-      runtimeActions.updateMarker(stagedMarkerEdits);
+      actions.updateMarker(stagedMarkerEdits);
+      sendJsonMessage({
+        type: 'UPDATE_MARKER',
+        payload: {
+          marker: stagedMarkerEdits,
+        },
+      });
     }
     if (overlayEdited) {
       console.log('Moving marker to overlay', targetOverlay);
-      runtimeActions.moveMarkerToOverlay(stagedMarkerEdits, targetOverlay);
+      actions.moveMarkerToOverlay(stagedMarkerEdits, targetOverlay);
+      sendJsonMessage({
+        type: 'UPDATE_MARKER_OVERLAY',
+        payload: {
+          marker: stagedMarkerEdits,
+          overlayId: targetOverlay.id,
+        },
+      });
     }
   };
   const undoChanges = () => {
@@ -97,14 +133,17 @@ const MarkerDetails: FC = () => {
     setEditMode(false);
   };
 
-  // TODO: Template Shenanigans
+  const templateFromId = (templateId: string) => {
+    return templateGroups
+      .map(group => group.markerTemplates)
+      .flat()
+      .find(template => template.id === templateId);
+  };
+
   return (
     stagedMarkerEdits && (
       <div className="marker-details">
-        <HeroArea template={selectedTemplate} />
-        {/* <div className="hero-area">
-          <img src={Info} />
-        </div> */}
+        <HeroArea template={templateFromId(stagedMarkerEdits.templateId)} />
         <div className="marker-details-content">
           <ActionsBar
             editMode={editMode}

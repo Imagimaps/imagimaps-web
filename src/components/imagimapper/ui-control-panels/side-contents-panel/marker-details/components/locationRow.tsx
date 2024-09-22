@@ -1,4 +1,3 @@
-import styled from '@modern-js/runtime/styled';
 import { MapMarker } from '@shared/_types';
 import { ChangeEventHandler, FC, useEffect, useState } from 'react';
 import { useModel } from '@modern-js/runtime/model';
@@ -20,7 +19,6 @@ const LocationRow: FC<LocationRowProps<Point>> = ({
   editMode,
   onValueChange,
 }) => {
-  //   console.log('LocationRow: pre-render', marker.position, editMode);
   const [selectedMarker, actions] = useModel(
     EngineDataModel,
     m => m.runtime.selectedMarker,
@@ -30,7 +28,6 @@ const LocationRow: FC<LocationRowProps<Point>> = ({
   const [localChanges, setLocalChanges] = useState<boolean>(false);
 
   useEffect(() => {
-    // console.log('LocationRow: set updatedPoint', marker.position);
     setUpdatedPoint(marker.position);
   }, [marker.position]);
 
@@ -43,9 +40,6 @@ const LocationRow: FC<LocationRowProps<Point>> = ({
       setLocalChanges(hasChanges);
       onValueChange?.(updatedPoint);
     }
-    // console.log('LocationRow: point', updatedPoint, 'selectedMarker', {
-    //   ...selectedMarker?.position,
-    // });
   }, [updatedPoint, selectedMarker?.position]);
 
   useEffect(() => {
@@ -67,7 +61,6 @@ const LocationRow: FC<LocationRowProps<Point>> = ({
     } else if (id === 'y-position') {
       tempPoint.y = Number(value);
     }
-    // console.log('LocationRow: updatePoint', tempPoint);
     setUpdatedPoint(tempPoint);
   };
 
@@ -86,45 +79,43 @@ const LocationRow: FC<LocationRowProps<Point>> = ({
     }
   };
 
-  //   console.log('LocationRow: render', marker.position, updatedPoint, editMode);
-
   return (
-    <Row>
-      <Content>
-        <MetaIcon src={LocationOnMapSvg} alt="" />
+    <div className="details-panel-row">
+      <div className="detail-item">
+        <SvgIcon className="meta-icon" src={LocationOnMapSvg} alt="" />
         {editMode ? (
           <>
-            <AxisLabel as="label" htmlFor="x-position">
-              x:
-            </AxisLabel>
-            <PointInput
-              as="input"
+            <label htmlFor="x-position">x:</label>
+            <input
+              className="number-input"
               id="x-position"
               type="number"
               value={Math.fround(updatedPoint.x)}
               onChange={updatePoint}
               onKeyDown={processKeyPress}
             />{' '}
-            <AxisLabel as="label" htmlFor="y-position">
-              y:
-            </AxisLabel>
-            <PointInput
-              as="input"
+            <label htmlFor="y-position">y:</label>
+            <input
+              className="number-input"
               id="y-position"
               type="number"
               value={Math.fround(updatedPoint.y)}
               onChange={updatePoint}
               onKeyDown={processKeyPress}
             />
-            <PanHandle src={Pan4D} alt="Shift icon around on map" />
+            <SvgIcon
+              className="location-pan-handle"
+              src={Pan4D}
+              alt="Shift icon around on map"
+            />
           </>
         ) : (
           <Metadata>
             Location {`(x: ${updatedPoint.x}, y: ${updatedPoint.y})`}
           </Metadata>
         )}
-      </Content>
-      <Controls>
+      </div>
+      <div className="controls">
         {localChanges && (
           <UndoIconButton
             alt="Undo edits made to marker position"
@@ -133,49 +124,9 @@ const LocationRow: FC<LocationRowProps<Point>> = ({
             }
           />
         )}
-      </Controls>
-    </Row>
+      </div>
+    </div>
   );
 };
 
 export default LocationRow;
-
-const Row = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 0.5rem 0;
-`;
-
-const Content = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-`;
-
-const Controls = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-`;
-
-const AxisLabel = styled.label`
-  margin-left: 0.5rem;
-  margin-right: 0.25rem;
-`;
-
-const PointInput = styled.input`
-  width: 5rem;
-`;
-
-const PanHandle = styled(SvgIcon)`
-  margin-left: 0.5rem;
-  width: 1rem;
-  height: 1rem;
-`;
-
-const MetaIcon = styled(SvgIcon)`
-  width: 1rem;
-  height: 1rem;
-  margin-right: 0.5rem;
-`;
