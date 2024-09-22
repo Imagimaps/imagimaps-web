@@ -42,12 +42,12 @@ const ImagiMapper: FC = () => {
         console.log('onReconnectStop', numAttempts);
         // TODO: Set some kind of state to allow the user to reconnect manually
       },
-      // heartbeat: {
-      //   message: 'ping',
-      //   returnMessage: 'pong',
-      //   interval: 10000,
-      //   timeout: 20000,
-      // },
+      heartbeat: {
+        message: 'ping',
+        returnMessage: 'pong',
+        interval: 10000,
+        timeout: 20000,
+      },
     },
   );
 
@@ -57,7 +57,7 @@ const ImagiMapper: FC = () => {
       console.log('Connecting to websocket...');
     } else if (readyState === ReadyState.OPEN) {
       console.log('Websocket connected!');
-      sendJsonMessage(JSON.stringify({ type: 'USER_ACTIVE', user: user?.id }));
+      sendJsonMessage({ type: 'USER_CONNECTED', payload: user?.id });
     } else if (readyState === ReadyState.CLOSING) {
       console.log('Closing websocket...');
     } else if (readyState === ReadyState.CLOSED) {
@@ -70,7 +70,13 @@ const ImagiMapper: FC = () => {
       const message = JSON.parse(lastMessage.data);
       console.log('Received message:', message);
       const { type, payload } = message;
-      if (type === 'MARKER_CREATED') {
+      if (type === 'MAP_DATA') {
+        console.log('Received map data:', payload);
+        actions.setMapData(payload);
+      } else if (type === 'LAYER_DATA_REFRESHED') {
+        console.log('Received layer data refresh:', payload);
+        // actions.setLayerData(payload);
+      } else if (type === 'MARKER_CREATED') {
         const { marker, overlayId } = payload;
         actions.createPointMarker(marker, overlayId);
       } else if (type === 'MARKER_UPDATED') {

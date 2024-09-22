@@ -98,6 +98,10 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
           map.templateGroups?.[0]?.markerTemplates[0];
         state.runtime.selectedTemplate = state.runtime.lastUsedTemplate;
       },
+      setMapData: (state: EngineData, map: Map) => {
+        state.map = map;
+        state.templateGroups = map.templateGroups ?? [];
+      },
       createPointMarker: (
         state: EngineData,
         marker: MapMarker,
