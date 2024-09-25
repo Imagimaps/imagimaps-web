@@ -5,8 +5,8 @@ import L from 'leaflet';
 
 import CloseSvg from '@shared/svg/close-circle.svg';
 import { MapMarker } from '@shared/_types';
-import { EngineDataModel } from '../../state/engineData';
 import { xy } from '../../_coordTranslators';
+import { StagedDataModel } from '../../state/stagedData';
 import MarkerDetails from './marker-details';
 import SvgIcon from '@/components/icon/svg';
 
@@ -15,20 +15,14 @@ import './index.scss';
 const SideContentsPanel: FC = () => {
   const panelRef = useRef<HTMLDivElement>(null);
   const [panelActive, setPanelActive] = useState(false);
-  const [
-    {
-      runtime: { selectedMarker, stagedMarker },
-    },
-    engineActions,
-  ] = useModel(EngineDataModel);
+  const [model, action] = useModel(StagedDataModel);
 
   const map = useMapEvents({
     click(_e) {
       // Look into auto save changes on click away
-      console.log('ContentsPanel deselect marker');
-      engineActions.deselectMarker();
+      console.log('[Side Contents Panel] Deselect marker');
       if (panelActive) {
-        engineActions.cancelCreatePointMarker();
+        action.resetStagedMarker();
       }
     },
   });
@@ -41,6 +35,7 @@ const SideContentsPanel: FC = () => {
   });
 
   const loadMarker = (marker?: MapMarker) => {
+    console.log('[Side Contents Panel] loadMarker', marker);
     if (marker) {
       setPanelActive(true);
       const { position } = marker;
@@ -51,14 +46,11 @@ const SideContentsPanel: FC = () => {
   };
 
   useEffect(() => {
-    loadMarker(selectedMarker);
-  }, [selectedMarker]);
+    console.log('[Side Contents Panel] Load staged marker', model.mapMarker);
+    loadMarker(model.mapMarker as MapMarker);
+  }, [model.mapMarker]);
 
-  useEffect(() => {
-    loadMarker(stagedMarker as MapMarker);
-  }, [stagedMarker]);
-
-  console.log('panelActive', panelActive);
+  console.log('[Side Contents Panel] Render', panelActive);
 
   return (
     panelActive && (
@@ -68,7 +60,7 @@ const SideContentsPanel: FC = () => {
             src={CloseSvg}
             alt="Close Details Panel"
             onClick={() => {
-              engineActions.deselectMarker();
+              action.resetStagedMarker();
               setPanelActive(false);
             }}
           />

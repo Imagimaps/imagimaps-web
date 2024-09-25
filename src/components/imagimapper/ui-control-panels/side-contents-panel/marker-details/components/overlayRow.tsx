@@ -1,55 +1,32 @@
-import { Overlay } from '@shared/_types';
-import { ChangeEventHandler, FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 import { useModel } from '@modern-js/runtime/model';
 import LayersSvg from '@shared/svg/layers.svg';
 import { Metadata } from './styles';
 import { UndoIconButton } from '@/components/icon/buttons';
 import SvgIcon from '@/components/icon/svg';
 import { EngineDataModel } from '@/components/imagimapper/state/engineData';
+import { StagedDataModel } from '@/components/imagimapper/state/stagedData';
+import { UserInteractionsModel } from '@/components/imagimapper/state/userInteractions';
 
-interface OverlayRowProps<T> {
-  overlay?: Overlay;
+interface OverlayRowProps {
   editMode: boolean;
-  onValueChange?: (value: T) => void;
 }
 
-const OverlayRow: FC<OverlayRowProps<Overlay>> = ({
-  overlay,
-  editMode,
-  onValueChange,
-}) => {
-  const [{ overlays, selectedMarkerOverlay }] = useModel(EngineDataModel);
-
-  const [updatedOverlay, setUpdatedOverlay] = useState<Overlay>();
-  const [localChanges, setLocalChanges] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (overlay) {
-      setUpdatedOverlay(overlay);
-    }
-  }, [overlay]);
-
-  useEffect(() => {
-    if (updatedOverlay) {
-      const hasChanges = updatedOverlay?.id !== selectedMarkerOverlay?.id;
-      setLocalChanges(hasChanges);
-      onValueChange?.(updatedOverlay);
-    }
-  }, [updatedOverlay, selectedMarkerOverlay]);
+const OverlayRow: FC<OverlayRowProps> = ({ editMode }) => {
+  const [
+    { overlayId, overlayChanged, overlays },
+    { setOverlayId, undoOverlayChange, overlayUsed },
+  ] = useModel(
+    [StagedDataModel, UserInteractionsModel, EngineDataModel],
+    (s, _, e) => ({
+      overlayId: s.overlayId?.[2] ?? s.overlayId?.[1] ?? '',
+      overlayChanged: s.overlayId?.[0] ?? false,
+      overlays: e.overlays,
+    }),
+  );
 
   const findOverlay = (overlayId: string) => {
     return overlays.find(overlay => overlay.id === overlayId);
-  };
-
-  const setOverlayById = (overlayId: string) => {
-    const targetOverlay = findOverlay(overlayId);
-    if (targetOverlay) {
-      setUpdatedOverlay(targetOverlay);
-    }
-  };
-
-  const overlaySelected: ChangeEventHandler<HTMLSelectElement> = e => {
-    setOverlayById(e.target.value);
   };
 
   const processKeyPress = (e: React.KeyboardEvent<HTMLSelectElement>) => {
@@ -58,15 +35,13 @@ const OverlayRow: FC<OverlayRowProps<Overlay>> = ({
         console.log('OverlayRow: Enter pressed');
         break;
       case 'Escape':
-        selectedMarkerOverlay && setOverlayById(selectedMarkerOverlay.id);
+        undoOverlayChange();
         break;
       default:
         console.log('OverlayRow: Unknown Key', e.key);
         break;
     }
   };
-
-  console.log('OverlayRow: selectedOverlay', selectedMarkerOverlay, overlays);
 
   return (
     <div className="details-panel-row">
@@ -76,8 +51,11 @@ const OverlayRow: FC<OverlayRowProps<Overlay>> = ({
           <>
             <select
               id="select-overlay"
-              value={updatedOverlay?.id}
-              onChange={overlaySelected}
+              value={overlayId}
+              onChange={e => {
+                setOverlayId(e.target.value);
+                overlayUsed(findOverlay(e.target.value));
+              }}
               onKeyDown={processKeyPress}
             >
               {overlays.map(overlay => (
@@ -88,16 +66,14 @@ const OverlayRow: FC<OverlayRowProps<Overlay>> = ({
             </select>
           </>
         ) : (
-          <Metadata>{updatedOverlay?.name}</Metadata>
+          <Metadata>{findOverlay(overlayId)?.name}</Metadata>
         )}
       </div>
       <div className="controls">
-        {localChanges && (
+        {overlayChanged && (
           <UndoIconButton
             alt="Undo changes made to assigned overlay"
-            onClick={() =>
-              selectedMarkerOverlay && setOverlayById(selectedMarkerOverlay.id)
-            }
+            onClick={undoOverlayChange}
           />
         )}
       </div>

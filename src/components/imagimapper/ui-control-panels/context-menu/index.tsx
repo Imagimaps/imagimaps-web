@@ -9,18 +9,27 @@ import PolygonAreaSvg from '@shared/svg/polygon-area.svg';
 import PathSvg from '@shared/svg/path-between-points.svg';
 import AddSvg from '@shared/svg/add.svg';
 import { EngineDataModel } from '../../state/engineData';
+import { UserInteractionsModel } from '../../state/userInteractions';
+import { StagedDataModel } from '../../state/stagedData';
 import SvgIcon from '@/components/icon/svg';
 
 import './index.scss';
 
 const ContextMenu: FC = () => {
-  const [stagedMarker, actions] = useModel(
-    EngineDataModel,
-    model => model.runtime.selectedMarker,
+  // TODO: Create a model for UI Component State (such as side panel open/closed, etc...)
+  const [{ templates, lastUsedTemplate, isNew, isChanged }, actions] = useModel(
+    [EngineDataModel, StagedDataModel, UserInteractionsModel],
+    (e, s, u) => ({
+      templates: e.templates,
+      lastUsedTemplate: u.lastUsedTemplate,
+      isNew: s.isNew,
+      isChanged: s.isChanged,
+    }),
   );
 
   const popupRef = useRef<any>(null);
   const [position, setPosition] = useState<LatLng | undefined>();
+  const [showCtxMenu, setShowCtxMenu] = useState<boolean>(false);
 
   useEffect(() => {
     if (popupRef.current) {
@@ -28,6 +37,14 @@ const ContextMenu: FC = () => {
       L.DomEvent.disableScrollPropagation(popupRef.current);
     }
   });
+
+  useEffect(() => {
+    if (position) {
+      setShowCtxMenu(true);
+    } else {
+      setShowCtxMenu(false);
+    }
+  }, [position]);
 
   const map = useMapEvents({
     click(e) {
@@ -37,17 +54,15 @@ const ContextMenu: FC = () => {
         return;
       }
       // Check to see if we have a new marker being created and if so, close it
-      if (stagedMarker) {
+      if (isNew || isChanged) {
+        // TODO: Popup to confirm abandoning edits
         setPosition(undefined);
-        console.log(
-          'Context Menu: on map click staged',
-          position,
-          stagedMarker,
-        );
+        console.log('Context Menu: on map click staged', position);
+        actions.resetStagedMarker();
         return;
       }
       console.log('on map click empty position');
-      actions.abandonAllEdits();
+      actions.resetStagedMarker();
       // TODO: Wait half a second to see if we get a double click
       setPosition(e.latlng);
       map.flyTo(e.latlng, map.getZoom());
@@ -67,15 +82,19 @@ const ContextMenu: FC = () => {
   });
 
   const addNewPointMarker: MouseEventHandler = event => {
+    console.log('Context Menu: addNewPointMarker', position);
     if (!position) {
       return;
     }
     event.stopPropagation();
-    actions.stageNewMarkerAt({ x: position.lng, y: position.lat });
+    const template = lastUsedTemplate ?? templates[0];
+    actions.createNewMarker(template, { x: position.lng, y: position.lat });
+    // actions.stageNewMarkerAt({ x: position.lng, y: position.lat });
     setPosition(undefined);
   };
 
   return (
+    showCtxMenu &&
     position && (
       <Marker
         icon={L.icon({

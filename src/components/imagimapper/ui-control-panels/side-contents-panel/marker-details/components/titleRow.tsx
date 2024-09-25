@@ -1,36 +1,22 @@
-import { MapMarker } from '@shared/_types';
-import { FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 import { useModel } from '@modern-js/runtime/model';
 import { UndoIconButton } from '@/components/icon/buttons';
-import { MapRuntimeModel } from '@/components/leaflet/mapRuntimeModel';
 
 import './styles.scss';
+import { StagedDataModel } from '@/components/imagimapper/state/stagedData';
 
-interface TitleRowProps<T> {
-  marker: MapMarker;
+interface TitleRowProps {
   editMode: boolean;
-  onValueChange?: (value: T) => void;
 }
 
-const TitleRow: FC<TitleRowProps<string>> = ({
-  marker,
-  editMode,
-  onValueChange,
-}) => {
-  const [selectedMarker] = useModel(MapRuntimeModel, m => m.selectedMarker);
-  const [name, setName] = useState<string>(marker.name);
-  const [localChanges, setLocalChanges] = useState<boolean>(false);
-
-  useEffect(() => {
-    setName(marker.name);
-  }, [marker.name]);
-
-  useEffect(() => {
-    const hasChanges = name !== selectedMarker?.name;
-    setLocalChanges(hasChanges);
-    onValueChange?.(name);
-    // console.log('TitleRow: name', name, 'selectedMarker', selectedMarker);
-  }, [name, selectedMarker?.name]);
+const TitleRow: FC<TitleRowProps> = ({ editMode }) => {
+  const [{ markerName, nameChanged }, { setName, undoNameChange }] = useModel(
+    StagedDataModel,
+    m => ({
+      markerName: m.name?.[2] ?? m.name?.[1] ?? '',
+      nameChanged: m.name?.[0] ?? false,
+    }),
+  );
 
   const processKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     switch (e.key) {
@@ -38,7 +24,7 @@ const TitleRow: FC<TitleRowProps<string>> = ({
         e.currentTarget.blur();
         break;
       case 'Escape':
-        setName(marker?.name ?? '');
+        undoNameChange();
         e.currentTarget.blur();
         break;
       default:
@@ -54,22 +40,20 @@ const TitleRow: FC<TitleRowProps<string>> = ({
             className="h1-edit"
             type="text"
             autoFocus={true}
-            value={name}
+            value={markerName}
             onFocus={e => e.target.select()}
             onChange={e => setName(e.target.value)}
             onKeyDown={processKeyPress}
           />
         ) : (
-          <h1>{marker?.name}</h1>
+          <h1>{markerName}</h1>
         )}
       </div>
       <div className="controls">
-        {localChanges && (
+        {nameChanged && (
           <UndoIconButton
             alt="Undo edits made to name"
-            onClick={() => {
-              setName(selectedMarker?.name ?? '');
-            }}
+            onClick={undoNameChange}
           />
         )}
       </div>

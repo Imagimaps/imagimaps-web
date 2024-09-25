@@ -11,6 +11,8 @@ export type WorldSpaceSize = {
   height: WorldSpace;
 };
 
+export type MarkerType = 'Marker' | 'Region';
+
 export type MapMarker = {
   id: string;
   type: 'Marker';

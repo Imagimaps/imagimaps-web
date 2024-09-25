@@ -1,6 +1,5 @@
 import { model } from '@modern-js/runtime/model';
 import {
-  DisplayTemplate,
   Map,
   MapLayer,
   MapMarker,
@@ -8,24 +7,12 @@ import {
   TemplateGroup,
   UserMapMetadata,
 } from '@shared/_types';
-import { LatLng } from 'leaflet';
-import { ulid } from 'ulid';
-import { xy } from '../_coordTranslators';
 
 export type EngineData = {
   userConfig: UserMapMetadata;
   map: Map;
   activeLayer?: MapLayer;
   templateGroups: TemplateGroup[];
-  runtime: {
-    selectedMarker?: MapMarker;
-    selectedMarkerIsNew: boolean;
-    selectedTemplate?: DisplayTemplate;
-    stagedMarker?: Partial<MapMarker>;
-    ghostTargetPosition?: LatLng;
-    lastTouchedOverlay?: Overlay;
-    lastUsedTemplate?: DisplayTemplate;
-  };
 };
 
 const EngineDataDefaults: EngineData = {
@@ -47,9 +34,9 @@ const EngineDataDefaults: EngineData = {
     layerId: '',
   },
   templateGroups: [],
-  runtime: {
-    selectedMarkerIsNew: false,
-  },
+  // runtime: {
+  //   selectedMarkerIsNew: false,
+  // },
 };
 
 // TODO: Split into separate models
@@ -60,24 +47,13 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
   return {
     state: EngineDataDefaults,
     computed: {
-      selectedMarkerOverlay: (state: EngineData) => {
-        return state.map.layers
-          .flatMap(l => l.overlays)
-          .find(o =>
-            o?.markers.some(m => m.id === state.runtime.selectedMarker?.id),
-          );
-      },
-      newMarkerOverlay: (state: EngineData) => {
-        const overlays = state.map.layers.flatMap(l => l.overlays);
-        return (
-          overlays.find(o => o?.id === state.runtime.lastTouchedOverlay?.id) ??
-          overlays[0]
-        );
-      },
       overlays: (state: EngineData): Overlay[] => {
         const overlays = state.map.layers.flatMap(l => l.overlays ?? []);
         console.log('Computed overlays', overlays, state);
         return overlays;
+      },
+      templates: (state: EngineData) => {
+        return state.templateGroups.flatMap(g => g.markerTemplates);
       },
     },
     actions: {
@@ -94,9 +70,6 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
           activeLayer ??
           map.layers.find(l => l.id === userConfig.layerId) ??
           map.layers[0];
-        state.runtime.lastUsedTemplate =
-          map.templateGroups?.[0]?.markerTemplates[0];
-        state.runtime.selectedTemplate = state.runtime.lastUsedTemplate;
       },
       setMapData: (state: EngineData, map: Map) => {
         state.map = map;
@@ -167,37 +140,6 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
         }
         state.map.layers = updatedLayers;
       },
-      stageNewMarkerAt: (state: EngineData, position: Point) => {
-        console.log('Data available to create new Point Marker', position, {
-          ...state,
-        });
-        const initialTemplate = state.runtime.lastUsedTemplate;
-        const placeholder = 'Placeholder';
-        const marker: MapMarker = {
-          id: ulid(),
-          type: 'Marker',
-          name: initialTemplate?.name ?? placeholder,
-          description: initialTemplate?.description ?? placeholder,
-          position: { ...position },
-          templateId: initialTemplate?.id ?? placeholder,
-        };
-        console.log(
-          'Adding new Point Marker',
-          marker,
-          state.runtime.selectedMarker,
-        );
-        state.runtime.stagedMarker = marker;
-        state.runtime.selectedMarker = marker;
-        state.runtime.selectedMarkerIsNew = true;
-      },
-      selectMarker: (state: EngineData, marker: MapMarker) => {
-        state.runtime.selectedMarker = marker;
-        state.runtime.selectedMarkerIsNew = false;
-      },
-      deselectMarker: (state: EngineData) => {
-        state.runtime.selectedMarker = undefined;
-        state.runtime.selectedMarkerIsNew = false;
-      },
       deleteMarker: (state: EngineData, marker: MapMarker) => {
         const updatedLayers = state.map.layers.map(layer => {
           const overlays = layer.overlays?.map(o => {
@@ -210,24 +152,6 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
           return { ...layer, overlays };
         });
         state.map.layers = updatedLayers;
-        state.runtime.selectedMarker = undefined;
-      },
-      cancelCreatePointMarker: (state: EngineData) => {
-        state.runtime.stagedMarker = undefined;
-      },
-      overlayTouched: (state: EngineData, overlay: Overlay) => {
-        state.runtime.lastTouchedOverlay = overlay;
-      },
-      abandonAllEdits: (state: EngineData) => {
-        state.runtime.selectedMarker = undefined;
-        state.runtime.stagedMarker = undefined;
-      },
-      showGhostTarget: (state: EngineData, position: Point) => {
-        const latlng = xy(position.x, position.y);
-        state.runtime.ghostTargetPosition = latlng;
-      },
-      hideGhostTarget: (state: EngineData) => {
-        state.runtime.ghostTargetPosition = undefined;
       },
     },
   };

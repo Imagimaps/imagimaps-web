@@ -1,47 +1,29 @@
 import { useModel } from '@modern-js/runtime/model';
-import { DisplayTemplate, MapMarker } from '@shared/_types';
-import { FC, useState, useEffect } from 'react';
+import { DisplayTemplate } from '@shared/_types';
+import { FC } from 'react';
 import TemplatePicker from './template-picker/templatePicker';
 import SvgIcon from '@/components/icon/svg';
 import { UndoIconButton } from '@/components/icon/buttons';
 import { EngineDataModel } from '@/components/imagimapper/state/engineData';
+import { StagedDataModel } from '@/components/imagimapper/state/stagedData';
+import { UserInteractionsModel } from '@/components/imagimapper/state/userInteractions';
 
-interface TemplateRowProps<T> {
-  marker: MapMarker;
+interface TemplateRowProps {
   editMode: boolean;
-  onValueChange?: (value: T) => void;
 }
 
-const TemplateRow: FC<TemplateRowProps<string>> = ({
-  marker,
-  editMode,
-  onValueChange,
-}) => {
-  const [{ selectedTemplate, templateGroups }] = useModel(
-    EngineDataModel,
-    m => {
-      return {
-        selectedTemplate: m.runtime.selectedTemplate,
-        templateGroups: m.map.templateGroups ?? [],
-      };
-    },
+const TemplateRow: FC<TemplateRowProps> = ({ editMode }) => {
+  const [
+    { templateId, templateChanged, templateGroups },
+    { setTemplateId, undoTemplateChange, templateUsed },
+  ] = useModel(
+    [StagedDataModel, UserInteractionsModel, EngineDataModel],
+    (s, _, e) => ({
+      templateId: s.templateId?.[2] ?? s.templateId?.[1] ?? '',
+      templateChanged: s.templateId?.[0] ?? false,
+      templateGroups: e.templateGroups,
+    }),
   );
-
-  const [updatedTemplateId, setUpdatedTemplateId] = useState<string>(
-    marker.templateId,
-  );
-  const [localChanges, setLocalChanges] = useState<boolean>(false);
-
-  useEffect(() => {
-    setUpdatedTemplateId(marker.templateId);
-  }, [marker.templateId]);
-
-  useEffect(() => {
-    const hasChanges = updatedTemplateId !== selectedTemplate?.id;
-    console.log('TemplateRow: hasChanges', hasChanges);
-    setLocalChanges(hasChanges);
-    onValueChange?.(updatedTemplateId);
-  }, [updatedTemplateId, selectedTemplate]);
 
   const displayIconSrc = (templateId: string) => {
     const template = templateGroups
@@ -66,18 +48,16 @@ const TemplateRow: FC<TemplateRowProps<string>> = ({
         <div className="detail-item">
           <SvgIcon
             className="meta-icon"
-            src={displayIconSrc(updatedTemplateId)}
+            src={displayIconSrc(templateId)}
             alt="Current Template Display Icon"
           />
-          <p className="meta-data">{templateFromId(updatedTemplateId)?.name}</p>
+          <p className="meta-data">{templateFromId(templateId)?.name}</p>
         </div>
         <div className="controls">
-          {localChanges && (
+          {templateChanged && (
             <UndoIconButton
               alt="Undo edits made to marker template type"
-              onClick={() => {
-                setUpdatedTemplateId(selectedTemplate?.id ?? '');
-              }}
+              onClick={undoTemplateChange}
             />
           )}
         </div>
@@ -85,9 +65,10 @@ const TemplateRow: FC<TemplateRowProps<string>> = ({
       {editMode && (
         <div className="details-panel-row">
           <TemplatePicker
-            selectedTemplate={templateFromId(updatedTemplateId)}
+            selectedTemplate={templateFromId(templateId)}
             onTemplateSelected={(template: DisplayTemplate) => {
-              setUpdatedTemplateId(template.id);
+              setTemplateId(template.id);
+              templateUsed(template);
             }}
           />
         </div>

@@ -1,22 +1,28 @@
 import { useModel } from '@modern-js/runtime/model';
-import { FC, useEffect } from 'react';
-import { LayerGroup, Marker } from 'react-leaflet';
+import { FC } from 'react';
+import { LayerGroup, Marker, useMapEvents } from 'react-leaflet';
 import { MapMarker } from '@shared/_types';
 import { EngineDataModel } from '../state/engineData';
 import { xy } from '../_coordTranslators';
+import { StagedDataModel } from '../state/stagedData';
 
 const MarkerGroups: FC = () => {
-  const [{ overlays }, actions] = useModel(EngineDataModel, data => ({
-    overlays: data.overlays,
-  }));
-
-  useEffect(() => {
-    console.log('Marker Groups', overlays);
-  }, [overlays]);
+  const [{ overlays, stagedMarkerId }, { selectMarker }] = useModel(
+    [EngineDataModel, StagedDataModel],
+    (e, s) => ({
+      overlays: e.overlays,
+      stagedMarkerId: s.id?.[2] ?? s.id?.[1],
+    }),
+    (_, s) => ({
+      selectMarker: s.hydrateFromMapMarker,
+    }),
+  );
+  const map = useMapEvents({});
 
   const handleClick = (marker: MapMarker) => (_e: any) => {
     console.log('Marker clicked', marker);
-    actions.selectMarker(marker);
+    selectMarker(marker);
+    map.flyTo(xy(marker.position.x, marker.position.y));
   };
 
   return (
@@ -26,14 +32,16 @@ const MarkerGroups: FC = () => {
           const { position, id } = marker;
           const markerPos = xy(position.x, position.y);
           return (
-            <Marker
-              key={id}
-              position={markerPos}
-              riseOnHover={true}
-              eventHandlers={{
-                click: handleClick(marker),
-              }}
-            />
+            id !== stagedMarkerId && (
+              <Marker
+                key={id}
+                position={markerPos}
+                riseOnHover={true}
+                eventHandlers={{
+                  click: handleClick(marker),
+                }}
+              />
+            )
           );
         });
       })}

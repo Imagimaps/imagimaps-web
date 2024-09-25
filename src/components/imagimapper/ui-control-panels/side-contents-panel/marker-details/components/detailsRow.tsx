@@ -1,37 +1,24 @@
+import { FC } from 'react';
 import { useModel } from '@modern-js/runtime/model';
-import { MapMarker } from '@shared/_types';
-import { FC, useState, useEffect } from 'react';
 import styled from '@modern-js/runtime/styled';
 import TempIcon from '@shared/svg/circle-question.svg';
 import { Metadata } from './styles';
-import { MapRuntimeModel } from '@/components/leaflet/mapRuntimeModel';
 import SvgIcon from '@/components/icon/svg';
 import { UndoIconButton } from '@/components/icon/buttons';
+import { StagedDataModel } from '@/components/imagimapper/state/stagedData';
 
-interface DetailsRowProps<T> {
-  marker: MapMarker;
+interface DetailsRowProps {
   editMode: boolean;
-  onValueChange?: (value: T) => void;
 }
 
-const DetailsRow: FC<DetailsRowProps<string>> = ({
-  marker,
-  editMode,
-  onValueChange,
-}) => {
-  const [selectedMarker] = useModel(MapRuntimeModel, m => m.selectedMarker);
-  const [details, setDetails] = useState<string>(marker.description);
-  const [localChanges, setLocalChanges] = useState<boolean>(false);
-
-  useEffect(() => {
-    setDetails(marker.description);
-  }, [marker.description]);
-
-  useEffect(() => {
-    const hasChanges = details !== selectedMarker?.description;
-    setLocalChanges(hasChanges);
-    onValueChange?.(details);
-  }, [details, selectedMarker?.description]);
+const DetailsRow: FC<DetailsRowProps> = ({ editMode }) => {
+  const [
+    { markerDescription, descriptionChanged },
+    { setDescription, undoDescriptionChange },
+  ] = useModel(StagedDataModel, m => ({
+    markerDescription: m.description?.[2] ?? m.description?.[1] ?? '',
+    descriptionChanged: m.description?.[0] ?? false,
+  }));
 
   const processKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     switch (e.key) {
@@ -39,7 +26,7 @@ const DetailsRow: FC<DetailsRowProps<string>> = ({
         e.currentTarget.blur();
         break;
       case 'Escape':
-        setDetails(marker?.description ?? '');
+        undoDescriptionChange();
         e.currentTarget.blur();
         break;
       default:
@@ -55,12 +42,10 @@ const DetailsRow: FC<DetailsRowProps<string>> = ({
           <Metadata>Description</Metadata>
         </Content>
         <Controls>
-          {localChanges && (
+          {descriptionChanged && (
             <UndoIconButton
               alt="Undo edits made to description"
-              onClick={() => {
-                setDetails(selectedMarker?.description ?? '');
-              }}
+              onClick={undoDescriptionChange}
             />
           )}
         </Controls>
@@ -70,13 +55,13 @@ const DetailsRow: FC<DetailsRowProps<string>> = ({
           {editMode ? (
             <DetailsInput
               as="textarea"
-              value={details}
+              value={markerDescription}
               onFocus={e => e.target.select()}
-              onChange={e => setDetails(e.target.value)}
+              onChange={e => setDescription(e.target.value)}
               onKeyDown={processKeyPress}
             />
           ) : (
-            <Metadata>{marker?.description}</Metadata>
+            <Metadata>{markerDescription}</Metadata>
           )}
         </Content>
       </Row>

@@ -3,13 +3,19 @@ import { FC } from 'react';
 import { Marker } from 'react-leaflet';
 import L, { Point } from 'leaflet';
 import TargetSvg from '@shared/svg/target-circular-dot.svg';
-import { EngineDataModel } from '../state/engineData';
+// import { UserInteractionsModel } from '../state/userInteractions';
+import { StagedDataModel } from '../state/stagedData';
+import { xy } from '../_coordTranslators';
 
 const GhostTargetMarker: FC = () => {
-  const [targetPosition] = useModel(
-    EngineDataModel,
-    m => m.runtime.ghostTargetPosition,
-  );
+  // const [targetPosition] = useModel(
+  //   UserInteractionsModel,
+  //   m => m.ghostTargetPosition,
+  // );
+  const [{ positionChanged, ghostPos }] = useModel(StagedDataModel, s => ({
+    positionChanged: s.positionChanged,
+    ghostPos: s.position?.[2],
+  }));
 
   const targetIcon = L.icon({
     iconUrl: TargetSvg,
@@ -17,8 +23,12 @@ const GhostTargetMarker: FC = () => {
     iconAnchor: new Point(16, 16),
   });
 
-  return targetPosition ? (
-    <Marker icon={targetIcon} position={targetPosition} riseOnHover={true} />
+  return positionChanged && ghostPos ? (
+    <Marker
+      icon={targetIcon}
+      position={xy(ghostPos.x, ghostPos.y)}
+      riseOnHover={true}
+    />
   ) : null;
 };
 

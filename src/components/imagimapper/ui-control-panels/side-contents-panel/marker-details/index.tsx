@@ -1,11 +1,10 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { useModel } from '@modern-js/runtime/model';
-import equal from 'deep-equal';
 import useWebSocket from 'react-use-websocket';
 
 // import Info from '@shared/svg/info.svg';
 
-import { MapMarker, Overlay } from '@shared/_types';
+import { Overlay } from '@shared/_types';
 import ActionsBar from './components/actionsBar';
 import TitleRow from './components/titleRow';
 import LocationRow from './components/locationRow';
@@ -14,123 +13,130 @@ import DetailsRow from './components/detailsRow';
 import HeroArea from './components/heroArea';
 import TemplateRow from './components/templateRow';
 import { EngineDataModel } from '@/components/imagimapper/state/engineData';
+import { UserInteractionsModel } from '@/components/imagimapper/state/userInteractions';
 
 import './index.scss';
+import { StagedDataModel } from '@/components/imagimapper/state/stagedData';
 
 const MarkerDetails: FC = () => {
+  const [{ lastUsedOverlay }, { overlayUsed }] = useModel(
+    UserInteractionsModel,
+  );
+
   const [
     {
-      runtime: { selectedMarker, selectedMarkerIsNew, lastTouchedOverlay },
-      selectedMarkerOverlay,
       templateGroups,
       overlays,
       map,
+      isNew,
+      markerHasChanges,
+      markerOverlayChanged,
+      markerId,
+      overlayId,
+      templateId,
+      mapMarker,
     },
-    actions,
-  ] = useModel(EngineDataModel, model => {
-    return {
-      runtime: model.runtime,
-      selectedMarkerOverlay: model.selectedMarkerOverlay,
-      templateGroups: model.map.templateGroups ?? [],
-      overlays: model.overlays,
-      map: model.map,
-    };
-  });
+    {
+      undoChanges,
+      createPointMarker,
+      updateMarker,
+      moveMarkerToOverlay,
+      hydrateFromMapMarker,
+    },
+  ] = useModel([EngineDataModel, StagedDataModel], (e, s) => ({
+    templateGroups: e.map.templateGroups ?? [],
+    overlays: e.overlays,
+    map: e.map,
+    isNew: s.isNew,
+    markerHasChanges: s.isChanged,
+    markerOverlayChanged: s.overlayIdChanged,
+    markerId: s.id?.[2] ?? s.id?.[1],
+    overlayId: s.overlayId?.[2] ?? s.overlayId?.[1] ?? e.overlays[0].id,
+    templateId: s.templateId?.[2] ?? s.templateId?.[1] ?? e.templates[0].id,
+    mapMarker: s.mapMarker,
+  }));
+
   const { sendJsonMessage } = useWebSocket(
     `ws://localhost:8082/api/map/${map.id}/ws`,
   );
+
   const [editMode, setEditMode] = useState<boolean>(false);
-  const [stagedMarkerEdits, setStagedMarkerEdits] = useState<MapMarker>();
-  const [modelHasEdits, setModelHasEdits] = useState<boolean>(false);
-  const [overlayEdited, setOverlayEdited] = useState<boolean>(false);
-  const [targetOverlay, setTargetOverlay] = useState<Overlay>();
+  // const [stagedMarkerEdits, setStagedMarkerEdits] = useState<MapMarker>();
+  // const [targetOverlay, setTargetOverlay] = useState<Overlay>();
+
+  const selectedMarkerOverlay: Overlay = useMemo(() => {
+    return (
+      overlays.find(o => o.id === overlayId) ??
+      overlays.find(o => o.markers.some(m => m.id === markerId)) ??
+      lastUsedOverlay ??
+      overlays[0]
+    );
+  }, [markerId, overlays]);
 
   useEffect(() => {
-    if (selectedMarkerIsNew) {
+    console.log('[MarkerDetails] isNew:', isNew);
+    if (isNew) {
+      console.log('[MarkerDetails] Setting edit mode to true');
       setEditMode(true);
     }
-  }, [selectedMarkerIsNew]);
-
-  useEffect(() => {
-    console.log(
-      'MarkerDetails: selectedMarker',
-      selectedMarker,
-      selectedMarkerOverlay,
-    );
-    if (selectedMarker) {
-      setStagedMarkerEdits({ ...selectedMarker });
-      setTargetOverlay(
-        selectedMarkerOverlay ?? lastTouchedOverlay ?? overlays[0],
-      );
-    }
-  }, [selectedMarker, selectedMarkerOverlay]);
-
-  useEffect(() => {
-    console.log('MarkerDetails: editMarker', stagedMarkerEdits);
-    setModelHasEdits(!equal(stagedMarkerEdits, selectedMarker));
-  }, [stagedMarkerEdits, selectedMarker]);
-
-  useEffect(() => {
-    console.log('MarkerDetails: targetOverlay', targetOverlay);
-    setOverlayEdited(targetOverlay?.id !== selectedMarkerOverlay?.id);
-  }, [targetOverlay, selectedMarkerOverlay]);
+  }, [isNew]);
 
   const saveChanges = () => {
-    if (!stagedMarkerEdits || !targetOverlay) {
-      console.error(
-        'Cannot save changes, missing marker or overlay',
-        stagedMarkerEdits,
-        targetOverlay,
+    if (!(markerHasChanges || isNew)) {
+      console.warn(
+        '[MarkerDetails] No changes made to marker, not saving',
+        mapMarker,
+        markerHasChanges,
+        isNew,
       );
       return;
     }
 
-    actions.overlayTouched(targetOverlay);
-    // runtimeActions.templateInteracted(selectedTemplate);
-    actions.selectMarker(stagedMarkerEdits);
+    overlayUsed(selectedMarkerOverlay);
+    // templateUsed(template);
     setEditMode(false);
 
-    if (selectedMarkerIsNew) {
-      console.log('Creating new marker', stagedMarkerEdits, targetOverlay);
-      actions.createPointMarker(stagedMarkerEdits, targetOverlay);
-      actions.selectMarker(stagedMarkerEdits);
+    if (isNew) {
+      console.log(
+        '[MarkerDetails] Creating new marker',
+        mapMarker,
+        selectedMarkerOverlay,
+      );
+      createPointMarker(mapMarker, selectedMarkerOverlay);
       sendJsonMessage({
         type: 'CREATE_MARKER',
         payload: {
-          marker: stagedMarkerEdits,
-          overlayId: targetOverlay.id,
+          marker: mapMarker,
+          overlayId: selectedMarkerOverlay.id,
         },
       });
       return;
     }
-    if (modelHasEdits) {
-      console.log('Saving changes to marker', stagedMarkerEdits);
-      actions.updateMarker(stagedMarkerEdits);
+    if (markerHasChanges) {
+      console.log('[MarkerDetails] Saving changes to marker', mapMarker);
+      updateMarker(mapMarker);
+      hydrateFromMapMarker(mapMarker);
       sendJsonMessage({
         type: 'UPDATE_MARKER',
         payload: {
-          marker: stagedMarkerEdits,
+          marker: mapMarker,
         },
       });
     }
-    if (overlayEdited) {
-      console.log('Moving marker to overlay', targetOverlay);
-      actions.moveMarkerToOverlay(stagedMarkerEdits, targetOverlay);
+    if (markerOverlayChanged) {
+      console.log(
+        '[MarkerDetails] Moving marker to overlay',
+        selectedMarkerOverlay,
+      );
+      moveMarkerToOverlay(mapMarker, selectedMarkerOverlay);
       sendJsonMessage({
         type: 'UPDATE_MARKER_OVERLAY',
         payload: {
-          marker: stagedMarkerEdits,
-          overlayId: targetOverlay.id,
+          marker: mapMarker,
+          overlayId: selectedMarkerOverlay.id,
         },
       });
     }
-  };
-  const undoChanges = () => {
-    if (selectedMarker) {
-      console.log('Undoing changes to marker', selectedMarker);
-      setStagedMarkerEdits({ ...selectedMarker });
-    }
-    setEditMode(false);
   };
 
   const templateFromId = (templateId: string) => {
@@ -141,63 +147,24 @@ const MarkerDetails: FC = () => {
   };
 
   return (
-    stagedMarkerEdits && (
+    mapMarker && (
       <div className="marker-details">
-        <HeroArea template={templateFromId(stagedMarkerEdits.templateId)} />
+        <HeroArea template={templateFromId(templateId)} />
         <div className="marker-details-content">
           <ActionsBar
             editMode={editMode}
-            modelHasEdits={modelHasEdits || overlayEdited}
-            modelIsNew={selectedMarkerIsNew}
             activateEditMode={() => setEditMode(true)}
             saveChanges={saveChanges}
-            undoChanges={undoChanges}
-          />
-          <TitleRow
-            marker={stagedMarkerEdits}
-            editMode={editMode}
-            onValueChange={value => {
-              stagedMarkerEdits &&
-                setStagedMarkerEdits({ ...stagedMarkerEdits, name: value });
+            undoChanges={() => {
+              undoChanges();
+              setEditMode(false);
             }}
           />
-          <LocationRow
-            marker={stagedMarkerEdits}
-            editMode={editMode}
-            onValueChange={value => {
-              stagedMarkerEdits &&
-                setStagedMarkerEdits({ ...stagedMarkerEdits, position: value });
-            }}
-          />
-          <OverlayRow
-            overlay={targetOverlay}
-            editMode={editMode}
-            onValueChange={value => {
-              setTargetOverlay(value);
-            }}
-          />
-          <TemplateRow
-            marker={stagedMarkerEdits}
-            editMode={editMode}
-            onValueChange={value => {
-              stagedMarkerEdits &&
-                setStagedMarkerEdits({
-                  ...stagedMarkerEdits,
-                  templateId: value,
-                });
-            }}
-          />
-          <DetailsRow
-            marker={stagedMarkerEdits}
-            editMode={editMode}
-            onValueChange={value => {
-              stagedMarkerEdits &&
-                setStagedMarkerEdits({
-                  ...stagedMarkerEdits,
-                  description: value,
-                });
-            }}
-          />
+          <TitleRow editMode={editMode} />
+          <LocationRow editMode={editMode} />
+          <OverlayRow editMode={editMode} />
+          <TemplateRow editMode={editMode} />
+          <DetailsRow editMode={editMode} />
         </div>
       </div>
     )

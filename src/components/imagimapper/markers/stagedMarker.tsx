@@ -2,14 +2,17 @@ import { useModel } from '@modern-js/runtime/model';
 import { FC } from 'react';
 import { Marker } from 'react-leaflet';
 import { xy } from '../_coordTranslators';
-import { EngineDataModel } from '../state/engineData';
+import { StagedDataModel } from '../state/stagedData';
 
 const StagedMarker: FC = () => {
-  const [marker] = useModel(EngineDataModel, m => m.runtime.stagedMarker);
+  const [{ markerPosition }] = useModel(StagedDataModel, m => ({
+    markerPosition: m.position?.[1],
+    mapMarker: m.mapMarker,
+  }));
 
-  return marker?.position ? (
+  return markerPosition ? (
     <Marker
-      position={xy(marker.position.x, marker.position.y)}
+      position={xy(markerPosition.x, markerPosition.y)}
       riseOnHover={true}
     />
   ) : null;

@@ -1,5 +1,8 @@
 import 'leaflet/dist/leaflet.css';
-import L, { CRS } from 'leaflet';
+import L, { CRS, Point } from 'leaflet';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 
 import { FC, useEffect } from 'react';
 import { MapContainer } from 'react-leaflet';
@@ -13,6 +16,7 @@ import BackgroundTiledImages from './backgroundTiledImages';
 import MarkerGroups from './markers/markerGroups';
 import StagedMarker from './markers/stagedMarker';
 import GhostTargetMarker from './markers/ghostTargetMarker';
+import { StagedDataModel } from './state/stagedData';
 import { AuthModel } from '@/state/authModel';
 
 import './index.scss';
@@ -20,6 +24,12 @@ import './index.scss';
 const ImagiMapper: FC = () => {
   const [{ user }] = useModel(AuthModel);
   const [{ map, userConfig }, actions] = useModel(EngineDataModel);
+  const [{ stagedMarkerId }, { resetStagedMarker }] = useModel(
+    StagedDataModel,
+    s => ({
+      stagedMarkerId: s.id?.[2] ?? s.id?.[1],
+    }),
+  );
 
   const { sendJsonMessage, lastMessage, readyState } = useWebSocket(
     `ws://localhost:8082/api/map/${map.id}/ws`,
@@ -88,11 +98,23 @@ const ImagiMapper: FC = () => {
       } else if (type === 'MARKER_DELETED') {
         const { markerId } = payload;
         actions.deleteMarker(markerId);
+        if (stagedMarkerId === markerId) {
+          // TODO: Toast message to inform user that their staged marker was deleted bt someone else
+          resetStagedMarker();
+        }
       } else {
         console.error('Unknown message type:', type, payload);
       }
     }
   }, [lastMessage]);
+
+  const DefaultIcon = L.icon({
+    iconRetinaUrl: iconRetina,
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconAnchor: new Point(12, 41),
+  });
+  L.Marker.prototype.options.icon = DefaultIcon;
 
   // TODO: Look into L.Control.Scale
   return (

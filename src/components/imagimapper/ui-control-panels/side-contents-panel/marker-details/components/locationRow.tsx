@@ -1,67 +1,38 @@
-import { MapMarker } from '@shared/_types';
-import { ChangeEventHandler, FC, useEffect, useState } from 'react';
+import { ChangeEventHandler, FC } from 'react';
 import { useModel } from '@modern-js/runtime/model';
 import Pan4D from '@shared/svg/pan-4d.svg';
 import LocationOnMapSvg from '@shared/svg/location-on-map.svg';
 import { Metadata } from './styles';
 import { UndoIconButton } from '@/components/icon/buttons';
 import SvgIcon from '@/components/icon/svg';
-import { EngineDataModel } from '@/components/imagimapper/state/engineData';
+import { StagedDataModel } from '@/components/imagimapper/state/stagedData';
+import { UserInteractionsModel } from '@/components/imagimapper/state/userInteractions';
 
-interface LocationRowProps<T> {
-  marker: MapMarker;
+interface LocationRowProps {
   editMode: boolean;
-  onValueChange?: (value: T) => void;
 }
 
-const LocationRow: FC<LocationRowProps<Point>> = ({
-  marker,
-  editMode,
-  onValueChange,
-}) => {
-  const [selectedMarker, actions] = useModel(
-    EngineDataModel,
-    m => m.runtime.selectedMarker,
+const LocationRow: FC<LocationRowProps> = ({ editMode }) => {
+  const [model, actions] = useModel(
+    [StagedDataModel, UserInteractionsModel],
+    (s, _) => ({
+      position: s.position?.[2] ?? s.position?.[1] ?? { x: 0, y: 0 },
+      positionChanged: s.position?.[0] ?? false,
+    }),
   );
 
-  const [updatedPoint, setUpdatedPoint] = useState<Point>(marker.position);
-  const [localChanges, setLocalChanges] = useState<boolean>(false);
-
-  useEffect(() => {
-    setUpdatedPoint(marker.position);
-  }, [marker.position]);
-
-  useEffect(() => {
-    if (selectedMarker) {
-      const { x: selX, y: selY } = selectedMarker.position;
-      const hasChanges =
-        Math.fround(updatedPoint.x) !== Math.fround(selX) ||
-        Math.fround(updatedPoint.y) !== Math.fround(selY);
-      setLocalChanges(hasChanges);
-      onValueChange?.(updatedPoint);
-    }
-  }, [updatedPoint, selectedMarker?.position]);
-
-  useEffect(() => {
-    if (localChanges) {
-      actions.showGhostTarget(updatedPoint);
-    } else {
-      actions.hideGhostTarget();
-    }
-    return () => {
-      actions.hideGhostTarget();
-    };
-  }, [updatedPoint, localChanges]);
+  const { position, positionChanged } = model;
+  const { setPosition, undoPositionChange } = actions;
 
   const updatePoint: ChangeEventHandler<HTMLInputElement> = event => {
     const { id, value } = event.target;
-    const tempPoint = { ...updatedPoint };
+    const tempPoint = { ...position };
     if (id === 'x-position') {
       tempPoint.x = Number(value);
     } else if (id === 'y-position') {
       tempPoint.y = Number(value);
     }
-    setUpdatedPoint(tempPoint);
+    setPosition(tempPoint);
   };
 
   const processKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -70,7 +41,7 @@ const LocationRow: FC<LocationRowProps<Point>> = ({
         console.log('LocationRow: Enter pressed');
         break;
       case 'Escape':
-        setUpdatedPoint(selectedMarker?.position ?? { x: 0, y: 0 });
+        undoPositionChange();
         e.currentTarget.blur();
         break;
       default:
@@ -90,7 +61,7 @@ const LocationRow: FC<LocationRowProps<Point>> = ({
               className="number-input"
               id="x-position"
               type="number"
-              value={Math.fround(updatedPoint.x)}
+              value={Math.fround(position.x)}
               onChange={updatePoint}
               onKeyDown={processKeyPress}
             />{' '}
@@ -99,7 +70,7 @@ const LocationRow: FC<LocationRowProps<Point>> = ({
               className="number-input"
               id="y-position"
               type="number"
-              value={Math.fround(updatedPoint.y)}
+              value={Math.fround(position.y)}
               onChange={updatePoint}
               onKeyDown={processKeyPress}
             />
@@ -110,18 +81,14 @@ const LocationRow: FC<LocationRowProps<Point>> = ({
             />
           </>
         ) : (
-          <Metadata>
-            Location {`(x: ${updatedPoint.x}, y: ${updatedPoint.y})`}
-          </Metadata>
+          <Metadata>Location {`(x: ${position.x}, y: ${position.y})`}</Metadata>
         )}
       </div>
       <div className="controls">
-        {localChanges && (
+        {positionChanged && (
           <UndoIconButton
             alt="Undo edits made to marker position"
-            onClick={() =>
-              setUpdatedPoint(selectedMarker?.position ?? { x: 0, y: 0 })
-            }
+            onClick={undoPositionChange}
           />
         )}
       </div>
