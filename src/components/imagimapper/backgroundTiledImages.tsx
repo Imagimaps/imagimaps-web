@@ -3,11 +3,12 @@ import { LatLngBounds } from 'leaflet';
 import { TileLayer } from 'react-leaflet';
 import { useModel } from '@modern-js/runtime/model';
 import { EngineDataModel } from './state/engineData';
+import { useRemoteBackends } from '@/hooks/remoteBackends';
 
 const BackgroundTiledImages: FC = () => {
+  const { cdnBaseUrl } = useRemoteBackends();
   const [{ activeLayer }] = useModel(EngineDataModel);
   const [bounds, setBounds] = useState<LatLngBounds | undefined>();
-  const [cdnHost] = useState<string>('https://cdn.dev.imagimaps.com');
 
   // TODO: Logic to load cdnHost for the environment
 
@@ -28,9 +29,10 @@ const BackgroundTiledImages: FC = () => {
   return (
     activeLayer && (
       <TileLayer
-        url={`${cdnHost}/${activeLayer.imagePath}/{z}_{x}_{y}.png`}
+        url={`${cdnBaseUrl}/${activeLayer.imagePath}/{z}_{x}_{y}.png`}
         bounds={bounds}
         tms={false}
+        detectRetina={true}
       />
     )
   );

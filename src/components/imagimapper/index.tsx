@@ -124,7 +124,7 @@ const ImagiMapper: FC = () => {
       zoom={userConfig.zoom}
       zoomSnap={0.5}
       zoomDelta={0.5}
-      minZoom={0}
+      minZoom={-1}
       maxZoom={2}
       bounceAtZoomLimits={true}
       scrollWheelZoom={true}

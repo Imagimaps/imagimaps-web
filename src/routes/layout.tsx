@@ -11,23 +11,26 @@ import { PrimeReactProvider } from 'primereact/api';
 
 import AuthProvider from '@/hooks/auth';
 import PersistState from '@/hooks/persistState';
+import RemoteBackends from '@/hooks/remoteBackends';
 import Header from '@/components/header';
 import BreadcrumbMenu from '@/components/breadcrumb-menu';
 
 export default function Layout() {
   return (
     <Provider config={{}}>
-      <AuthProvider>
-        <PersistState>
-          <PrimeReactProvider>
-            <Header />
-            <BreadcrumbMenu />
-            <div className="content">
-              <Outlet />
-            </div>
-          </PrimeReactProvider>
-        </PersistState>
-      </AuthProvider>
+      <RemoteBackends>
+        <AuthProvider>
+          <PersistState>
+            <PrimeReactProvider>
+              <Header />
+              <BreadcrumbMenu />
+              <div className="content">
+                <Outlet />
+              </div>
+            </PrimeReactProvider>
+          </PersistState>
+        </AuthProvider>
+      </RemoteBackends>
     </Provider>
   );
 }
