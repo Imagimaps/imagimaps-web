@@ -1,10 +1,10 @@
-import styled from '@modern-js/runtime/styled';
+import styled, { css, CSSObject } from '@modern-js/runtime/styled';
 import { CSSProperties, FC, MouseEventHandler } from 'react';
 import UndoSvg from '@shared/svg/undo.svg';
 import SvgIcon from '../svg';
 
 interface UndoIconButtonProps {
-  style?: CSSProperties;
+  style?: CSSObject;
   alt?: string;
   size?: CSSProperties['width'] | CSSProperties['height'];
   onClick?: MouseEventHandler;
@@ -29,8 +29,11 @@ export const UndoIconButton: FC<UndoIconButtonProps> = ({
 
 const SvgIconButton = styled(SvgIcon)<{
   size: CSSProperties['width'] | CSSProperties['height'];
+  style?: CSSObject;
 }>`
   width: ${props => props.size};
   height: ${props => props.size};
   cursor: pointer;
+
+  ${props => props.style && css(props.style)}
 `;

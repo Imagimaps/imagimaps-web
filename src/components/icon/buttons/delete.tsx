@@ -1,26 +1,26 @@
 import styled, { css, CSSObject } from '@modern-js/runtime/styled';
 import { CSSProperties, FC, MouseEventHandler } from 'react';
-import SaveSvg from '@shared/svg/save.svg';
+import DeleteSvg from '@shared/svg/delete.svg';
 import SvgIcon from '../svg';
 
-interface SaveDetailsButtonProps {
-  style?: CSSObject;
+interface EditIconButtonProps {
+  svgStyle?: CSSObject;
   alt?: string;
   size?: CSSProperties['width'] | CSSProperties['height'];
   onClick?: MouseEventHandler;
 }
 
-export const SaveIconButton: FC<SaveDetailsButtonProps> = ({
-  style,
+export const DeleteIconButton: FC<EditIconButtonProps> = ({
+  svgStyle,
   alt,
   size = '1rem',
   onClick,
 }) => {
   return (
     <SvgIconButton
-      src={SaveSvg}
-      alt={alt ?? 'Save Changes'}
-      style={style}
+      src={DeleteSvg}
+      alt={alt ?? 'Delete Item'}
+      style={svgStyle}
       size={size}
       onClick={onClick}
     />

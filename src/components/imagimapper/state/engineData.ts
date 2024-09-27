@@ -140,11 +140,12 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
         }
         state.map.layers = updatedLayers;
       },
-      deleteMarker: (state: EngineData, marker: MapMarker) => {
+      deleteMarker: (state: EngineData, markerId: string) => {
         const updatedLayers = state.map.layers.map(layer => {
           const overlays = layer.overlays?.map(o => {
-            const index = o.markers.findIndex(m => m.id === marker.id);
+            const index = o.markers.findIndex(m => m.id === markerId);
             if (index >= 0) {
+              console.log('[EngineDataModel] Deleting marker', markerId);
               o.markers.splice(index, 1);
             }
             return o;

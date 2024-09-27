@@ -1,3 +1,18 @@
+.delete-prompt {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  &.selected {
+    border: 1px solid red;
+  }
+
+  p {
+    margin: 0;
+    color: red;
+  }
+}
+
 .details-panel-segment {
   &.hero {
     display: flex;

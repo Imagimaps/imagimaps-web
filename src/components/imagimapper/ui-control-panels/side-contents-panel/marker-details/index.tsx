@@ -14,11 +14,14 @@ import HeroArea from './components/heroArea';
 import TemplateRow from './components/templateRow';
 import { EngineDataModel } from '@/components/imagimapper/state/engineData';
 import { UserInteractionsModel } from '@/components/imagimapper/state/userInteractions';
+import { StagedDataModel } from '@/components/imagimapper/state/stagedData';
+import { useRemoteBackends } from '@/hooks/remoteBackends';
 
 import './index.scss';
-import { StagedDataModel } from '@/components/imagimapper/state/stagedData';
 
 const MarkerDetails: FC = () => {
+  const { mapApiHost } = useRemoteBackends();
+
   const [{ lastUsedOverlay }, { overlayUsed }] = useModel(
     UserInteractionsModel,
   );
@@ -57,12 +60,13 @@ const MarkerDetails: FC = () => {
   }));
 
   const { sendJsonMessage } = useWebSocket(
-    `ws://localhost:8082/api/map/${map.id}/ws`,
+    `ws://${mapApiHost}/api/map/${map.id}/ws`,
+    {
+      share: true,
+    },
   );
 
   const [editMode, setEditMode] = useState<boolean>(false);
-  // const [stagedMarkerEdits, setStagedMarkerEdits] = useState<MapMarker>();
-  // const [targetOverlay, setTargetOverlay] = useState<Overlay>();
 
   const selectedMarkerOverlay: Overlay = useMemo(() => {
     return (

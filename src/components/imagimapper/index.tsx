@@ -17,11 +17,13 @@ import MarkerGroups from './markers/markerGroups';
 import StagedMarker from './markers/stagedMarker';
 import GhostTargetMarker from './markers/ghostTargetMarker';
 import { StagedDataModel } from './state/stagedData';
+import { useRemoteBackends } from '@/hooks/remoteBackends';
 import { AuthModel } from '@/state/authModel';
 
 import './index.scss';
 
 const ImagiMapper: FC = () => {
+  const { mapApiHost } = useRemoteBackends();
   const [{ user }] = useModel(AuthModel);
   const [{ map, userConfig }, actions] = useModel(EngineDataModel);
   const [{ stagedMarkerId }, { resetStagedMarker }] = useModel(
@@ -32,7 +34,7 @@ const ImagiMapper: FC = () => {
   );
 
   const { sendJsonMessage, lastMessage, readyState } = useWebSocket(
-    `ws://localhost:8082/api/map/${map.id}/ws`,
+    `ws://${mapApiHost}/api/map/${map.id}/ws`,
     {
       share: true,
       onError: e => {
@@ -96,7 +98,7 @@ const ImagiMapper: FC = () => {
         const { marker, overlayId } = payload;
         actions.moveMarkerToOverlay(marker, overlayId);
       } else if (type === 'MARKER_DELETED') {
-        const { markerId } = payload;
+        const markerId = payload as string;
         actions.deleteMarker(markerId);
         if (stagedMarkerId === markerId) {
           // TODO: Toast message to inform user that their staged marker was deleted bt someone else
