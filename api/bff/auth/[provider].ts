@@ -7,19 +7,8 @@ import { OAuth2Providers } from '@shared/types/auth.enums';
 
 const { authServiceBaseUrl, userServiceBaseUrl } = ServicesConfig();
 
-const STUB = false;
-
 export default async (provider: OAuth2Providers) => {
   console.log(provider);
-
-  if (STUB) {
-    console.log('Stubbing response');
-    return {
-      tokenLink:
-        // eslint-disable-next-line max-len
-        'https://discord.com/api/oauth2/authorize?client_id=1189425291450400849&response_type=code&redirect_uri=http://localhost:8080/oauth/authorize&scope=identify%20guilds&prompt=none&state=5b9c4f5f-5f0c-4f4c-8f8c-1e7b1c7c5',
-    };
-  }
 
   const authLinksResponse = await fetch(
     `${authServiceBaseUrl}/api/auth/providers/`,
@@ -49,51 +38,14 @@ export const post = async (
   console.log('use context', useContext);
   const ctx = useContext();
 
-  if (STUB) {
-    console.log('Stubbing response POST AuthToken');
-    const expiresAt = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);
-    ctx.res.statusCode = 200;
-    ctx.res.setHeader('Content-Type', 'application/json');
-    ctx.cookies.set('id-token', '27d1ae8d-91a5-4ca8-92ea-090a2b606cca', {
-      httpOnly: false,
-      path: '/',
-      expires: expiresAt, // 1 day into the future
-      sameSite: 'strict',
-    });
-
-    ctx.cookies.set('session-token', '32b23230-b42d-43f5-8f9c-3ce96b5c3a78', {
-      httpOnly: true,
-      path: '/',
-      expires: expiresAt,
-      sameSite: 'strict',
-    });
-
-    ctx.res.end(
-      JSON.stringify({
-        user: {
-          id: 'test-12345678',
-          email: '',
-          name: 'botagar',
-          picture: 'd906c8f5708a517507e9160d44f4f880',
-        },
-        session: {
-          id: '32b23230-b42d-43f5-8f9c-3ce96b5c3a78',
-          expiry: new Date().toISOString(),
-        },
-      }),
-    );
-
-    return;
-  }
-
   console.log(
-    'Getting Session',
+    'Establishing Session',
     provider,
     data,
-    `${authServiceBaseUrl}/api/auth/user/session`,
+    `${authServiceBaseUrl}/api/auth/session`,
   );
   const sessionResponse = await fetch(
-    `${authServiceBaseUrl}/api/auth/user/session`,
+    `${authServiceBaseUrl}/api/auth/session`,
     {
       method: 'POST',
       headers: {
@@ -129,8 +81,31 @@ export const post = async (
   }
 
   console.log('Extracting UserDetails from Response', userDetailsResponse);
-  const userDetails: User = await userDetailsResponse.json();
+  const userDetails: User & { externalId: string } =
+    await userDetailsResponse.json();
   console.log('UserDetails', userDetails);
+
+  const setUserInSessionResponse = await fetch(
+    `${authServiceBaseUrl}/api/auth/session/user`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-source': 'bff-service',
+        'x-session-id': session.id,
+      },
+      body: JSON.stringify({
+        userId: userDetails.id,
+        userExternalId: userDetails.externalId,
+      }),
+    },
+  );
+
+  if (!setUserInSessionResponse.ok) {
+    throw new Error(
+      `Error setting User in Session. HTTP Status: ${setUserInSessionResponse.status}`,
+    );
+  }
 
   ctx.cookies.set('id-token', userDetails.id, {
     httpOnly: false,

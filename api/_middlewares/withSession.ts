@@ -6,22 +6,22 @@ const withSession = async (ctx: any, next: () => Promise<void>) => {
   const isPublicPath = publicPaths.some(path => url.startsWith(path));
 
   if (isPublicPath) {
-    console.log('Public path', url);
+    console.log('[WithSession Hook] Public path', url);
     await next();
   } else {
     if (!sessionId) {
-      console.error('withSession: Session Id not supplied');
+      console.error('[WithSession Hook]: Session Id not supplied');
       ctx.throw(401, 'Unauthorized');
     }
 
     if (Array.isArray(sessionId)) {
       console.error(
-        `Somehow ended up with multiple session tokens [${sessionId}]`,
+        `[WithSession Hook] Somehow ended up with multiple session tokens [${sessionId}]`,
       );
       ctx.throw(403, 'Forbidden');
     }
 
-    console.log('Request with session token', sessionId);
+    console.log('[WithSession Hook] Request with session token', sessionId);
     ctx.state.sessionId = sessionId;
 
     await next();
