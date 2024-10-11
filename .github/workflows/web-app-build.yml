@@ -11,6 +11,12 @@ on:
   # schedule:
   # - cron: '30 21 * * *' # 07:30 AEST (9:30pm UTC)
   workflow_dispatch:
+    inputs:
+      build-all:
+        type: boolean
+        description: Build all artifacts
+        required: false
+        default: false
 
 permissions:
   id-token: write
@@ -50,7 +56,7 @@ jobs:
   build-webapp:
     needs:
       - detect-changes
-    if: needs.detect-changes.outputs.webapp == 'true'
+    if: needs.detect-changes.outputs.webapp == 'true' || inputs.build-all == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -91,7 +97,7 @@ jobs:
   build-bff:
     needs:
       - detect-changes
-    if: needs.detect-changes.outputs.bff == 'true'
+    if: needs.detect-changes.outputs.bff == 'true' || inputs.build-all == 'true'
     runs-on: ubuntu-latest
     environment: artifacts
     env:
