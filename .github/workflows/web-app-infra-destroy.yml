@@ -1,8 +1,8 @@
-name: Soft Destroy WebApp Infrastructure
+name: Infra Destroy (Soft)
 
 on:
   schedule:
-    - cron: "0 14 * * *" # 00:00 AEST (2pm UTC)
+    - cron: '0 14 * * *' # 00:00 AEST (2pm UTC)
   workflow_dispatch:
 
 permissions:

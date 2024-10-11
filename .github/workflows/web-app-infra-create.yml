@@ -1,4 +1,4 @@
-name: Create WebApp Infrastructure
+name: Infra Create
 
 on:
   # schedule:
