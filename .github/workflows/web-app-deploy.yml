@@ -14,7 +14,7 @@ defaults:
 
 env:
   ARTIFACT_NAME: webapp
-  ARTIFACT_PATH: dist/webapp
+  ARTIFACT_PATH: out/webapp
 
 jobs:
   deploy-webapp:
