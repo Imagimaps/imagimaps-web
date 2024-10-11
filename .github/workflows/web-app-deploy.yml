@@ -71,8 +71,6 @@ jobs:
           DISTRIBUTION_ID: ${{ steps.cf-distribution.outputs.distribution_id }}
 
   deploy-bff:
-    needs:
-      - build-bff
     runs-on: ubuntu-latest
     environment: development
     env:
