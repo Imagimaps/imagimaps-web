@@ -1,13 +1,13 @@
 name: Build WebApp
 
 on:
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - 'apps/webapp/**'
-  #     - 'Dockerfile.webapp'
-  #     - '.github/workflows/web-app-build.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/webapp/**'
+      - 'Dockerfile.webapp'
+      - '.github/workflows/web-app-build.yml'
   # schedule:
   # - cron: '30 21 * * *' # 07:30 AEST (9:30pm UTC)
   workflow_dispatch:
@@ -135,86 +135,3 @@ jobs:
           platforms: ${{ env.target-platforms }}
           tags: |
             ${{ env.ECR_REGISTRY }}/imagimaps/service/webapp-bff:latest
-
-  deploy-webapp:
-    needs:
-      - build-webapp
-    # uses: ./.github/workflows/web-app-deploy.yml
-    # with:
-    #   action: deploy
-    #   module_dir: apps/webapp
-    # secrets: inherit
-    runs-on: ubuntu-latest
-    environment: development
-    env:
-      website_bucket: dev.imagimaps.com
-      environment: development
-
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.ARTIFACT_PATH }}
-
-      - name: Login to AWS
-        id: login-aws
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION }}
-
-      - name: Deploy WebApp to S3
-        run: |
-          echo "Deploying WebApp to S3"
-          echo "Artifact Path: ${{ env.ARTIFACT_PATH }}"
-          echo "Bucket Name: ${{ env.website_bucket }}"
-          aws s3 cp ./${{ env.ARTIFACT_PATH }} s3://${{ env.website_bucket }} --recursive
-
-      - name: Get CloudFront Distribution ID
-        id: cf-distribution
-        run: |
-          TAG_KEY1="Environment"
-          TAG_VALUE1="${{ env.environment }}"
-          TAG_KEY2="Project"
-          TAG_VALUE2="imagimaps"
-          distribution_arns=$(aws cloudfront list-distributions --query "DistributionList.Items[*].ARN" --output text)
-          for arn in $distribution_arns; do
-            tags=$(aws cloudfront list-tags-for-resource --resource $arn --query "Tags.Items" --output json)
-            if echo $tags | jq -e ".[] | select(.Key == \"$TAG_KEY1\" and .Value == \"$TAG_VALUE1\")" > /dev/null && \
-                echo $tags | jq -e ".[] | select(.Key == \"$TAG_KEY2\" and .Value == \"$TAG_VALUE2\")" > /dev/null; then
-              distribution_id=$(aws cloudfront list-distributions --query "DistributionList.Items[?ARN=='$arn'].Id" --output text)
-              echo "distribution_id=$distribution_id" >> $GITHUB_OUTPUT
-              break
-            fi
-          done
-
-      - name: Invalidate CloudFront cache
-        run: |
-          echo "Invalidating CloudFront cache for distribution $DISTRIBUTION_ID"
-          echo 'aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"'
-        env:
-          DISTRIBUTION_ID: ${{ steps.cf-distribution.outputs.distribution_id }}
-
-  deploy-bff:
-    needs:
-      - build-bff
-    runs-on: ubuntu-latest
-    environment: development
-    env:
-      SERVICE_NAME: webapp-bff
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Deploy to development
-        uses: Imagimaps/common-actions/.github/actions/deploy-service@main
-        with:
-          environment: development
-          environment_short_name: dev
-          service_name: ${{ env.SERVICE_NAME }}
-          aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
-          aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
-          artifacts_aws_account_id: ${{ secrets.ARTIFACTS_AWS_ACCOUNT_ID }}
-          aws_region: ${{ vars.AWS_REGION }}
