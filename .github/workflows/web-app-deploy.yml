@@ -31,6 +31,9 @@ jobs:
       environment: development
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Get latest run_id for "WebApp Build"
         id: get-run-id
         run: |
