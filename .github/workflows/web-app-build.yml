@@ -41,6 +41,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Build All
+        run: echo "Build all artifacts: ${{ inputs.build-all }}"
+
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -52,6 +55,7 @@ jobs:
               - '.github/workflows/web-app-build.yml'
             bff:
               - 'apps/webapp/api/**'
+              - '.github/workflows/web-app-build.yml'
 
   build-webapp:
     needs:
