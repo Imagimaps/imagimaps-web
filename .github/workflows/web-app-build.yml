@@ -136,7 +136,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile.webapp
+          file: Dockerfile
           push: true
           build-args: |
             run_args: "--api-only"
