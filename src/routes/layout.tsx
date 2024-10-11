@@ -9,7 +9,7 @@ import { Outlet } from '@modern-js/runtime/router';
 import { Provider } from '@modern-js/runtime/model';
 import { PrimeReactProvider } from 'primereact/api';
 
-import AuthProvider from '@/hooks/auth';
+import AuthenticationProvider from '@/hooks/authentication';
 import PersistState from '@/hooks/persistState';
 import RemoteBackends from '@/hooks/remoteBackends';
 import Header from '@/components/header';
@@ -19,7 +19,7 @@ export default function Layout() {
   return (
     <Provider config={{}}>
       <RemoteBackends>
-        <AuthProvider>
+        <AuthenticationProvider>
           <PersistState>
             <PrimeReactProvider>
               <Header />
@@ -29,7 +29,7 @@ export default function Layout() {
               </div>
             </PrimeReactProvider>
           </PersistState>
-        </AuthProvider>
+        </AuthenticationProvider>
       </RemoteBackends>
     </Provider>
   );

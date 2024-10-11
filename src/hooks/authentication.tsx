@@ -4,9 +4,9 @@ import { useContext, createContext, ReactNode, useEffect } from 'react';
 import { Session } from '@shared/types/auth';
 import { AuthModel } from '@/state/authModel';
 
-const AuthContext = createContext({});
+const AuthenticationContext = createContext({});
 
-const AuthProvider = ({ children }: { children: ReactNode }) => {
+const AuthenticationProvider = ({ children }: { children: ReactNode }) => {
   const [{ user, isAuthenticated }, authActions] = useModel(AuthModel);
 
   useEffect(() => {
@@ -51,16 +51,24 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [isAuthenticated]);
 
-  return <AuthContext.Provider value={{}}>{children}</AuthContext.Provider>;
+  return (
+    <AuthenticationContext.Provider value={{}}>
+      {children}
+    </AuthenticationContext.Provider>
+  );
 };
 
-export default AuthProvider;
+export default AuthenticationProvider;
 
 export const useAuth = () => {
-  return useContext(AuthContext);
+  return useContext(AuthenticationContext);
 };
 
-export const RequireAuth = ({ children }: { children: ReactNode }) => {
+export const RequireAuthentication = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
   const [{ isAuthenticated }] = useModel(AuthModel);
   const navigate = useNavigate();
   const location = useLocation();
