@@ -2,11 +2,17 @@ name: WebApp Deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      build-id:
+        description: 'Build ID'
+        required: false
+        default: 'latest'
 
 permissions:
   id-token: write
   contents: read
   packages: write
+  actions: read
 
 defaults:
   run:
@@ -25,11 +31,20 @@ jobs:
       environment: development
 
     steps:
+      - name: Get latest run_id for "WebApp Build"
+        id: get-run-id
+        run: |
+          latest_run_id=$(gh run list --workflow="WebApp Build" --branch=main --json databaseId --jq '.[0].databaseId')
+          echo "latest_run_id=$latest_run_id" >> $GITHUB_OUTPUT
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ env.ARTIFACT_PATH }}
+          github_token: ${{ secrets.GH_PAT }}
+          repository: ${{ github.repository }}
+          run_id: ${{ steps.get-run-id.outputs.latest_run_id }}
 
       - name: Login to AWS
         id: login-aws
