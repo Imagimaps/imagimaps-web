@@ -47,9 +47,9 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ env.ARTIFACT_PATH }}
-          github_token: ${{ secrets.GH_PAT }}
+          github-token: ${{ secrets.GH_PAT }}
           repository: ${{ github.repository }}
-          run_id: ${{ steps.get-run-id.outputs.latest_run_id }}
+          run-id: ${{ steps.get-run-id.outputs.latest_run_id }}
 
       - name: Login to AWS
         id: login-aws
