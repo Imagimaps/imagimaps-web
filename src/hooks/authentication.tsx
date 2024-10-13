@@ -1,7 +1,7 @@
 import { useModel } from '@modern-js/runtime/model';
 import { useLocation, useNavigate } from '@modern-js/runtime/router';
 import { useContext, createContext, ReactNode, useEffect } from 'react';
-import GetUserDetails from '@api/bff/auth/user/details';
+import GetUserDetails from '@api/bff/user/details';
 import { Session } from '@shared/types/auth';
 import { AuthModel } from '@/state/authModel';
 
