@@ -8,7 +8,9 @@ import { OAuth2Providers } from '@shared/types/auth.enums';
 const { authServiceBaseUrl, userServiceBaseUrl } = ServicesConfig();
 
 export default async (provider: OAuth2Providers) => {
-  console.log(provider);
+  const ctx = useContext();
+  const logger = ctx.log.child({ source: 'GET auth/[provider]' });
+  logger.debug(`Get Auth Links for Provider: ${provider}`);
 
   const authLinksResponse = await fetch(
     `${authServiceBaseUrl}/api/auth/providers/`,
@@ -23,7 +25,7 @@ export default async (provider: OAuth2Providers) => {
     throw new Error('Failed to get auth links');
   }
   const tokenLinks = await authLinksResponse.json();
-  console.log(tokenLinks);
+  logger.debug(`tokenLinks: ${JSON.stringify(tokenLinks)}`);
   const tokenLink = tokenLinks[provider];
 
   return {
@@ -35,10 +37,10 @@ export const post = async (
   provider: OAuth2Providers,
   { data }: RequestOption<undefined, AuthCodeData>,
 ) => {
-  console.log('use context', useContext);
   const ctx = useContext();
+  const logger = ctx.log.child({ source: 'POST auth/[provider]' });
 
-  console.log(
+  logger.info(
     'Establishing Session',
     provider,
     data,
@@ -63,9 +65,9 @@ export const post = async (
   }
 
   const session: Session = await sessionResponse.json();
-  console.log('Established Session', session);
+  logger.info('Established Session', session);
 
-  console.log('Getting UserDetails from:', `${userServiceBaseUrl}/api/user/`);
+  logger.debug('Getting UserDetails from:', `${userServiceBaseUrl}/api/user/`);
   const userDetailsResponse = await fetch(`${userServiceBaseUrl}/api/user/`, {
     method: 'GET',
     headers: {
@@ -80,10 +82,10 @@ export const post = async (
     );
   }
 
-  console.log('Extracting UserDetails from Response', userDetailsResponse);
+  logger.debug('Extracting UserDetails from Response', userDetailsResponse);
   const userDetails: User & { externalId: string } =
     await userDetailsResponse.json();
-  console.log('UserDetails', userDetails);
+  logger.info('UserDetails', userDetails);
 
   const setUserInSessionResponse = await fetch(
     `${authServiceBaseUrl}/api/auth/session/user`,
@@ -124,6 +126,4 @@ export const post = async (
   ctx.res.statusCode = 200;
   ctx.res.setHeader('Content-Type', 'application/json');
   ctx.response.body = JSON.stringify(userDetails);
-
-  console.log('Returning ctx', JSON.stringify(ctx.response));
 };

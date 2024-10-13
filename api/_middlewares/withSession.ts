@@ -1,31 +1,42 @@
-const withSession = async (ctx: any, next: () => Promise<void>) => {
-  const { cookies, url } = ctx;
+const WithSession = async (ctx: any, next: () => Promise<void>) => {
+  const logger = ctx.log.child({ middleware: 'WithSession' });
+  const { cookies, url } = ctx as { cookies: any; url: string };
   const sessionId = cookies.get('session-token');
 
   const publicPaths = ['/api/bff/auth', '/api/bff/health'];
-  const isPublicPath = publicPaths.some(path => url.startsWith(path));
+  const isPublicPath = publicPaths.some(path => url === path);
 
-  if (isPublicPath) {
-    console.log('[WithSession Hook] Public path', url);
+  if (url.endsWith('/api/bff/health')) {
+    await next();
+  } else if (isPublicPath) {
+    logger.info('[WithSession Hook] Public path request', url);
     await next();
   } else {
     if (!sessionId) {
-      console.error('[WithSession Hook]: Session Id not supplied');
-      ctx.throw(401, 'Unauthorized');
+      logger.error('[WithSession Hook]: Session Id not supplied');
+      ctx.status = 401;
+      ctx.body = {
+        message: 'Unauthorized',
+      };
+      return;
     }
 
     if (Array.isArray(sessionId)) {
-      console.error(
+      logger.error(
         `[WithSession Hook] Somehow ended up with multiple session tokens [${sessionId}]`,
       );
-      ctx.throw(403, 'Forbidden');
+      ctx.status = 403;
+      ctx.body = {
+        message: 'Forbidden',
+      };
+      return;
     }
 
-    console.log('[WithSession Hook] Request with session token', sessionId);
+    logger.info('[WithSession Hook] Request with session token', sessionId);
     ctx.state.sessionId = sessionId;
 
     await next();
   }
 };
 
-export default withSession;
+export default WithSession;

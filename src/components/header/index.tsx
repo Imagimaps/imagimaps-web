@@ -11,6 +11,8 @@ const Header: React.FC = () => {
 
   const navigate = useNavigate();
 
+  console.log('header', user, isAuthenticated);
+
   return (
     <header>
       <div className="left">

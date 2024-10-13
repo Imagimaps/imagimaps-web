@@ -1,12 +1,9 @@
 import { hook } from '@modern-js/runtime/server';
 
-import withSession from './_middlewares/withSession';
+import WithLogger from './_middlewares/withLogger';
+import WithSession from './_middlewares/withSession';
 
 export default hook(({ addMiddleware }) => {
-  addMiddleware(async (ctx, next) => {
-    console.log(`access url: ${ctx.url}`);
-    await next();
-    ctx.res.setHeader('X-Hook', 'Success');
-  });
-  addMiddleware(withSession);
+  addMiddleware(WithLogger);
+  addMiddleware(WithSession);
 });

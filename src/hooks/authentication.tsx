@@ -1,6 +1,7 @@
 import { useModel } from '@modern-js/runtime/model';
 import { useLocation, useNavigate } from '@modern-js/runtime/router';
 import { useContext, createContext, ReactNode, useEffect } from 'react';
+import GetUserDetails from '@api/bff/auth/user/details';
 import { Session } from '@shared/types/auth';
 import { AuthModel } from '@/state/authModel';
 
@@ -8,6 +9,17 @@ const AuthenticationContext = createContext({});
 
 const AuthenticationProvider = ({ children }: { children: ReactNode }) => {
   const [{ user, isAuthenticated }, authActions] = useModel(AuthModel);
+
+  useEffect(() => {
+    GetUserDetails()
+      .then(user => {
+        console.log('Setting user and session from API', user.userDetails);
+        authActions.setAuth(user, {} as Session);
+      })
+      .catch(() => {
+        authActions.clearAuth();
+      });
+  }, []);
 
   useEffect(() => {
     const user = localStorage.getItem('user');
