@@ -12,25 +12,39 @@ export default async (provider: OAuth2Providers) => {
   const logger = ctx.log.child({ source: 'GET auth/[provider]' });
   logger.debug(`Get Auth Links for Provider: ${provider}`);
 
-  const authLinksResponse = await fetch(
-    `${authServiceBaseUrl}/api/auth/providers/`,
+  logger.debug(
+    'Fetching Auth Links from:',
+    `GET ${authServiceBaseUrl}/api/auth/providers/`,
     {
-      method: 'GET',
       headers: {
         'x-source': 'bff-service',
       },
     },
   );
-  if (!authLinksResponse.ok) {
-    throw new Error('Failed to get auth links');
-  }
-  const tokenLinks = await authLinksResponse.json();
-  logger.debug(`tokenLinks: ${JSON.stringify(tokenLinks)}`);
-  const tokenLink = tokenLinks[provider];
+  try {
+    const tokenLinksResponse = await fetch(
+      `${authServiceBaseUrl}/api/auth/providers/`,
+      {
+        method: 'GET',
+        headers: {
+          'x-source': 'bff-service',
+        },
+      },
+    );
+    if (!tokenLinksResponse.ok) {
+      throw new Error('Failed to get auth links');
+    }
+    const tokenLinks = await tokenLinksResponse.json();
+    logger.debug(`tokenLinks: ${JSON.stringify(tokenLinks)}`);
+    const tokenLink = tokenLinks[provider];
 
-  return {
-    tokenLink,
-  };
+    return {
+      tokenLink,
+    };
+  } catch (error) {
+    logger.error('Error fetching Auth Links', error);
+    throw error;
+  }
 };
 
 export const post = async (
