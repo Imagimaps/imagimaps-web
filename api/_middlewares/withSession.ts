@@ -4,7 +4,7 @@ const WithSession = async (ctx: any, next: () => Promise<void>) => {
   const sessionId = cookies.get('session-token');
 
   const publicPaths = ['/api/bff/auth', '/api/bff/health'];
-  const isPublicPath = publicPaths.some(path => url === path);
+  const isPublicPath = publicPaths.some(path => url.startsWith(path));
 
   if (url.endsWith('/api/bff/health')) {
     await next();
