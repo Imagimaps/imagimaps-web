@@ -28,6 +28,7 @@
     ".rpt2_cache/"
   ],
   "dependencies": {
+    "@aws-sdk/client-ssm": "^3.670.0",
     "@casl/ability": "^6.7.1",
     "@casl/react": "^4.0.0",
     "@dnd-kit/core": "^6.1.0",
@@ -39,6 +40,7 @@
     "ky": "^1.7.2",
     "leaflet": "^1.9.4",
     "nanoid": "^3.3.7",
+    "node-cache": "^5.1.2",
     "object-hash": "^3.0.0",
     "pino": "^9.4.0",
     "pino-pretty": "^11.2.2",
