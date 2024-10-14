@@ -1,5 +1,7 @@
 import { useContext } from '@modern-js/runtime/koa';
 import { RequestOption } from '@modern-js/runtime/server';
+import axios from 'axios';
+
 import ServicesConfig from '@api/_config/services';
 import { AuthCodeData, Session } from '@shared/types/auth';
 import { User } from '@shared/types/user';
@@ -23,21 +25,30 @@ export default async (provider: OAuth2Providers) => {
     },
   });
   try {
-    const tokenLinksResponse = await fetch(
+    const tokenLinksResponse = await axios.get(
       `${authServiceBaseUrl}/api/auth/providers/`,
       {
-        method: 'GET',
         headers: {
           'x-source': 'bff-service',
         },
       },
     );
-    if (!tokenLinksResponse.ok) {
-      throw new Error('Failed to get auth links', {
-        cause: tokenLinksResponse.statusText,
-      });
-    }
-    const tokenLinks = await tokenLinksResponse.json();
+    const tokenLinks = tokenLinksResponse.data;
+    // const tokenLinksResponse = await fetch(
+    //   `${authServiceBaseUrl}/api/auth/providers/`,
+    //   {
+    //     method: 'GET',
+    //     headers: {
+    //       'x-source': 'bff-service',
+    //     },
+    //   },
+    // );
+    // if (!tokenLinksResponse.ok) {
+    //   throw new Error('Failed to get auth links', {
+    //     cause: tokenLinksResponse.statusText,
+    //   });
+    // }
+    // const tokenLinks = await tokenLinksResponse.json();
     logger.debug({
       message: `Received Auth Links for Providers`,
       links: tokenLinks,
