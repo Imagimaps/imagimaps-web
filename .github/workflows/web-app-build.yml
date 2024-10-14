@@ -49,12 +49,14 @@ jobs:
         with:
           filters: |
             webapp:
-              - 'apps/webapp/**'
-              - '!apps/webapp/api/**'
-              - 'Dockerfile.webapp'
+              - 'src/**'
+              - 'shared/**'
+              - 'Dockerfile'
               - '.github/workflows/web-app-build.yml'
             bff:
-              - 'apps/webapp/api/**'
+              - 'api/**'
+              - 'shared/**'
+              - 'Dockerfile'
               - '.github/workflows/web-app-build.yml'
 
   build-webapp:
