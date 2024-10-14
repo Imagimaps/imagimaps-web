@@ -33,7 +33,9 @@ export default async (provider: OAuth2Providers) => {
       },
     );
     if (!tokenLinksResponse.ok) {
-      throw new Error('Failed to get auth links');
+      throw new Error('Failed to get auth links', {
+        cause: tokenLinksResponse.statusText,
+      });
     }
     const tokenLinks = await tokenLinksResponse.json();
     logger.debug({
@@ -46,7 +48,17 @@ export default async (provider: OAuth2Providers) => {
       tokenLink,
     };
   } catch (error) {
-    logger.error({ message: 'Error fetching Auth Links', error });
+    if (error instanceof TypeError) {
+      logger.error({
+        message: 'Network or Fetch Error',
+        error: error.message,
+      });
+    } else {
+      logger.error({
+        message: 'Error fetching Auth Links',
+        error,
+      });
+    }
     throw error;
   }
 };
