@@ -75,6 +75,36 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
         state.map = map;
         state.templateGroups = map.templateGroups ?? [];
       },
+      setNewlyCreatedMarkerId: (state: EngineData, marker: MapMarker) => {
+        console.log('[EngineData] Setting newly created marker ID', marker);
+        console.log('[EngineData] Active Layer:', state.activeLayer);
+        const updatedLayers = state.map.layers.map(layer => {
+          const overlays = layer.overlays?.map(o => {
+            const index = o.markers.findIndex(m => !m.id);
+            if (index >= 0) {
+              const newMarker = o.markers[index];
+              if (
+                newMarker.position.x === marker.position.x &&
+                newMarker.position.y === marker.position.y &&
+                newMarker.type === marker.type &&
+                newMarker.name === marker.name &&
+                newMarker.description === marker.description &&
+                newMarker.templateId === marker.templateId
+              ) {
+                console.log(
+                  '[EngineData] Setting ID for marker',
+                  newMarker,
+                  marker,
+                );
+                o.markers[index] = marker;
+              }
+            }
+            return o;
+          });
+          return { ...layer, overlays };
+        });
+        state.map.layers = updatedLayers;
+      },
       createPointMarker: (
         state: EngineData,
         marker: MapMarker,

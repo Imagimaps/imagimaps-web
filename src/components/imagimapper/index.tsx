@@ -88,8 +88,12 @@ const ImagiMapper: FC = () => {
       } else if (type === 'LAYER_DATA_REFRESHED') {
         console.log('Received layer data refresh:', payload);
         // actions.setLayerData(payload);
+      } else if (type === 'MARKER_CREATION_SUCCESS') {
+        const { marker } = payload;
+        actions.setNewlyCreatedMarkerId(marker);
       } else if (type === 'MARKER_CREATED') {
         const { marker, overlayId } = payload;
+        actions.setNewlyCreatedMarkerId(marker);
         actions.createPointMarker(marker, overlayId);
       } else if (type === 'MARKER_UPDATED') {
         console.log('Updating marker from WS Event:', payload);
