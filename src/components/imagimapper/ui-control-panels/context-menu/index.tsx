@@ -93,6 +93,16 @@ const ContextMenu: FC = () => {
     setPosition(undefined);
   };
 
+  const startNewPolygon: MouseEventHandler = event => {
+    console.log('Context Menu: startNewPolygon', position);
+    if (!position) {
+      return;
+    }
+    event.stopPropagation();
+    // actions.stageNewPolygonAt({ x: position.lng, y: position.lat });
+    setPosition(undefined);
+  };
+
   return (
     showCtxMenu &&
     position && (
@@ -133,9 +143,10 @@ const ContextMenu: FC = () => {
             onClick={addNewPointMarker}
           />
           <SvgIcon
-            className="icon disabled"
+            className="icon"
             src={PolygonAreaSvg}
             alt="Area on Map"
+            onClick={startNewPolygon}
           />
           <SvgIcon className="icon disabled" src={PathSvg} alt="Path on Map" />
         </Popup>
