@@ -3,7 +3,7 @@ import { useModel } from '@modern-js/runtime/model';
 import { UndoIconButton } from '@/components/icon/buttons';
 
 import './styles.scss';
-import { StagedDataModel } from '@/components/imagimapper/state/stagedData';
+import { StagedPointMarkerModel } from '@/components/imagimapper/state/stagedPointMarker';
 
 interface TitleRowProps {
   editMode: boolean;
@@ -11,7 +11,7 @@ interface TitleRowProps {
 
 const TitleRow: FC<TitleRowProps> = ({ editMode }) => {
   const [{ markerName, nameChanged }, { setName, undoNameChange }] = useModel(
-    StagedDataModel,
+    StagedPointMarkerModel,
     m => ({
       markerName: m.name?.[2] ?? m.name?.[1] ?? '',
       nameChanged: m.name?.[0] ?? false,

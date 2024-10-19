@@ -5,7 +5,7 @@ import LocationOnMapSvg from '@shared/svg/location-on-map.svg';
 import { Metadata } from './styles';
 import { UndoIconButton } from '@/components/icon/buttons';
 import SvgIcon from '@/components/icon/svg';
-import { StagedDataModel } from '@/components/imagimapper/state/stagedData';
+import { StagedPointMarkerModel } from '@/components/imagimapper/state/stagedPointMarker';
 import { UserInteractionsModel } from '@/components/imagimapper/state/userInteractions';
 
 interface LocationRowProps {
@@ -14,7 +14,7 @@ interface LocationRowProps {
 
 const LocationRow: FC<LocationRowProps> = ({ editMode }) => {
   const [model, actions] = useModel(
-    [StagedDataModel, UserInteractionsModel],
+    [StagedPointMarkerModel, UserInteractionsModel],
     (s, _) => ({
       position: s.position?.[2] ?? s.position?.[1] ?? { x: 0, y: 0 },
       positionChanged: s.position?.[0] ?? false,

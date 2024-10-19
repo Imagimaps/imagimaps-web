@@ -14,7 +14,7 @@ import HeroArea from './components/heroArea';
 import TemplateRow from './components/templateRow';
 import { EngineDataModel } from '@/components/imagimapper/state/engineData';
 import { UserInteractionsModel } from '@/components/imagimapper/state/userInteractions';
-import { StagedDataModel } from '@/components/imagimapper/state/stagedData';
+import { StagedPointMarkerModel } from '@/components/imagimapper/state/stagedPointMarker';
 import { useRemoteBackends } from '@/hooks/remoteBackends';
 
 import './index.scss';
@@ -46,7 +46,7 @@ const MarkerDetails: FC = () => {
       moveMarkerToOverlay,
       hydrateFromMapMarker,
     },
-  ] = useModel([EngineDataModel, StagedDataModel], (e, s) => ({
+  ] = useModel([EngineDataModel, StagedPointMarkerModel], (e, s) => ({
     templateGroups: e.map.templateGroups ?? [],
     overlays: e.overlays,
     map: e.map,

@@ -7,7 +7,7 @@ import {
   UndoIconButton,
   DeleteIconButton,
 } from '@/components/icon/buttons';
-import { StagedDataModel } from '@/components/imagimapper/state/stagedData';
+import { StagedPointMarkerModel } from '@/components/imagimapper/state/stagedPointMarker';
 import { EngineDataModel } from '@/components/imagimapper/state/engineData';
 import { useRemoteBackends } from '@/hooks/remoteBackends';
 
@@ -27,8 +27,10 @@ const ActionsBar: FC<ActionsBarProps> = ({
   undoChanges,
 }) => {
   const { mapApiHost } = useRemoteBackends();
-  const [{ isNew, isChanged, mapMarker }, { resetStagedMarker }] =
-    useModel(StagedDataModel);
+  const [
+    { isNew, isChanged, mapMarker },
+    { resetStagedPointMarker: resetStagedMarker },
+  ] = useModel(StagedPointMarkerModel);
   const [{ map }, { deleteMarker }] = useModel(EngineDataModel);
   const [deletePrompt, setDeletePrompt] = useState(false);
   const size = '1.5rem';

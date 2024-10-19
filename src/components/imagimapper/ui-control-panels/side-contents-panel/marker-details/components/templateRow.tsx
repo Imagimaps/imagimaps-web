@@ -5,7 +5,7 @@ import TemplatePicker from './template-picker/templatePicker';
 import SvgIcon from '@/components/icon/svg';
 import { UndoIconButton } from '@/components/icon/buttons';
 import { EngineDataModel } from '@/components/imagimapper/state/engineData';
-import { StagedDataModel } from '@/components/imagimapper/state/stagedData';
+import { StagedPointMarkerModel } from '@/components/imagimapper/state/stagedPointMarker';
 import { UserInteractionsModel } from '@/components/imagimapper/state/userInteractions';
 
 interface TemplateRowProps {
@@ -17,7 +17,7 @@ const TemplateRow: FC<TemplateRowProps> = ({ editMode }) => {
     { templateId, templateChanged, templateGroups },
     { setTemplateId, undoTemplateChange, templateUsed },
   ] = useModel(
-    [StagedDataModel, UserInteractionsModel, EngineDataModel],
+    [StagedPointMarkerModel, UserInteractionsModel, EngineDataModel],
     (s, _, e) => ({
       templateId: s.templateId?.[2] ?? s.templateId?.[1] ?? '',
       templateChanged: s.templateId?.[0] ?? false,

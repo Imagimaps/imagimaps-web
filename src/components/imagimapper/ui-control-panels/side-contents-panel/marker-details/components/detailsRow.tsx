@@ -5,7 +5,7 @@ import TempIcon from '@shared/svg/circle-question.svg';
 import { Metadata } from './styles';
 import SvgIcon from '@/components/icon/svg';
 import { UndoIconButton } from '@/components/icon/buttons';
-import { StagedDataModel } from '@/components/imagimapper/state/stagedData';
+import { StagedPointMarkerModel } from '@/components/imagimapper/state/stagedPointMarker';
 
 interface DetailsRowProps {
   editMode: boolean;
@@ -15,7 +15,7 @@ const DetailsRow: FC<DetailsRowProps> = ({ editMode }) => {
   const [
     { markerDescription, descriptionChanged },
     { setDescription, undoDescriptionChange },
-  ] = useModel(StagedDataModel, m => ({
+  ] = useModel(StagedPointMarkerModel, m => ({
     markerDescription: m.description?.[2] ?? m.description?.[1] ?? '',
     descriptionChanged: m.description?.[0] ?? false,
   }));

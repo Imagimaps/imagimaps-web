@@ -6,18 +6,18 @@ import { useModel } from '@modern-js/runtime/model';
 import { MapMarker } from '@shared/_types';
 import { EngineDataModel } from '../state/engineData';
 import { xy } from '../_coordTranslators';
-import { StagedDataModel } from '../state/stagedData';
+import { StagedPointMarkerModel } from '../state/stagedPointMarker';
 
 const MarkerGroups: FC = () => {
   const [{ overlays, templates, stagedMarkerId }, { selectMarker }] = useModel(
-    [EngineDataModel, StagedDataModel],
+    [EngineDataModel, StagedPointMarkerModel],
     (e, s) => ({
       overlays: e.overlays,
       templates: e.templates,
       stagedMarkerId: s.id?.[2] ?? s.id?.[1],
     }),
     (_, s) => ({
-      selectMarker: s.hydrateFromMapMarker,
+      selectMarker: s.hydrateFromPointMapMarker,
     }),
   );
   const map = useMapEvents({});

@@ -14,9 +14,10 @@ import { EngineDataModel } from './state/engineData';
 import ControlPanelLayout from './ui-control-panels';
 import BackgroundTiledImages from './backgroundTiledImages';
 import MarkerGroups from './markers/markerGroups';
-import StagedMarker from './markers/stagedMarker';
+import StagedMarker from './markers/stagedPointMarker';
 import GhostTargetMarker from './markers/ghostTargetMarker';
-import { StagedDataModel } from './state/stagedData';
+import StagedPolygon from './markers/stagedPolygon';
+import { StagedPointMarkerModel } from './state/stagedPointMarker';
 import { useRemoteBackends } from '@/hooks/remoteBackends';
 import { AuthModel } from '@/state/authModel';
 
@@ -26,12 +27,10 @@ const ImagiMapper: FC = () => {
   const { mapApiHost } = useRemoteBackends();
   const [{ user }] = useModel(AuthModel);
   const [{ map, userConfig }, actions] = useModel(EngineDataModel);
-  const [{ stagedMarkerId }, { resetStagedMarker }] = useModel(
-    StagedDataModel,
-    s => ({
+  const [{ stagedMarkerId }, { resetStagedPointMarker: resetStagedMarker }] =
+    useModel(StagedPointMarkerModel, s => ({
       stagedMarkerId: s.id?.[2] ?? s.id?.[1],
-    }),
-  );
+    }));
 
   const { sendJsonMessage, lastMessage, readyState } = useWebSocket(
     `ws://${mapApiHost}/api/map/${map.id}/ws`,
@@ -142,6 +141,7 @@ const ImagiMapper: FC = () => {
       <BackgroundTiledImages />
       <MarkerGroups />
       <StagedMarker />
+      <StagedPolygon />
       <GhostTargetMarker />
     </MapContainer>
   );

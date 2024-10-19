@@ -5,7 +5,7 @@ import { Metadata } from './styles';
 import { UndoIconButton } from '@/components/icon/buttons';
 import SvgIcon from '@/components/icon/svg';
 import { EngineDataModel } from '@/components/imagimapper/state/engineData';
-import { StagedDataModel } from '@/components/imagimapper/state/stagedData';
+import { StagedPointMarkerModel } from '@/components/imagimapper/state/stagedPointMarker';
 import { UserInteractionsModel } from '@/components/imagimapper/state/userInteractions';
 
 interface OverlayRowProps {
@@ -17,7 +17,7 @@ const OverlayRow: FC<OverlayRowProps> = ({ editMode }) => {
     { overlayId, overlayChanged, overlays },
     { setOverlayId, undoOverlayChange, overlayUsed },
   ] = useModel(
-    [StagedDataModel, UserInteractionsModel, EngineDataModel],
+    [StagedPointMarkerModel, UserInteractionsModel, EngineDataModel],
     (s, _, e) => ({
       overlayId: s.overlayId?.[2] ?? s.overlayId?.[1] ?? '',
       overlayChanged: s.overlayId?.[0] ?? false,

@@ -6,7 +6,7 @@ import L from 'leaflet';
 import CloseSvg from '@shared/svg/close-circle.svg';
 import { MapMarker } from '@shared/_types';
 import { xy } from '../../_coordTranslators';
-import { StagedDataModel } from '../../state/stagedData';
+import { StagedPointMarkerModel } from '../../state/stagedPointMarker';
 import MarkerDetails from './marker-details';
 import SvgIcon from '@/components/icon/svg';
 
@@ -15,14 +15,14 @@ import './index.scss';
 const SideContentsPanel: FC = () => {
   const panelRef = useRef<HTMLDivElement>(null);
   const [panelActive, setPanelActive] = useState(false);
-  const [model, action] = useModel(StagedDataModel);
+  const [model, action] = useModel(StagedPointMarkerModel);
 
   const map = useMapEvents({
     click(_e) {
       // Look into auto save changes on click away
       console.log('[Side Contents Panel] Deselect marker');
       if (panelActive) {
-        action.resetStagedMarker();
+        action.resetStagedPointMarker();
       }
     },
   });
@@ -60,7 +60,7 @@ const SideContentsPanel: FC = () => {
             src={CloseSvg}
             alt="Close Details Panel"
             onClick={() => {
-              action.resetStagedMarker();
+              action.resetStagedPointMarker();
               setPanelActive(false);
             }}
           />

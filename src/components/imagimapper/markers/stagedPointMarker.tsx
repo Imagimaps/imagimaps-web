@@ -4,12 +4,12 @@ import L from 'leaflet';
 import { Marker } from 'react-leaflet';
 
 import { xy } from '../_coordTranslators';
-import { StagedDataModel } from '../state/stagedData';
+import { StagedPointMarkerModel } from '../state/stagedPointMarker';
 import { EngineDataModel } from '../state/engineData';
 
 const StagedMarker: FC = () => {
   const [{ markerPosition, markerTemplateId, templates }] = useModel(
-    [StagedDataModel, EngineDataModel],
+    [StagedPointMarkerModel, EngineDataModel],
     (s, e) => ({
       markerPosition: s.position?.[1],
       markerTemplateId: s.templateId?.[1],

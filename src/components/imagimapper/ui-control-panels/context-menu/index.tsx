@@ -10,7 +10,8 @@ import PathSvg from '@shared/svg/path-between-points.svg';
 import AddSvg from '@shared/svg/add.svg';
 import { EngineDataModel } from '../../state/engineData';
 import { UserInteractionsModel } from '../../state/userInteractions';
-import { StagedDataModel } from '../../state/stagedData';
+import { StagedPointMarkerModel } from '../../state/stagedPointMarker';
+import { StagedPolygonModel } from '../../state/stagedPolygon';
 import SvgIcon from '@/components/icon/svg';
 
 import './index.scss';
@@ -18,12 +19,17 @@ import './index.scss';
 const ContextMenu: FC = () => {
   // TODO: Create a model for UI Component State (such as side panel open/closed, etc...)
   const [{ templates, lastUsedTemplate, isNew, isChanged }, actions] = useModel(
-    [EngineDataModel, StagedDataModel, UserInteractionsModel],
-    (e, s, u) => ({
-      templates: e.templates,
-      lastUsedTemplate: u.lastUsedTemplate,
-      isNew: s.isNew,
-      isChanged: s.isChanged,
+    [
+      EngineDataModel,
+      StagedPointMarkerModel,
+      StagedPolygonModel,
+      UserInteractionsModel,
+    ],
+    (edm, spmm, _, uim) => ({
+      templates: edm.templates,
+      lastUsedTemplate: uim.lastUsedTemplate,
+      isNew: spmm.isNew,
+      isChanged: spmm.isChanged,
     }),
   );
 
@@ -58,11 +64,11 @@ const ContextMenu: FC = () => {
         // TODO: Popup to confirm abandoning edits
         setPosition(undefined);
         console.log('Context Menu: on map click staged', position);
-        actions.resetStagedMarker();
+        actions.resetStagedPointMarker();
         return;
       }
       console.log('on map click empty position');
-      actions.resetStagedMarker();
+      actions.resetStagedPointMarker();
       // TODO: Wait half a second to see if we get a double click
       setPosition(e.latlng);
       map.flyTo(e.latlng, map.getZoom());
@@ -88,7 +94,10 @@ const ContextMenu: FC = () => {
     }
     event.stopPropagation();
     const template = lastUsedTemplate ?? templates[0];
-    actions.createNewMarker(template, { x: position.lng, y: position.lat });
+    actions.createNewPointMarker(template, {
+      x: position.lng,
+      y: position.lat,
+    });
     // actions.stageNewMarkerAt({ x: position.lng, y: position.lat });
     setPosition(undefined);
   };
@@ -99,7 +108,7 @@ const ContextMenu: FC = () => {
       return;
     }
     event.stopPropagation();
-    // actions.stageNewPolygonAt({ x: position.lng, y: position.lat });
+    actions.startNewPolygon({ x: position.lng, y: position.lat });
     setPosition(undefined);
   };
 
