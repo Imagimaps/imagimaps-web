@@ -19,8 +19,8 @@ const TemplateRow: FC<TemplateRowProps> = ({ editMode }) => {
   ] = useModel(
     [StagedPointMarkerModel, UserInteractionsModel, EngineDataModel],
     (s, _, e) => ({
-      templateId: s.templateId?.[2] ?? s.templateId?.[1] ?? '',
-      templateChanged: s.templateId?.[0] ?? false,
+      templateId: s.templateId,
+      templateChanged: s.templateIdChanged,
       templateGroups: e.templateGroups,
     }),
   );

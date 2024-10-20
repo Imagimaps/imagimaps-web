@@ -16,8 +16,8 @@ const DetailsRow: FC<DetailsRowProps> = ({ editMode }) => {
     { markerDescription, descriptionChanged },
     { setDescription, undoDescriptionChange },
   ] = useModel(StagedPointMarkerModel, m => ({
-    markerDescription: m.description?.[2] ?? m.description?.[1] ?? '',
-    descriptionChanged: m.description?.[0] ?? false,
+    markerDescription: m.description,
+    descriptionChanged: m.descriptionChanged,
   }));
 
   const processKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

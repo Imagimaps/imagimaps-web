@@ -7,6 +7,7 @@ import CloseSvg from '@shared/svg/close-circle.svg';
 import { MapMarker } from '@shared/_types';
 import { xy } from '../../_coordTranslators';
 import { StagedPointMarkerModel } from '../../state/stagedPointMarker';
+import { UIPanelDataModel } from '../../state/uiPanels';
 import MarkerDetails from './marker-details';
 import SvgIcon from '@/components/icon/svg';
 
@@ -14,15 +15,19 @@ import './index.scss';
 
 const SideContentsPanel: FC = () => {
   const panelRef = useRef<HTMLDivElement>(null);
-  const [panelActive, setPanelActive] = useState(false);
+  const [saveOnClose] = useState(false);
   const [model, action] = useModel(StagedPointMarkerModel);
+  const [{ showDetailsPanel }, uiActions] = useModel(UIPanelDataModel);
 
   const map = useMapEvents({
     click(_e) {
-      // Look into auto save changes on click away
+      if (saveOnClose) {
+        console.log('[Side Contents Panel] TODO: Save marker on close');
+      }
       console.log('[Side Contents Panel] Deselect marker');
-      if (panelActive) {
+      if (showDetailsPanel) {
         action.resetStagedPointMarker();
+        uiActions.closeDetailsPanel();
       }
     },
   });
@@ -37,11 +42,11 @@ const SideContentsPanel: FC = () => {
   const loadMarker = (marker?: MapMarker) => {
     console.log('[Side Contents Panel] loadMarker', marker);
     if (marker) {
-      setPanelActive(true);
+      uiActions.openDetailsPanel();
       const { position } = marker;
       map.flyTo(xy(position.x, position.y), map.getZoom());
     } else {
-      setPanelActive(false);
+      uiActions.closeDetailsPanel();
     }
   };
 
@@ -50,10 +55,10 @@ const SideContentsPanel: FC = () => {
     loadMarker(model.mapMarker as MapMarker);
   }, [model.mapMarker]);
 
-  console.log('[Side Contents Panel] Render', panelActive);
+  console.log('[Side Contents Panel] Render', showDetailsPanel);
 
   return (
-    panelActive && (
+    showDetailsPanel && (
       <div ref={panelRef} className="side-contents-panel">
         <div className="side-contents-panel-close-wrapper">
           <SvgIcon
@@ -61,7 +66,7 @@ const SideContentsPanel: FC = () => {
             alt="Close Details Panel"
             onClick={() => {
               action.resetStagedPointMarker();
-              setPanelActive(false);
+              uiActions.closeDetailsPanel();
             }}
           />
         </div>

@@ -16,8 +16,8 @@ const LocationRow: FC<LocationRowProps> = ({ editMode }) => {
   const [model, actions] = useModel(
     [StagedPointMarkerModel, UserInteractionsModel],
     (s, _) => ({
-      position: s.position?.[2] ?? s.position?.[1] ?? { x: 0, y: 0 },
-      positionChanged: s.position?.[0] ?? false,
+      position: s.position,
+      positionChanged: s.positionChanged,
     }),
   );
 

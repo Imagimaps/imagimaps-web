@@ -16,7 +16,7 @@ const GhostTargetMarker: FC = () => {
     StagedPointMarkerModel,
     s => ({
       positionChanged: s.positionChanged,
-      ghostPos: s.position?.[2],
+      ghostPos: s._position?.[2],
     }),
   );
 

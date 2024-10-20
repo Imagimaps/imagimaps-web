@@ -13,8 +13,8 @@ const TitleRow: FC<TitleRowProps> = ({ editMode }) => {
   const [{ markerName, nameChanged }, { setName, undoNameChange }] = useModel(
     StagedPointMarkerModel,
     m => ({
-      markerName: m.name?.[2] ?? m.name?.[1] ?? '',
-      nameChanged: m.name?.[0] ?? false,
+      markerName: m.name,
+      nameChanged: m.nameChanged,
     }),
   );
 

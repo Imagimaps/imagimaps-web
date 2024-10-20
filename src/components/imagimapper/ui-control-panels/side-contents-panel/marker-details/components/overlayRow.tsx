@@ -19,26 +19,27 @@ const OverlayRow: FC<OverlayRowProps> = ({ editMode }) => {
   ] = useModel(
     [StagedPointMarkerModel, UserInteractionsModel, EngineDataModel],
     (s, _, e) => ({
-      overlayId: s.overlayId?.[2] ?? s.overlayId?.[1] ?? '',
-      overlayChanged: s.overlayId?.[0] ?? false,
+      overlayId: s.overlayId,
+      overlayChanged: s.overlayIdChanged,
       overlays: e.overlays,
     }),
   );
 
   const findOverlay = (overlayId: string) => {
+    console.log('[OverlayRow] findOverlay', overlayId, overlays);
     return overlays.find(overlay => overlay.id === overlayId);
   };
 
   const processKeyPress = (e: React.KeyboardEvent<HTMLSelectElement>) => {
     switch (e.key) {
       case 'Enter':
-        console.log('OverlayRow: Enter pressed');
+        console.log('[OverlayRow] Enter pressed');
         break;
       case 'Escape':
         undoOverlayChange();
         break;
       default:
-        console.log('OverlayRow: Unknown Key', e.key);
+        console.log('[OverlayRow] Unknown Key', e.key);
         break;
     }
   };

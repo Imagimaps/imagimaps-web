@@ -111,7 +111,7 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
         overlay: Overlay | string,
       ) => {
         // TODO: Revisit this logic if lists get big
-        console.log('Creating Point Marker', marker, overlay);
+        console.log('[EngineData] Creating Point Marker', marker, overlay);
         const overlayId = typeof overlay === 'string' ? overlay : overlay.id;
         const updatedLayers = state.map.layers.map(layer => {
           const overlays = layer.overlays?.map(o => {

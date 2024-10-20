@@ -14,7 +14,7 @@ const MarkerGroups: FC = () => {
     (e, s) => ({
       overlays: e.overlays,
       templates: e.templates,
-      stagedMarkerId: s.id?.[2] ?? s.id?.[1],
+      stagedMarkerId: s._id?.[2] ?? s._id?.[1],
     }),
     (_, s) => ({
       selectMarker: s.hydrateFromPointMapMarker,

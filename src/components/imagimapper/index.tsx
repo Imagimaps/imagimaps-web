@@ -29,7 +29,7 @@ const ImagiMapper: FC = () => {
   const [{ map, userConfig }, actions] = useModel(EngineDataModel);
   const [{ stagedMarkerId }, { resetStagedPointMarker: resetStagedMarker }] =
     useModel(StagedPointMarkerModel, s => ({
-      stagedMarkerId: s.id?.[2] ?? s.id?.[1],
+      stagedMarkerId: s._id?.[2] ?? s._id?.[1],
     }));
 
   const { sendJsonMessage, lastMessage, readyState } = useWebSocket(

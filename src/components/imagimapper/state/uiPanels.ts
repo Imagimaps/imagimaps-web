@@ -21,17 +21,26 @@ export const UIPanelDataModel = model<UIPanelData>('UIPanelData').define(
     return {
       state: UIPanelDataDefaults,
       actions: {
-        toggleCtxMenu: (state: UIPanelData) => {
-          state.showCtxMenu = !state.showCtxMenu;
+        closeCtxMenu: (state: UIPanelData) => {
+          state.showCtxMenu = false;
         },
-        toggleDetailsPanel: (state: UIPanelData) => {
-          state.showDetailsPanel = !state.showDetailsPanel;
+        openCtxMenu: (state: UIPanelData) => {
+          state.showCtxMenu = true;
+        },
+        closeDetailsPanel: (state: UIPanelData) => {
+          state.showDetailsPanel = false;
+        },
+        openDetailsPanel: (state: UIPanelData) => {
+          state.showDetailsPanel = true;
         },
         setClickPosition: (
           state: UIPanelData,
           position: { lng: number; lat: number },
         ) => {
           state.clickPosition = position;
+        },
+        clearClickPosition: (state: UIPanelData) => {
+          state.clickPosition = undefined;
         },
       },
     };

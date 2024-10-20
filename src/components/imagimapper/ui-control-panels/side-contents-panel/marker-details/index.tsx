@@ -53,9 +53,9 @@ const MarkerDetails: FC = () => {
     isNew: s.isNew,
     markerHasChanges: s.isChanged,
     markerOverlayChanged: s.overlayIdChanged,
-    markerId: s.id?.[2] ?? s.id?.[1],
-    overlayId: s.overlayId?.[2] ?? s.overlayId?.[1] ?? e.overlays[0].id,
-    templateId: s.templateId?.[2] ?? s.templateId?.[1] ?? e.templates[0].id,
+    markerId: s._id?.[2] ?? s._id?.[1],
+    overlayId: s._overlayId?.[2] ?? s._overlayId?.[1] ?? e.overlays[0].id,
+    templateId: s._templateId?.[2] ?? s._templateId?.[1] ?? e.templates[0].id,
     mapMarker: s.mapMarker,
   }));
 

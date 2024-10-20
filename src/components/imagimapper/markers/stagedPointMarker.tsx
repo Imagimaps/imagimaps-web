@@ -11,8 +11,8 @@ const StagedMarker: FC = () => {
   const [{ markerPosition, markerTemplateId, templates }] = useModel(
     [StagedPointMarkerModel, EngineDataModel],
     (s, e) => ({
-      markerPosition: s.position?.[1],
-      markerTemplateId: s.templateId?.[1],
+      markerPosition: s._position?.[2] ?? s._position?.[1],
+      markerTemplateId: s._templateId?.[2] ?? s._templateId?.[1],
       mapMarker: s.mapMarker,
       templates: e.templates,
     }),
@@ -34,6 +34,7 @@ const StagedMarker: FC = () => {
     });
   };
 
+  console.log('[StagedMarker] Render', markerPosition, markerTemplateId);
   return markerPosition ? (
     <Marker
       position={xy(markerPosition.x, markerPosition.y)}
