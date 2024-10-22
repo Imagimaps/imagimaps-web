@@ -2,6 +2,7 @@ const WithSession = async (ctx: any, next: () => Promise<void>) => {
   const logger = ctx.log.child({ middleware: 'WithSession' });
   const { cookies, url } = ctx as { cookies: any; url: string };
   const sessionId = cookies.get('session-token');
+  const userId = cookies.get('id-token');
 
   const publicPaths = ['/api/bff/auth', '/api/bff/health'];
   const isPublicPath = publicPaths.some(path => url.startsWith(path));
@@ -34,6 +35,7 @@ const WithSession = async (ctx: any, next: () => Promise<void>) => {
 
     logger.info('[WithSession Hook] Request with session token', sessionId);
     ctx.state.sessionId = sessionId;
+    ctx.state.userId = userId;
 
     await next();
   }

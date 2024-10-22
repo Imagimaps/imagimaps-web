@@ -10,7 +10,7 @@ import { AppModel } from '@/state/appModel';
 
 import './page.scss';
 
-const CommunityPage: React.FC = () => {
+const ManageCommunityPage: React.FC = () => {
   const { communityId } = useParams<{ communityId: string }>();
   const [{ community, worlds }, actions] = useModel(AppModel);
   const navigate = useNavigate();
@@ -57,4 +57,4 @@ const CommunityPage: React.FC = () => {
   );
 };
 
-export default CommunityPage;
+export default ManageCommunityPage;
