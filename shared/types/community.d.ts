@@ -21,3 +21,20 @@ export type JoinableCommunity = {
   icon?: string | null;
   size?: number;
 };
+
+export type CommunityRole = {
+  id: string;
+  name: string;
+  description?: string;
+  permissions: CommunityPermission[];
+};
+
+export type CommunityPermission = {
+  id: string;
+  effect: string;
+  action: string;
+  resource: string;
+  filterResource: string;
+  filterType: string;
+  filterValue: string;
+};

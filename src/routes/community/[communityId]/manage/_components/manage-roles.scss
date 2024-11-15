@@ -1,0 +1,54 @@
+.roles-list {
+  width: 100%;
+}
+
+.manage-roles-panel-header, .role-permissions-panel-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+
+  h3 {
+    margin: 0;
+  }
+
+  button {
+    margin-left: 1rem;
+  }
+
+  &.p-panel-title {
+    width: 100%;
+  }
+}
+
+.role-details-panel {
+  padding: 10px;
+}
+
+.role-details-header {
+  padding: 2px;
+  margin-bottom: 2rem;
+
+  .metadata {
+    font-size: 0.8rem;
+    font-style: italic;
+    color: #666;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.form-group {
+  margin-bottom: 2rem;
+  margin-left: 1rem;
+}
+
+.role-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
