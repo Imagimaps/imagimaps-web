@@ -23,7 +23,8 @@
     "assets",
     "language-extensions",
     "shared/types",
-    "hooks"
+    "hooks",
+    "stories"
   ],
   "exclude": ["**/node_modules"]
 }
