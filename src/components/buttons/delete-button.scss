@@ -1,0 +1,59 @@
+.delete-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  cursor: pointer;
+  border-radius: 50px;
+  width: max-content;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: rgba(var(--color-shadow), 0.2);
+    box-shadow: 0 2px 4px rgba(var(--color-shadow), 0.2);
+  }
+
+  &.expanded {
+    padding: 2px 6px;
+  }
+
+  &.black {
+    p {
+      color: var(--color-text-primary);
+    }
+  }
+  &.red {
+    border-color: var(--color-red);
+    p {
+      color: var(--color-red);
+    }
+    img {
+      filter: invert(41%) sepia(84%) saturate(6748%) hue-rotate(346deg)
+        brightness(98%) contrast(91%);
+    }
+  }
+
+  &.border {
+    border-width: 1px;
+    border-style: solid;
+  }
+  
+  &.small {
+    img {
+      width: 12px;
+      height: 12px;
+    }
+  }
+  &.medium {
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+  &.large {
+    img {
+      width: 40px;
+      height: 40px;
+    }
+  }
+}

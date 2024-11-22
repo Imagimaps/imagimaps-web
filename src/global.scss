@@ -1,7 +1,24 @@
-h1, h2, h3, h4, h5, h6, p, a {
+:root {
+  --color-text-primary: #172234;
+  --color-dark: #071e22;
+  --color-grey: #828489;
+  --color-shadow: #828489;
+  --color-red: #ee2e31;
+  --color-steel-blue: #4d7ea8;
+  --color-peach: #f4c095;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a {
   // font-family: 'Roboto', sans-serif;
   // font-weight: 400;
-  // color: #333;
+  color: var(--color-text-primary);
   margin: 0;
   padding: 0;
 }
