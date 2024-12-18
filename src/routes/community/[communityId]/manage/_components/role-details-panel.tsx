@@ -9,9 +9,8 @@ import { Toast } from 'primereact/toast';
 import { post as UpdateRole } from '@api/bff/community/[communityId]/roles';
 import { RolesModel } from '../_state/roles';
 import RolePermissionsPanel from './role-permissions-panel';
-import DeleteConfirmationButton from '@/components/delete-confirmation-button';
 import { AppModel } from '@/state/appModel';
-import { SaveIconButton, UndoIconButton } from '@/components/icon/buttons';
+import ActionsBar from '@/components/actions-bar';
 
 import './role-details-panel.scss';
 
@@ -39,59 +38,50 @@ const RoleDetailsPanel: FC = () => {
 
   const RoleControls = (
     <div className="role-controls">
-      {hasChanges && (
-        <>
-          <SaveIconButton
-            onClick={async () => {
-              console.log('Save role');
-              if (!community?.id) {
-                console.error('No community id found');
-                return;
-              }
-              if (!editedRole) {
-                console.error('No role found');
-                return;
-              }
-              toastRef.current?.show({
-                severity: 'info',
-                summary: 'Saving Role',
-                detail: 'Saving role changes...',
-                life: 3000,
-              });
-              try {
-                const updatedRole = await UpdateRole(community?.id, {
-                  query: undefined,
-                  data: { roles: [editedRole] },
-                });
-                console.log('Updated role:', updatedRole);
-                rolesActions.updateRole(editedRole.id, updatedRole[0]);
-                toastRef.current?.show({
-                  severity: 'success',
-                  summary: 'Success',
-                  detail: 'Role saved',
-                  life: 3000,
-                });
-              } catch (e) {
-                console.error('Failed to save role', e);
-                toastRef.current?.show({
-                  severity: 'error',
-                  summary: 'Error',
-                  detail: 'Failed to save role',
-                  life: 3000,
-                });
-              }
-            }}
-          />
-          <UndoIconButton
-            onClick={() => {
-              rolesActions.revertEditsToCurrentRole();
-            }}
-          />
-        </>
-      )}
-      <DeleteConfirmationButton
-        onDelete={() => {
+      <ActionsBar
+        isChanged={hasChanges}
+        onUndo={rolesActions.revertEditsToCurrentRole}
+        onDelete={async () => {
           console.log('Delete role');
+        }}
+        onSave={async () => {
+          console.log('Save role');
+          if (!community?.id) {
+            console.error('No community id found');
+            return;
+          }
+          if (!editedRole) {
+            console.error('No role found');
+            return;
+          }
+          toastRef.current?.show({
+            severity: 'info',
+            summary: 'Saving Role',
+            detail: 'Saving role changes...',
+            life: 3000,
+          });
+          try {
+            const updatedRole = await UpdateRole(community?.id, {
+              query: undefined,
+              data: { roles: [editedRole] },
+            });
+            console.log('Updated role:', updatedRole);
+            rolesActions.updateRole(editedRole.id, updatedRole[0]);
+            toastRef.current?.show({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Role saved',
+              life: 3000,
+            });
+          } catch (e) {
+            console.error('Failed to save role', e);
+            toastRef.current?.show({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Failed to save role',
+              life: 3000,
+            });
+          }
         }}
       />
     </div>

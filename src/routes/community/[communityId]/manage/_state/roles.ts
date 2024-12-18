@@ -166,5 +166,43 @@ export const RolesModel = model<RolesState>('roles').define({
         p.id === permission.id ? permission : p,
       );
     },
+    deletePermission: (state: RolesState, permissionId: string) => {
+      const editedRole = state.editedRoles.find(
+        role => role.id === state.selectedRole?.id,
+      );
+      if (!editedRole) {
+        console.error('No role found to delete permission');
+        return;
+      }
+      editedRole.permissions = editedRole.permissions.filter(
+        p => p.id !== permissionId,
+      );
+    },
+    undoPermissionChanges: (state: RolesState, permissionId) => {
+      const editedRole = state.editedRoles.find(
+        role => role.id === state.selectedRole?.id,
+      );
+      if (!editedRole) {
+        console.error('No role found to undo permission changes');
+        return;
+      }
+      const editedPermission = editedRole.permissions.find(
+        p => p.id === permissionId,
+      );
+      if (!editedPermission) {
+        console.error('No permission found to undo changes');
+        return;
+      }
+      const originalPermission = state.selectedRole?.permissions.find(
+        p => p.id === permissionId,
+      );
+      if (!originalPermission) {
+        console.error('No original permission found to undo changes');
+        return;
+      }
+      editedRole.permissions = editedRole.permissions.map(p =>
+        p.id === permissionId ? originalPermission : p,
+      );
+    },
   },
 });

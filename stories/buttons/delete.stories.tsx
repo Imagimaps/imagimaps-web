@@ -1,4 +1,4 @@
-import '../src/global.scss';
+import '../../src/global.scss';
 
 import DeleteButton from '@components/buttons/delete-button';
 

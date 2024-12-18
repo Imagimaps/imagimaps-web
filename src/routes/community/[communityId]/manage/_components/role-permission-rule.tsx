@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from 'react';
 import { useModel } from '@modern-js/runtime/model';
 
 import { CommunityPermission } from '@shared/types/community';
+import ActionsBar from '@components/actions-bar/index';
 import { RolesModel } from '../_state/roles';
 import RolePermissionFragment from './role-permission-fragement';
 import { AppModel } from '@/state/appModel';
@@ -46,6 +47,8 @@ const RolePermissionRule: FC<RolePermissionRuleProps> = ({ rule }) => {
   const [, rolesActions] = useModel(RolesModel);
   const [{ community }] = useModel(AppModel);
 
+  const [hasLocalChanges, setHasLocalChanges] = useState<boolean>(false);
+
   const [resourcePreText] = useState<string | undefined>('This rule for');
   const [resourcePostText] = useState<string | undefined>(',');
   const [effectPreText, setEffectPreText] = useState<string | undefined>(
@@ -78,6 +81,9 @@ const RolePermissionRule: FC<RolePermissionRuleProps> = ({ rule }) => {
     setResource(rule.resource);
     setEffect(rule.effect);
     setAction(rule.action);
+    setParentResource(rule.filterResource || 'community');
+    setParentDiscriminatorType(rule.filterType || 'id');
+    setParentDiscriminatorValue(rule.filterValue || '*');
   }, [rule]);
 
   useEffect(() => {
@@ -150,12 +156,48 @@ const RolePermissionRule: FC<RolePermissionRuleProps> = ({ rule }) => {
   }, [resource, effect, action]);
 
   useEffect(() => {
-    rolesActions.updatePermission({ ...rule, resource, effect, action });
-  }, [resource, effect, action]);
+    setHasLocalChanges(
+      resource !== rule.resource ||
+        effect !== rule.effect ||
+        action !== rule.action ||
+        parentResource !== rule.filterResource ||
+        parentDiscriminatorType !== rule.filterType ||
+        parentDiscriminatorValue !== rule.filterValue,
+    );
+    rolesActions.updatePermission({
+      ...rule,
+      resource,
+      effect,
+      action,
+      filterResource: parentResource,
+      filterType: parentDiscriminatorType,
+      filterValue: parentDiscriminatorValue,
+    });
+  }, [
+    resource,
+    effect,
+    action,
+    parentResource,
+    parentDiscriminatorType,
+    parentDiscriminatorValue,
+  ]);
 
   return (
     <div className="role-permission-rule">
-      <div className="header">Id: {rule.id}</div>
+      <div className="header">
+        <p>Id: {rule.id}</p>
+        <ActionsBar
+          externalSave={true}
+          isChanged={hasLocalChanges}
+          onUndo={() => {
+            console.log('Undo');
+            rolesActions.undoPermissionChanges(rule.id);
+          }}
+          onDelete={async () => {
+            rolesActions.deletePermission(rule.id);
+          }}
+        />
+      </div>
       <div className="body">
         <RolePermissionFragment
           value={RESOURCE_OPTIONS_TEXT[resource]}
