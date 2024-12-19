@@ -6,7 +6,7 @@ type RolesState = {
   communityRoles: CommunityRole[];
   selectedRole?: CommunityRole;
   editedRoles: CommunityRole[];
-  isNewRole: boolean;
+  newRoles: CommunityRole[];
 };
 
 const permissionsDeepEqual = (
@@ -31,6 +31,7 @@ export const RolesModel = model<RolesState>('roles').define({
   state: {
     communityRoles: [],
     editedRoles: [],
+    newRoles: [],
   },
   computed: {
     editedRole: (state: RolesState) => {
@@ -80,9 +81,27 @@ export const RolesModel = model<RolesState>('roles').define({
       state.communityRoles = roles;
     },
     setSelectedRoleId: (state: RolesState, roleId: string) => {
-      state.selectedRole = state.communityRoles.find(
-        role => role.id === roleId,
-      );
+      const role = state.communityRoles.find(role => role.id === roleId);
+      if (role) {
+        state.selectedRole = role;
+        return;
+      }
+      const newRole = state.newRoles.find(role => role.id === roleId);
+      state.selectedRole = newRole;
+    },
+    clearSelectedRole: (state: RolesState) => {
+      state.selectedRole = undefined;
+    },
+    createNewRole: (state: RolesState) => {
+      const newRole = {
+        id: `new/${ulid()}`,
+        name: `New Role ${state.newRoles.length + 1}`,
+        description: '',
+        permissions: [],
+      };
+      state.newRoles = [...state.newRoles, newRole];
+      state.selectedRole = newRole;
+      state.editedRoles = [...state.editedRoles, newRole];
     },
     beginEditingRole: (state: RolesState, roleId?: string) => {
       const roleToEdit = state.communityRoles.find(role => role.id === roleId);
@@ -108,8 +127,15 @@ export const RolesModel = model<RolesState>('roles').define({
       updatedRole: CommunityRole,
     ) => {
       if (roleId.startsWith('new/')) {
-        // TODO: Complete Logic
-        state.communityRoles = [updatedRole, ...state.communityRoles];
+        state.selectedRole = updatedRole;
+        state.newRoles = state.newRoles.filter(role => role.id !== roleId);
+        state.editedRoles = state.editedRoles.map(role => {
+          if (role.id === roleId) {
+            return updatedRole;
+          }
+          return role;
+        });
+        state.communityRoles = [...state.communityRoles, updatedRole];
         return;
       }
       state.communityRoles = state.communityRoles.map(role =>
@@ -118,6 +144,12 @@ export const RolesModel = model<RolesState>('roles').define({
       state.editedRoles = state.editedRoles.map(role =>
         role.id === roleId ? updatedRole : role,
       );
+    },
+    deleteRole: (state: RolesState, roleId: string) => {
+      state.communityRoles = state.communityRoles.filter(
+        role => role.id !== roleId,
+      );
+      state.editedRoles = state.editedRoles.filter(role => role.id !== roleId);
     },
     updateRoleName: (state: RolesState, name: string) => {
       const editRole = state.editedRoles?.find(

@@ -43,7 +43,10 @@ export default async (communityId: string): Promise<CommunityRole[]> => {
 export const post = async (
   communityId: string,
   { data }: RequestOption<undefined, { roles: CommunityRole[] }>,
-): Promise<CommunityRole[]> => {
+): Promise<{
+  updatedRoles: CommunityRole[];
+  createdRoles: CommunityRole[];
+}> => {
   const ctx = useContext();
   const logger: Logger = (ctx.log as Logger).child({
     source: 'POST community/[communityId]/roles.ts',
@@ -71,7 +74,7 @@ export const post = async (
     role => !role.id || role.id.startsWith('new/'),
   );
   const rolesToUpdate = roles
-    .filter(role => role.id)
+    .filter(role => role.id && !role.id.startsWith('new/'))
     .map(role => {
       role.permissions = role.permissions.map(permission => {
         logger.debug({ message: 'Permission', permission });
@@ -134,5 +137,60 @@ export const post = async (
     updatedRoles,
   });
 
-  return [...createdRoles, ...updatedRoles];
+  return {
+    updatedRoles,
+    createdRoles,
+  };
+};
+
+export const DELETE = async (
+  communityId: string,
+  payload: RequestOption<undefined, { roleId: string }> & {
+    params: Record<any, any>;
+  },
+): Promise<void> => {
+  const ctx = useContext();
+  const logger: Logger = (ctx.log as Logger).child({
+    source: 'DELETE community/[communityId]/roles.ts',
+  });
+  const { sessionId, userId } = ctx.state as {
+    sessionId: string;
+    userId: string;
+  };
+  const { data, params } = payload;
+  const { roleId } = data;
+
+  logger.info({
+    message: 'Deleting role',
+    communityId,
+    roleId,
+    payload,
+    params,
+    data,
+  });
+
+  const headers = {
+    'x-source': 'bff-service',
+    'x-session-id': sessionId,
+    'x-user-id': userId,
+    'Content-Type': 'application/json',
+  };
+
+  const deleteRoleResponse = await axios.delete(
+    `${userServiceBaseUrl}/api/user/community/${communityId}/role/${roleId}`,
+    {
+      headers,
+    },
+  );
+
+  if (deleteRoleResponse.status !== 200) {
+    throw new Error(
+      `Failed to delete role. Status: ${deleteRoleResponse.status}`,
+    );
+  }
+
+  logger.info({
+    message: 'Role deleted',
+    roleId,
+  });
 };

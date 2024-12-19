@@ -24,6 +24,7 @@ const ManageRoles: FC = () => {
         tooltipOptions={{ showDelay: 250, hideDelay: 0 }}
         onClick={() => {
           console.log('Add role');
+          rolesActions.createNewRole();
         }}
       />
     </div>
@@ -36,7 +37,7 @@ const ManageRoles: FC = () => {
             <ListBox
               className="roles-list"
               emptyMessage="Add Role(s)"
-              options={rolesModel.communityRoles}
+              options={[...rolesModel.communityRoles, ...rolesModel.newRoles]}
               optionLabel="name"
               optionValue="id"
               value={rolesModel.selectedRole?.id}

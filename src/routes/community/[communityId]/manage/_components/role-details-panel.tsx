@@ -7,6 +7,7 @@ import { Toolbar } from 'primereact/toolbar';
 import { Toast } from 'primereact/toast';
 
 import { post as UpdateRole } from '@api/bff/community/[communityId]/roles';
+import { DELETE as DeleteRole } from '@api/bff/community/[communityId]/role/[roleId]';
 import { RolesModel } from '../_state/roles';
 import RolePermissionsPanel from './role-permissions-panel';
 import { AppModel } from '@/state/appModel';
@@ -42,7 +43,43 @@ const RoleDetailsPanel: FC = () => {
         isChanged={hasChanges}
         onUndo={rolesActions.revertEditsToCurrentRole}
         onDelete={async () => {
-          console.log('Delete role');
+          console.log('Delete role', selectedRole?.id);
+          if (!community?.id) {
+            console.error('No community id found');
+            return;
+          }
+          if (!selectedRole) {
+            console.error('No role found');
+            return;
+          }
+          toastRef.current?.show({
+            severity: 'info',
+            summary: 'Deleting Role',
+            detail: `Deleting role ${selectedRole.name}...`,
+            life: 3000,
+          });
+          try {
+            const deletedRoleId = await DeleteRole(
+              community.id,
+              selectedRole.id,
+            );
+            rolesActions.deleteRole(deletedRoleId);
+            rolesActions.clearSelectedRole();
+            toastRef.current?.show({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Role deleted',
+              life: 3000,
+            });
+          } catch (err) {
+            console.error('Failed to delete role', err);
+            toastRef.current?.show({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Failed to delete role',
+              life: 3000,
+            });
+          }
         }}
         onSave={async () => {
           console.log('Save role');
@@ -61,12 +98,24 @@ const RoleDetailsPanel: FC = () => {
             life: 3000,
           });
           try {
-            const updatedRole = await UpdateRole(community?.id, {
+            const savedRoles = await UpdateRole(community?.id, {
               query: undefined,
               data: { roles: [editedRole] },
             });
-            console.log('Updated role:', updatedRole);
-            rolesActions.updateRole(editedRole.id, updatedRole[0]);
+            if (savedRoles.createdRoles.length > 0) {
+              console.log('Created role:', savedRoles.createdRoles[0]);
+              rolesActions.updateRole(
+                editedRole.id,
+                savedRoles.createdRoles[0],
+              );
+            }
+            if (savedRoles.updatedRoles.length > 0) {
+              console.log('Updated role:', savedRoles.updatedRoles[0]);
+              rolesActions.updateRole(
+                editedRole.id,
+                savedRoles.updatedRoles[0],
+              );
+            }
             toastRef.current?.show({
               severity: 'success',
               summary: 'Success',
