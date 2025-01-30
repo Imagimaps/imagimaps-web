@@ -1,7 +1,7 @@
 import { Helmet } from '@modern-js/runtime/head';
 import { useEffect } from 'react';
 import GetAuthTokenLink from '@api/bff/auth/[provider]';
-import { useNavigate } from '@modern-js/runtime/router';
+import { Link } from '@modern-js/runtime/router';
 
 import { OAuth2Providers } from '@shared/types/auth.enums';
 // import ImagimapsSplash from '@assets/images/imagimaps_compressed.png';
@@ -14,7 +14,6 @@ import CommunityGridPanel from '@/components/communities-grid-panel';
 import './index.css';
 
 const Index = () => {
-  const navigate = useNavigate();
   const [{ isAuthenticated, user }] = useModel(AuthModel);
 
   useEffect(() => {
@@ -33,23 +32,19 @@ const Index = () => {
         <link rel="icon" type="image/x-icon" href={ImagimapsIco} />
       </Helmet>
       <main>
-        <div className="title-box central-content-box debug">
-          <h1>Imagimaps</h1>
-        </div>
+        <h1 className="hero">Imagimaps</h1>
         {isAuthenticated && (
           <p className="description">Welcome back, {user?.name}!</p>
         )}
         <p className="description">
           Start exploring your worlds with Imagimaps!
         </p>
-        <button onClick={() => navigate('/map/test_room/leaflet')}>
-          Go to map engine dev playground
-        </button>
         {!isAuthenticated && (
           <div className="grid">
             <AuthDiscordCard />
           </div>
         )}
+        {isAuthenticated && <Link to="/portal">Go to your Portal</Link>}
         {isAuthenticated && <CommunityGridPanel />}
       </main>
     </div>

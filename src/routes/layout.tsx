@@ -1,4 +1,5 @@
 // import './reset.scss';
+import '../global.scss';
 import './layout.scss';
 // import 'primereact/resources/themes/lara-light-cyan/theme.css';
 import 'primereact/resources/themes/saga-blue/theme.css';
