@@ -4,7 +4,7 @@ import GetAuthTokenLink from '@api/bff/auth/[provider]';
 import { useNavigate } from '@modern-js/runtime/router';
 
 import { OAuth2Providers } from '@shared/types/auth.enums';
-import ImagimapsSplash from '@assets/images/imagimaps_compressed.png';
+// import ImagimapsSplash from '@assets/images/imagimaps_compressed.png';
 import ImagimapsIco from '@assets/icons/imagimaps.ico';
 import { useModel } from '@modern-js/runtime/model';
 import AuthDiscordCard from '@/components/auth-providers/discord-card';
@@ -33,14 +33,8 @@ const Index = () => {
         <link rel="icon" type="image/x-icon" href={ImagimapsIco} />
       </Helmet>
       <main>
-        <div
-          className="title-box central-content-box debug"
-          style={{
-            backgroundImage: `url(${ImagimapsSplash})`,
-            backgroundSize: 'cover',
-          }}
-        >
-          Imagimaps
+        <div className="title-box central-content-box debug">
+          <h1>Imagimaps</h1>
         </div>
         {isAuthenticated && (
           <p className="description">Welcome back, {user?.name}!</p>
