@@ -30,6 +30,10 @@ const Index = () => {
     <div className="container-box">
       <Helmet>
         <link rel="icon" type="image/x-icon" href={ImagimapsIco} />
+        <script
+          crossOrigin="anonymous"
+          src="//unpkg.com/react-scan/dist/auto.global.js"
+        />
       </Helmet>
       <main>
         <h1 className="hero">Imagimaps</h1>

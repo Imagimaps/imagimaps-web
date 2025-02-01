@@ -34,9 +34,9 @@
     "@casl/ability": "^6.7.2",
     "@casl/react": "^4.0.0",
     "@dnd-kit/core": "^6.1.0",
-    "@modern-js/plugin-bff": "2.62.0",
-    "@modern-js/plugin-koa": "2.62.0",
-    "@modern-js/runtime": "2.62.0",
+    "@modern-js/plugin-bff": "2.64.0",
+    "@modern-js/plugin-koa": "2.64.0",
+    "@modern-js/runtime": "2.64.0",
     "axios": "^1.7.7",
     "deep-equal": "^2.2.3",
     "koa": "~2.15.3",
@@ -65,9 +65,9 @@
   },
   "devDependencies": {
     "@modern-js-app/eslint-config": "2.59.0",
-    "@modern-js/app-tools": "2.62.0",
+    "@modern-js/app-tools": "2.64.0",
     "@modern-js/eslint-config": "2.59.0",
-    "@modern-js/tsconfig": "2.62.0",
+    "@modern-js/tsconfig": "2.64.0",
     "@types/deep-equal": "^1.0.4",
     "@types/geojson": "^7946.0.14",
     "@types/jest": "~29.5.14",
@@ -89,7 +89,7 @@
     "ts-node": "~10.9.2",
     "tsconfig-paths": "~4.2.0",
     "typescript": "~5.6.3",
-    "@modern-js/storybook": "2.62.0",
+    "@modern-js/storybook": "2.64.0",
     "@storybook/addon-essentials": "^7"
   },
   "packageManager": "pnpm@9.12.2+sha512.22721b3a11f81661ae1ec68ce1a7b879425a1ca5b991c975b074ac220b187ce56c708fe5db69f4c962c989452eee76c82877f4ee80f474cebd61ee13461b6228"

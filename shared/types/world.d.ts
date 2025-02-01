@@ -9,7 +9,7 @@ export type World = {
   status: string;
   game?: string;
   owner: User;
-  community: Community;
+  community?: Community;
   mapIds: string[];
   active?: boolean;
   lastAccessed?: Date;

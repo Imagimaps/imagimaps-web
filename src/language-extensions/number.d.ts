@@ -1,17 +1,10 @@
 type ScreenCoordinate = number;
 type CanvasCoordinate = number;
 type ViewportCoordinate = number; // Viewport refers to https://developer.mozilla.org/en-US/docs/Web/CSS/CSSOM_view/Coordinate_systems#viewport
-type World = number;
 type Scalar = number;
 type Pixel = number;
 type Point<
-  T =
-    | number
-    | ScreenCoordinate
-    | CanvasCoordinate
-    | ViewportCoordinate
-    | World
-    | Pixel,
+  T = number | ScreenCoordinate | CanvasCoordinate | ViewportCoordinate | Pixel,
 > = { x: T; y: T };
 
 type Size<
@@ -21,7 +14,6 @@ type Size<
     | ScreenCoordinate
     | CanvasCoordinate
     | ViewportCoordinate
-    | World
     | Pixel,
 > = { width: T; height: T };
 
