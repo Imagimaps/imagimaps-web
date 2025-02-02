@@ -1,4 +1,4 @@
-import GetUserWorlds from '@api/bff/user/[userId]/worlds';
+import GetUserWorlds from '@api/bff/user/worlds';
 import { Community } from '@shared/types/community';
 import { World } from '@shared/types/world';
 
