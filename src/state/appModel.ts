@@ -16,7 +16,7 @@ const AppModelDefault: AppModelState = {
   layers: [],
 };
 
-export const AppModel = model<AppModelState>('community').define(_ => {
+export const AppModel = model<AppModelState>('app').define(_ => {
   return {
     state: AppModelDefault,
     computed: {

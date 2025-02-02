@@ -1,0 +1,28 @@
+.editable-content-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  &.h1 {
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .h1-edit {
+    font-size: 2.986rem;
+    line-height: 2.986rem;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: none;
+    box-shadow: none;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .row-controls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+}

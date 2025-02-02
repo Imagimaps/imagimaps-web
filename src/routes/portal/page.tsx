@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Panel } from 'primereact/panel';
-import { useLoaderData } from '@modern-js/runtime/router';
+import { useLoaderData, useNavigate } from '@modern-js/runtime/router';
 import { useModel } from '@modern-js/runtime/model';
 
 import TileGrid from '@components/grid-panel';
@@ -13,41 +13,45 @@ import type { PortalPageData } from './page.data';
 import { AuthModel } from '@/state/authModel';
 import NewWorldDialog from '@/components/dialogs/new-world';
 import NewItemCard from '@/components/grid-panel/new-item-card';
+import { AppModel } from '@/state/appModel';
 
 const PortalPage: React.FC = () => {
+  const navigate = useNavigate();
   const data = useLoaderData() as PortalPageData;
+  const [, actions] = useModel(AppModel);
   const [auth] = useModel(AuthModel);
   const [worlds, setWorlds] = useState<World[]>(data.userWorlds);
   const [newWorldDialogVisible, setNewWorldDialogVisible] = useState(false);
+
+  useEffect(() => {
+    actions.setWorlds(worlds);
+  }, [worlds]);
+
+  const saveNewWorld = async (worldName: string, worldDescription: string) => {
+    const userId = auth.user?.id;
+    if (!userId) {
+      console.error('No user id found');
+      return;
+    }
+    console.log('Creating new world', userId, worldName, worldDescription);
+    const newlyCreatedWorld = await createWorld(userId, {
+      query: undefined,
+      data: {
+        name: worldName,
+        description: worldDescription,
+      },
+    });
+    console.log('New World created', newlyCreatedWorld);
+    setWorlds([...worlds, newlyCreatedWorld]);
+    setNewWorldDialogVisible(false);
+  };
 
   return (
     <div>
       <NewWorldDialog
         dialogVisible={newWorldDialogVisible}
         setDialogVisible={setNewWorldDialogVisible}
-        onSave={async (worldName, worldDescription) => {
-          const userId = auth.user?.id;
-          if (!userId) {
-            console.error('No user id found');
-            return;
-          }
-          console.log(
-            'Creating new world',
-            userId,
-            worldName,
-            worldDescription,
-          );
-          const newlyCreatedWorld = await createWorld(userId, {
-            query: undefined,
-            data: {
-              name: worldName,
-              description: worldDescription,
-            },
-          });
-          console.log('New World created', newlyCreatedWorld);
-          setWorlds([...worlds, newlyCreatedWorld]);
-          setNewWorldDialogVisible(false);
-        }}
+        onSave={saveNewWorld}
       />
       <Panel>No notifications</Panel>
       <TileGrid header="Your Worlds" toggleable={{ open: true }}>
@@ -57,6 +61,11 @@ const PortalPage: React.FC = () => {
             splashImage={world.coverImage ?? worldPlaceholder}
             title={world.name}
             content={world.description}
+            onClick={() => {
+              console.log('Go to world', world.id);
+              actions.setViewingWorld(world);
+              navigate(`/world/${world.id}`);
+            }}
           />
         ))}
         <NewItemCard
