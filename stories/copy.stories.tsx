@@ -50,7 +50,7 @@ const TextPrimatives: FC = () => {
 };
 
 export default {
-  title: 'Primatives/Text',
+  title: 'Primitives/Text',
   component: TextPrimatives,
   argTypes: {},
 };

@@ -1,11 +1,11 @@
 import { FC } from 'react';
-import { InputText } from 'primereact/inputtext';
+import { InputTextarea } from 'primereact/inputtextarea';
 import UndoButton from '@components/buttons/icons/undo';
 import EditButton from '@components/buttons/icons/edit';
 
 import './styles.scss';
 
-type EditableTitleRowProps = {
+type EditableTextAreaRowProps = {
   value: string;
   editMode: boolean;
   valueChanged?: boolean;
@@ -14,7 +14,7 @@ type EditableTitleRowProps = {
   onUndo?: () => void;
 };
 
-const EditableTitleRow: FC<EditableTitleRowProps> = ({
+const EditableTextAreaRow: FC<EditableTextAreaRowProps> = ({
   value,
   editMode,
   valueChanged,
@@ -22,11 +22,8 @@ const EditableTitleRow: FC<EditableTitleRowProps> = ({
   onChange,
   onUndo,
 }) => {
-  const processKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const processKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     switch (e.key) {
-      case 'Enter':
-        e.currentTarget.blur();
-        break;
       case 'Escape':
         onUndo?.();
         e.currentTarget.blur();
@@ -37,12 +34,11 @@ const EditableTitleRow: FC<EditableTitleRowProps> = ({
   };
 
   return (
-    <div className={`editable-content-row h1${valueChanged ? ' changed' : ''}`}>
+    <div className={`editable-content-row ${valueChanged ? ' changed' : ''}`}>
       <div className="row-content">
         {editMode ? (
-          <InputText
-            className="h1-edit"
-            type="text"
+          <InputTextarea
+            className="text-area-edit"
             autoFocus={true}
             value={value}
             onFocus={e => e.target.select()}
@@ -50,7 +46,7 @@ const EditableTitleRow: FC<EditableTitleRowProps> = ({
             onKeyDown={processKeyPress}
           />
         ) : (
-          <h1>{value}</h1>
+          <p>{value}</p>
         )}
       </div>
       <div className="row-controls">
@@ -61,4 +57,4 @@ const EditableTitleRow: FC<EditableTitleRowProps> = ({
   );
 };
 
-export default EditableTitleRow;
+export default EditableTextAreaRow;

@@ -5,22 +5,22 @@ import { Button } from 'primereact/button';
 
 import './index.scss';
 
-type NewWorldDialogProps = {
+type NewMapDialogProps = {
   dialogVisible: boolean;
   setDialogVisible: (visible: boolean) => void;
-  onSave: (worldName: string, worldDescription: string) => Promise<void>;
+  onSave: (mapName: string, mapDescription: string) => Promise<void>;
 };
 
-const NewWorldDialog: FC<NewWorldDialogProps> = ({
+const NewMapDialog: FC<NewMapDialogProps> = ({
   dialogVisible,
   setDialogVisible,
   onSave,
 }) => {
-  const [worldName, setWorldName] = useState<string>('');
-  const [worldDescription, setWorldDescription] = useState<string>('');
+  const [mapName, setMapName] = useState<string>('');
+  const [mapDescription, setMapDescription] = useState<string>('');
   return (
     <Dialog
-      header={'Create a New World'}
+      header={'Create a New Map'}
       modal
       visible={dialogVisible}
       onHide={() => {
@@ -28,7 +28,7 @@ const NewWorldDialog: FC<NewWorldDialogProps> = ({
       }}
       content={() => (
         <Panel
-          header={'Create a New World'}
+          header={'Create a New Map'}
           className="new-item-panel"
           footer={
             <>
@@ -38,40 +38,40 @@ const NewWorldDialog: FC<NewWorldDialogProps> = ({
                 className="p-button p-component p-button-text-only"
                 onClick={() => {
                   setDialogVisible(false);
-                  setWorldName('');
-                  setWorldDescription('');
+                  setMapName('');
+                  setMapDescription('');
                 }}
               />
               <Button
                 label="Create"
                 className="p-button p-component p-button-text-only"
                 onClick={async () => {
-                  await onSave(worldName, worldDescription);
+                  await onSave(mapName, mapDescription);
                   setDialogVisible(false);
-                  setWorldName('');
-                  setWorldDescription('');
+                  setMapName('');
+                  setMapDescription('');
                 }}
               />
             </>
           }
         >
-          <form className="new-world-form">
+          <form className="new-map-form">
             <div className="form-row">
-              <label htmlFor="world-name">World name</label>
+              <label htmlFor="map-name">Map name</label>
               <input
                 type="text"
-                placeholder="World name"
-                value={worldName}
+                placeholder="Map name"
+                value={mapName}
                 required
-                onChange={e => setWorldName(e.target.value)}
+                onChange={e => setMapName(e.target.value)}
               />
             </div>
             <div className="form-row">
-              <label htmlFor="world-description">World description</label>
+              <label htmlFor="map-description">Map description</label>
               <textarea
-                placeholder="World description"
-                value={worldDescription}
-                onChange={e => setWorldDescription(e.target.value)}
+                placeholder="Map description"
+                value={mapDescription}
+                onChange={e => setMapDescription(e.target.value)}
               />
             </div>
           </form>
@@ -81,4 +81,4 @@ const NewWorldDialog: FC<NewWorldDialogProps> = ({
   );
 };
 
-export default NewWorldDialog;
+export default NewMapDialog;

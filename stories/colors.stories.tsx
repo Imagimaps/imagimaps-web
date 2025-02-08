@@ -40,7 +40,7 @@ const ColorSwatches: FC = () => {
 };
 
 export default {
-  title: 'Primatives/Colors',
+  title: 'Primitives/Colors',
   component: ColorSwatches,
   argTypes: {},
 };

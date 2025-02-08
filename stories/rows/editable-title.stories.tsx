@@ -26,3 +26,12 @@ export const Default = {
     onChange: (value: string) => console.log(value),
   },
 };
+
+export const LongTitle = {
+  args: {
+    value: 'This is a very long title that exceeds the usual length',
+    editMode: false,
+    valueChanged: false,
+    onChange: (value: string) => console.log(value),
+  },
+};

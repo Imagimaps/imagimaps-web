@@ -1,4 +1,4 @@
-// import GetUserWorlds from '@api/bff/user/worlds';
+import GetUserWorld from '@api/bff/user/world/[worldId]';
 import { LoaderFunctionArgs } from '@modern-js/runtime/router';
 import { World } from '@shared/types/world';
 
@@ -10,19 +10,12 @@ export const loader = async ({
   params,
 }: LoaderFunctionArgs): Promise<UserWorldData> => {
   const { worldId } = params;
-  console.log('Loading User World Data', worldId);
+  if (!worldId) {
+    throw new Error('No world id found');
+  }
+  const world = await GetUserWorld(worldId);
+  console.log('Loading User World Data', world);
   return {
-    world: {
-      id: '12345678',
-      name: 'stub world',
-      description: 'World Description',
-      status: 'active',
-      owner: {
-        id: 'ownerId',
-        name: 'ownerName',
-        picture: 'ownerPicture',
-      },
-      mapIds: [],
-    },
+    world,
   };
 };

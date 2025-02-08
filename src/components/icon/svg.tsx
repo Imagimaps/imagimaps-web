@@ -1,4 +1,3 @@
-import styled from '@modern-js/runtime/styled';
 import { CSSProperties, MouseEventHandler } from 'react';
 
 interface SvgIconProps {
@@ -18,20 +17,26 @@ const SvgIcon = ({
   onClick,
   onHover,
 }: SvgIconProps) => {
+  const defaultStyle: CSSProperties = {
+    width: '24px',
+    height: '24px',
+  };
+  const appliedStyle = style ? { ...defaultStyle, ...style } : defaultStyle;
+  // return (
+  //   <div className={className} onClick={onClick} onMouseOver={onHover}>
+  //     <img src={src} alt={alt} style={appliedStyle} />
+  //   </div>
+  // );
   return (
-    <IconContainer
-      as="div"
+    <img
+      src={src}
+      alt={alt}
       className={className}
+      style={appliedStyle}
       onClick={onClick}
       onMouseOver={onHover}
-    >
-      <IconImg as="img" src={src} alt={alt} style={style} />
-    </IconContainer>
+    />
   );
 };
 
 export default SvgIcon;
-
-const IconImg = styled.img``;
-
-const IconContainer = styled.div``;

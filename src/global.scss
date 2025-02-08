@@ -19,7 +19,9 @@ h4,
 h5,
 h6,
 p,
-a {
+a,
+textarea,
+input {
   // font-family: 'Roboto', sans-serif;
   // font-weight: 400;
   color: var(--color-text-primary);
@@ -48,7 +50,7 @@ h5 {
 h6 {
   font-size: 1.2rem;
 }
-p {
+p,textarea {
   font-size: 1rem;
 
   &.small {

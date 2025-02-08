@@ -57,7 +57,12 @@ export const AppModel = model<AppModelState>('app').define(_ => {
         state.worlds = [];
       },
       addWorld: (state: AppModelState, world: World) => {
-        state.worlds = [...state.worlds, world];
+        if (!state.worlds.some(w => w.id === world.id)) {
+          state.worlds = [...state.worlds, world];
+        }
+      },
+      updateWorld: (state: AppModelState, world: World) => {
+        state.worlds = state.worlds.map(w => (w.id === world.id ? world : w));
       },
       setMaps: (state: AppModelState, maps: Map[]) => {
         state.maps = maps;

@@ -885,7 +885,7 @@
         <mxCell id="OBmjM6y_dqrNjivptntu-1" value="id: uuidv7" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="OBmjM6y_dqrNjivptntu-0" vertex="1">
           <mxGeometry y="26" width="220" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="OBmjM6y_dqrNjivptntu-2" value="provider: Provider" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="OBmjM6y_dqrNjivptntu-0" vertex="1">
+        <mxCell id="OBmjM6y_dqrNjivptntu-2" value="provider: IdentityProvider" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="OBmjM6y_dqrNjivptntu-0" vertex="1">
           <mxGeometry y="52" width="220" height="26" as="geometry" />
         </mxCell>
         <mxCell id="OBmjM6y_dqrNjivptntu-3" value="userId: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="OBmjM6y_dqrNjivptntu-0" vertex="1">
@@ -894,7 +894,7 @@
         <mxCell id="OBmjM6y_dqrNjivptntu-4" value="data: jsonb" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="OBmjM6y_dqrNjivptntu-0" vertex="1">
           <mxGeometry y="104" width="220" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="OBmjM6y_dqrNjivptntu-12" value="Enum Provider " style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+        <mxCell id="OBmjM6y_dqrNjivptntu-12" value="Enum IdentityProvider " style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="570" y="-1686" width="160" height="78" as="geometry">
             <mxRectangle x="570" y="76" width="170" height="26" as="alternateBounds" />
           </mxGeometry>
