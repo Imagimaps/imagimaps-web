@@ -8,6 +8,7 @@ import TileGrid from '@components/grid-panel';
 import Tile from '@components/grid-panel/panel-card';
 import { useModel } from '@modern-js/runtime/model';
 import { post as UpdateWorld } from '@api/bff/user/world/[worldId]';
+import { put as CreateMap } from '@api/bff/user/world/[worldId]/map';
 
 import Fingerprint from '@shared/svg/fingerprint.svg';
 import MapPlaceholder from '@shared/images/map_image_placeholder_mini.png';
@@ -60,6 +61,36 @@ const UserWorldPage: React.FC = () => {
 
   const createNewMap = async (mapName: string, mapDescription: string) => {
     console.log('Creating new map', mapName, mapDescription);
+    toast.current?.show({
+      severity: 'info',
+      summary: 'Creating Map',
+    });
+    const worldId = activeWorld?.id;
+    if (!worldId) {
+      console.error('No active world to create map in');
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Failed to create map',
+      });
+      return;
+    }
+    try {
+      const newMap = await CreateMap(worldId, {
+        query: undefined,
+        data: { name: mapName, description: mapDescription },
+      });
+      actions.addMap(newMap);
+      toast.current?.show({
+        severity: 'success',
+        summary: 'Map Created',
+      });
+    } catch (error) {
+      console.error('Failed to create map', error);
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Failed to create map',
+      });
+    }
     setNewMapDialogVisible(false);
   };
 

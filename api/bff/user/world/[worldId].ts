@@ -36,26 +36,28 @@ export default async (worldId: string): Promise<World> => {
   const world: World = await getWorldRes.json();
   logger.info({ msg: 'Got world', world });
 
-  const getMapsRes = await fetch(
-    `${mapServiceBaseUrl}/api/map?mapIds=${world.mapIds.join(',')}`,
-    {
-      method: 'GET',
-      headers: {
-        'x-source': 'bff-service',
-        'x-session-id': sessionId,
-        'x-user-id': userId,
-        'Content-Type': 'application/json',
+  if (world.mapIds.length > 0) {
+    const getMapsRes = await fetch(
+      `${mapServiceBaseUrl}/api/map?mapIds=${world.mapIds.join(',')}`,
+      {
+        method: 'GET',
+        headers: {
+          'x-source': 'bff-service',
+          'x-session-id': sessionId,
+          'x-user-id': userId,
+          'Content-Type': 'application/json',
+        },
       },
-    },
-  );
+    );
 
-  if (!getMapsRes.ok) {
-    throw new Error(`Failed to get maps. Status: ${getMapsRes.status}`);
+    if (!getMapsRes.ok) {
+      throw new Error(`Failed to get maps. Status: ${getMapsRes.status}`);
+    }
+
+    const maps: Map[] = await getMapsRes.json();
+    logger.info({ msg: 'Got maps', maps });
+    world.maps = maps;
   }
-
-  const maps: Map[] = await getMapsRes.json();
-  logger.info({ msg: 'Got maps', maps });
-  world.maps = maps;
 
   return world;
 };
