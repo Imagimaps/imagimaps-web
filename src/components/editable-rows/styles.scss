@@ -5,6 +5,7 @@
   border-radius: 3px;
   padding: 5px 10px;
   background: none;
+  flex-wrap: wrap;
 
   h1 {
     white-space: nowrap;
@@ -18,6 +19,13 @@
 
   &.changed {
     box-shadow: inset 0 0 10px rgba(255, 165, 0, 0.5);
+  }
+
+  .metadata-row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 0.5rem;
   }
 
   .h1-edit {
@@ -44,6 +52,9 @@
 
   .row-content {
     width: 95%;
+    min-height: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
   }
 
   .row-controls {

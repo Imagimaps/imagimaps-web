@@ -55,7 +55,7 @@ const EditableTitleRow: FC<EditableTitleRowProps> = ({
       </div>
       <div className="row-controls">
         {!editMode && <EditButton onClick={() => onEditEnable?.()} />}
-        {valueChanged && <UndoButton onClick={() => onUndo?.()} />}
+        {editMode && <UndoButton onClick={() => onUndo?.()} />}
       </div>
     </div>
   );

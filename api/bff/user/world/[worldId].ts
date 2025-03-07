@@ -10,7 +10,6 @@ export default async (worldId: string): Promise<World> => {
   const logger = ctx.log.child({ source: 'GET user/world/[worldId]' });
   const sessionId = ctx.state.sessionId as string;
   const userId = ctx.cookies.get('id-token');
-  logger.debug({ mgs: `Getting details for user`, userId, sessionId });
 
   if (!userId) {
     throw new Error('User not found');

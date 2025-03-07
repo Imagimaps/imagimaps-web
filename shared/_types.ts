@@ -96,6 +96,8 @@ export type TemplateGroup = {
 };
 
 export enum LayerStatus {
+  NEW = 'NEW',
+  DRAFT = 'DRAFT',
   PROCESSING = 'PROCESSING',
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
@@ -110,6 +112,7 @@ export type MapLayer = {
   status: LayerStatus;
   imagePath: string;
   topography: MapTopography;
+  isDefault?: boolean;
   description?: string;
   icon?: string;
   previewImage?: string;

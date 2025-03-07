@@ -230,7 +230,7 @@ const UserWorldPage: React.FC = () => {
             content={map.description}
             onClick={() => {
               console.log('Go to Map', map.id);
-              navigate(`map/${map.id}`);
+              navigate(`${map.id}`);
             }}
           />
         ))}

@@ -1,0 +1,23 @@
+.entity-panel {
+  .p-panel-header {
+    padding: 0.5rem 1rem;
+  }
+
+  .p-panel-title {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .header-content {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.1rem;
+  }
+}

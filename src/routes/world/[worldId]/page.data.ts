@@ -13,9 +13,14 @@ export const loader = async ({
   if (!worldId) {
     throw new Error('No world id found');
   }
-  const world = await GetUserWorld(worldId);
-  console.log('Loading User World Data', world);
-  return {
-    world,
-  };
+  try {
+    const world = await GetUserWorld(worldId);
+    console.log('Loading User World Data', world);
+    return {
+      world,
+    };
+  } catch (error) {
+    console.error('Failed to get user world', error);
+    throw error;
+  }
 };

@@ -8,6 +8,7 @@ import './styles.scss';
 type EditableTextAreaRowProps = {
   value: string;
   editMode: boolean;
+  label?: string;
   valueChanged?: boolean;
   onEditEnable?: () => void;
   onChange?: (value: string) => void;
@@ -17,6 +18,7 @@ type EditableTextAreaRowProps = {
 const EditableTextAreaRow: FC<EditableTextAreaRowProps> = ({
   value,
   editMode,
+  label,
   valueChanged,
   onEditEnable,
   onChange,
@@ -35,6 +37,15 @@ const EditableTextAreaRow: FC<EditableTextAreaRowProps> = ({
 
   return (
     <div className={`editable-content-row ${valueChanged ? ' changed' : ''}`}>
+      {label && (
+        <div className="metadata-row">
+          <p className="metadata">{label}</p>
+          <div className="row-controls">
+            {!editMode && <EditButton onClick={() => onEditEnable?.()} />}
+            {editMode && <UndoButton onClick={() => onUndo?.()} />}
+          </div>
+        </div>
+      )}
       <div className="row-content">
         {editMode ? (
           <InputTextarea
@@ -49,10 +60,12 @@ const EditableTextAreaRow: FC<EditableTextAreaRowProps> = ({
           <p>{value}</p>
         )}
       </div>
-      <div className="row-controls">
-        {!editMode && <EditButton onClick={() => onEditEnable?.()} />}
-        {valueChanged && <UndoButton onClick={() => onUndo?.()} />}
-      </div>
+      {!label && (
+        <div className="row-controls">
+          {!editMode && <EditButton onClick={() => onEditEnable?.()} />}
+          {editMode && <UndoButton onClick={() => onUndo?.()} />}
+        </div>
+      )}
     </div>
   );
 };

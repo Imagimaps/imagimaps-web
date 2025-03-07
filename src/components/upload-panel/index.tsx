@@ -11,6 +11,7 @@ import { PrimeIcons } from 'primereact/api';
 
 import s3UploadHandler from './s3-upload-handlers';
 import { AppModel } from '@/state/appModel';
+import { LayerModel } from '@/routes/world/[worldId]/[mapId]/_state/layers'; // Yay for horrible coupling
 
 import './index.scss';
 
@@ -41,6 +42,7 @@ const UploadsPanel: FC<UploadsPanelProps> = ({
   const fileRef = useRef<FileUpload>(null);
   const toastRef = useRef<Toast>(null);
   const [{ activeWorld, activeMap, community }] = useModel(AppModel);
+  const [{ imageUploads, activeLayer }, layerActions] = useModel(LayerModel);
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>(
     UploadStatus.IDLE,
   );
@@ -88,6 +90,37 @@ const UploadsPanel: FC<UploadsPanelProps> = ({
       onUploadError?.();
     }
   }, [uploadStatus]);
+
+  useEffect(() => {
+    if (activeLayer) {
+      const upload = imageUploads.get(activeLayer.id);
+      if (upload) {
+        setUploadKey(upload.key);
+        setTotalSize(upload.totalSize);
+        setUploadStatus(upload.uploadStatus);
+        setUploadProgress(upload.uploadProgress);
+        fileRef.current?.setFiles(upload.selectedFiles);
+        fileRef.current?.setUploadedFiles(upload.uploadedFiles);
+      } else {
+        setUploadKey('');
+        setTotalSize(0);
+        setUploadStatus(UploadStatus.IDLE);
+        setUploadProgress(0);
+        fileRef.current?.clear();
+      }
+    }
+  }, [activeLayer]);
+
+  useEffect(() => {
+    layerActions.setImageUploadState({
+      key: uploadKey,
+      selectedFiles: fileRef.current?.getFiles() || [],
+      uploadedFiles: fileRef.current?.getUploadedFiles() || [],
+      uploadStatus,
+      uploadProgress,
+      totalSize,
+    });
+  }, [fileRef, uploadKey, uploadProgress, totalSize]);
 
   const chooseOptions = {
     icon: PrimeIcons.IMAGES,
