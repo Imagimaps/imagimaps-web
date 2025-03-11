@@ -11,6 +11,8 @@ import Fingerprint from '@shared/svg/fingerprint.svg';
 import LayersSvg from '@shared/svg/layers.svg';
 import { LayerStatus, MapLayer } from '@shared/_types';
 import { post as updateMap } from '@api/bff/user/world/[worldId]/map';
+import { put as createLayer } from '@api/bff/user/map/[mapId]/layer';
+import { NewLayer } from '@shared/_defaults';
 import { UserMapData } from './page.data';
 import { LayerModel } from './_state/layers';
 import { AppModel } from '@/state/appModel';
@@ -37,15 +39,13 @@ const MapPage: FC = () => {
 
   useEffect(() => {
     console.log('Setting active map', data.map);
+    layersActions.initialise(data.map);
     actions.setActiveMap(data.map);
   }, [data.map]);
 
   useEffect(() => {
     console.log('Active Map Changed', activeMap);
     setLiveMapModel(activeMap);
-    if (activeMap) {
-      layersActions.initialise(activeMap);
-    }
   }, [activeMap]);
 
   useEffect(() => {
@@ -72,19 +72,27 @@ const MapPage: FC = () => {
       <Button
         icon="pi pi-plus"
         label="Add Layer"
-        onClick={() => {
+        onClick={async () => {
           console.log('Add Layer');
           if (!liveMapModel) {
             return;
           }
-          layersActions.createNewLayer({ setActive: true });
+          const newLayer = await createLayer(liveMapModel.id, {
+            query: undefined,
+            data: { layer: NewLayer(layersModel.layerCount) },
+          });
+          layersActions.addLayer(newLayer);
+          layersActions.setActiveLayer(newLayer);
         }}
       />
     </>
   );
 
   const layerTemplate = (layer: MapLayer) => {
-    const layerHasChanges = layersModel.currentLayerHasChanges;
+    console.log('Rendering Layer Template', layer);
+    const { changedLayers } = layersModel;
+
+    const layerHasChanges = changedLayers.some(l => l.id === layer.id);
     return (
       <div
         onClick={() => {
@@ -197,7 +205,7 @@ const MapPage: FC = () => {
             setEditEnabledFields({ ...editEnabledFields, description: false });
           }}
         />
-        {layersModel?.activeLayer ? (
+        {layersModel?.activeLayerIsWorkable ? (
           <Button> Enter Map </Button>
         ) : (
           <Button disabled> Enter Map </Button>

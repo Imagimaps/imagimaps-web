@@ -109,6 +109,7 @@ export type MapLayer = {
   id: string;
   type: 'Layer';
   name: string;
+  order: number;
   status: LayerStatus;
   imagePath: string;
   topography: MapTopography;

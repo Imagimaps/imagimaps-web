@@ -11,7 +11,7 @@ import { PrimeIcons } from 'primereact/api';
 
 import s3UploadHandler from './s3-upload-handlers';
 import { AppModel } from '@/state/appModel';
-import { LayerModel } from '@/routes/world/[worldId]/[mapId]/_state/layers'; // Yay for horrible coupling
+import { LayerModel } from '@/routes/world/[worldId]/[mapId]/_state/layers';
 
 import './index.scss';
 

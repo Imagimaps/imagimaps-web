@@ -111,6 +111,7 @@ const MapPage: React.FC = () => {
     const newLayer: MapLayer = {
       type: 'Layer',
       id: 'new-layer',
+      order: layers.length,
       name: 'New Layer',
       description: 'New Layer Description',
       status: LayerStatus.PROCESSING,

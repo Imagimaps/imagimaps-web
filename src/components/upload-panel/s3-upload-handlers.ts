@@ -1,7 +1,7 @@
 import { SetStateAction } from 'react';
 import { FileUploadHandlerEvent } from 'primereact/fileupload';
 
-import GetUploadUrl from '@api/bff/community/[communityId]/world/[worldId]/map/[mapId]/upload';
+import GetUploadUrl from '@api/bff/images/upload';
 import { Community } from '@shared/types/community';
 import { Map } from '@shared/_types';
 import { World } from '@shared/types/world';
@@ -44,8 +44,13 @@ const s3UploadHandler =
     const file = event.files[0];
     console.log('Selected File:', file);
 
-    const getUploadUrlPromise = GetUploadUrl(communityId, worldId, mapId, {
-      query: { filename: file.name },
+    const getUploadUrlPromise = GetUploadUrl({
+      query: {
+        communityId,
+        worldId,
+        mapId,
+        filename: file.name,
+      },
       data: undefined,
     });
 

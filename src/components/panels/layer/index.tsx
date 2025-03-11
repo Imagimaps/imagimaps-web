@@ -3,10 +3,13 @@ import { FC, useState } from 'react';
 import { Button } from 'primereact/button';
 import { useModel } from '@modern-js/runtime/model';
 import { LayerStatus } from '@shared/_types';
+import { post as UpdateLayer } from '@api/bff/user/map/[mapId]/layer';
+import { post as ProcessImage } from '@api/bff/images/process';
 import EditableTitleRow from '@/components/editable-rows/title';
 import EditableTextAreaRow from '@/components/editable-rows/text-area';
 import UploadsPanel from '@/components/upload-panel';
 import { LayerModel } from '@/routes/world/[worldId]/[mapId]/_state/layers';
+import { AppModel } from '@/state/appModel';
 
 import './index.scss';
 
@@ -17,22 +20,10 @@ const LayerPanel: FC = () => {
     { activeLayer, layers, editState, fieldHasChanged, currentLayerHasChanges },
     layerActions,
   ] = useModel(LayerModel);
+  const [{ activeMap }] = useModel(AppModel);
   const layerId = activeLayer?.id;
   const editModel = layers.find(l => l.id === layerId);
   const fieldEditState = editState.get(layerId ?? '');
-
-  const createNewLayer = async (uploadKey: string) => {
-    console.log('Create New Layer', activeLayer, uploadKey);
-    // const newLayer = await CreateLayer(
-    //   community?.id,
-    //   activeWorld?.id,
-    //   activeMap?.id,
-    //   {
-    //     query: undefined,
-    //     data: { uploadKey, layer },
-    //   },
-    // );
-  };
 
   if (!editModel) {
     return null;
@@ -51,7 +42,18 @@ const LayerPanel: FC = () => {
               currentLayerHasChanges ? 'Save Changes' : 'No Changes to save'
             }
             tooltipOptions={{ position: 'top' }}
-            onClick={() => console.log('Save Layer')}
+            onClick={async () => {
+              if (!activeMap || !editModel) {
+                return;
+              }
+              console.log('Saving Layer', editModel);
+              const updatedLayer = await UpdateLayer(activeMap.id, {
+                query: undefined,
+                data: { layer: editModel },
+              });
+              layerActions.saveUpdatedLayer(updatedLayer);
+              layerActions.resetFieldEditState();
+            }}
           >
             Save
           </Button>
@@ -108,12 +110,34 @@ const LayerPanel: FC = () => {
       <p>{`Offset: [X: ${editModel.topography.position.x}, Y: ${editModel.topography.position.y}]`}</p>
       <p>{` Scale: [X: ${editModel.topography.scale.x}, Y: ${editModel.topography.scale.y}]`}</p>
       {editModel.imagePath ? (
-        <div>Image Uploaded</div>
+        <div>
+          <div>Layer Image</div>
+          <img
+            src={editModel.imagePath}
+            alt="Layer Image"
+            width="100%"
+            height="auto"
+          />
+        </div>
       ) : (
         <>
           <UploadsPanel
             triggerUpload={triggerUpload}
-            onUploadComplete={createNewLayer}
+            onUploadComplete={async (uploadKey: string) => {
+              setTriggerUpload(false);
+              if (!activeMap) {
+                return;
+              }
+              console.log('Processing Image', uploadKey);
+              await ProcessImage({
+                query: undefined,
+                data: {
+                  mapId: activeMap.id,
+                  layerId: editModel.id,
+                  uploadKey,
+                },
+              });
+            }}
             onUploadError={() => setTriggerUpload(false)}
           />
           <Button

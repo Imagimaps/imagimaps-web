@@ -70,9 +70,27 @@ export const LayerModel = model<LayerModelState>('map_layers').define(_ => {
             layer[k as keyof MapLayer] !== originalLayer[k as keyof MapLayer],
         );
       },
+      changedLayers: (state: LayerModelState) => {
+        return state.layers.filter(l => {
+          const originalLayer = state.map?.layers.find(_l => _l.id === l.id);
+          if (!originalLayer) {
+            return true;
+          }
+          return Object.keys(l).some(
+            k => l[k as keyof MapLayer] !== originalLayer[k as keyof MapLayer],
+          );
+        });
+      },
+      layerCount: (state: LayerModelState) => {
+        return state.layers.length;
+      },
+      activeLayerIsWorkable: (state: LayerModelState) => {
+        return state.activeLayer?.status === LayerStatus.ACTIVE;
+      },
     },
     actions: {
       initialise: (state: LayerModelState, map: WorldMap) => {
+        console.log('[LayersModel] Initialising Layers', map, [...map.layers]);
         state.map = map;
         state.layers = [...map.layers];
         state.activeLayer =
@@ -81,6 +99,11 @@ export const LayerModel = model<LayerModelState>('map_layers').define(_ => {
           map.layers.length > 0
             ? map.layers[0]
             : undefined;
+        console.log(
+          '[LayersModel] Initialised Layers',
+          state.layers,
+          state.activeLayer,
+        );
       },
       createNewLayer: (
         state: LayerModelState,
@@ -92,6 +115,7 @@ export const LayerModel = model<LayerModelState>('map_layers').define(_ => {
         const newLayer: MapLayer = {
           type: 'Layer',
           id: layerId,
+          order: state.layers.length,
           name: `New Layer ${newLayerCount}`,
           description: 'Edit the fields here to customize this layer',
           status: LayerStatus.DRAFT,
@@ -108,8 +132,28 @@ export const LayerModel = model<LayerModelState>('map_layers').define(_ => {
           state.activeLayer = newLayer;
         }
       },
+      addLayer: (state: LayerModelState, layer: MapLayer) => {
+        const index = state.layers.findIndex(l => l.order > layer.order);
+        if (index === -1) {
+          state.layers.push(layer);
+        } else {
+          state.layers.splice(index, 0, layer);
+        }
+      },
       setActiveLayer: (state: LayerModelState, layer: MapLayer) => {
         state.activeLayer = layer;
+      },
+      saveUpdatedLayer: (state: LayerModelState, updatedLayer: MapLayer) => {
+        const layer = state.layers.find(l => l.id === updatedLayer.id);
+        if (layer) {
+          Object.assign(layer, updatedLayer);
+        }
+        const originalLayer = state.map?.layers.find(
+          l => l.id === updatedLayer.id,
+        );
+        if (originalLayer) {
+          Object.assign(originalLayer, updatedLayer);
+        }
       },
       setFieldEditState: (
         state: LayerModelState,
@@ -127,6 +171,14 @@ export const LayerModel = model<LayerModelState>('map_layers').define(_ => {
         };
         editState[field] = value;
         state.editState.set(layerId, editState);
+      },
+      resetFieldEditState: (state: LayerModelState) => {
+        const layerId = state.activeLayer?.id;
+        if (!layerId) {
+          console.error('No active layer to edit');
+          return;
+        }
+        state.editState.delete(layerId);
       },
       updateField: (
         state: LayerModelState,
@@ -173,6 +225,16 @@ export const LayerModel = model<LayerModelState>('map_layers').define(_ => {
           return;
         }
         state.imageUploads.set(layerId, imageState);
+      },
+      replaceLayer: (
+        state: LayerModelState,
+        oldLayer: MapLayer,
+        newLayer: MapLayer,
+      ) => {
+        const index = state.layers.findIndex(l => l.id === oldLayer.id);
+        if (index >= 0) {
+          state.layers[index] = newLayer;
+        }
       },
     },
   };

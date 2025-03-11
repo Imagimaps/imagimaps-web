@@ -7,24 +7,27 @@ import { GetImageUploadUrlResponse } from './mapclient.types';
 const { mapServiceBaseUrl } = ServicesConfig();
 
 const MapClient = (userCredentials?: UserCredentials) => {
+  if (!userCredentials) {
+    console.error('User credentials not provided');
+    throw new Error('User credentials not provided');
+  }
+
   const getMapLayerUploadUrl = async (
     mapCtx: MapApiContext,
     filename: string,
   ) => {
-    if (!userCredentials) {
-      console.error('User credentials not provided');
-      throw new Error('User credentials not provided');
-    }
-
-    const { communityId, worldId, mapId } = mapCtx;
-    if (!communityId || !worldId || !mapId) {
+    const { mapId } = mapCtx;
+    if (!mapId) {
       console.error('Not enough Map context provided');
       throw new Error('Missing Map Context');
     }
 
-    const getParams = new URLSearchParams([['filename', filename]]).toString();
+    const getParams = new URLSearchParams([
+      ['mapId', mapId],
+      ['filename', filename],
+    ]).toString();
     const response = await fetch(
-      `${mapServiceBaseUrl}/api/map/tile/${communityId}/${worldId}/${mapId}/upload?${getParams}`,
+      `${mapServiceBaseUrl}/api/map/upload/s3url?${getParams}`,
       {
         method: 'GET',
         headers: {
@@ -44,8 +47,34 @@ const MapClient = (userCredentials?: UserCredentials) => {
     return responseParsed;
   };
 
+  const processLayerImageUpload = async (
+    mapId: string,
+    layerId: string,
+    uploadKey: string,
+  ) => {
+    const response = await fetch(
+      `${mapServiceBaseUrl}/api/map/${mapId}/layer/${layerId}/image/process`,
+      {
+        method: 'POST',
+        headers: {
+          'x-source': 'bff-service',
+          'x-user-id': userCredentials.userId,
+          'x-session-id': userCredentials.sessionToken,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ uploadKey }),
+      },
+    );
+
+    if (!response.ok) {
+      console.error('Failed to process layer image upload', response);
+      throw new Error('Failed to process layer image upload');
+    }
+  };
+
   return {
     getMapLayerUploadUrl,
+    processLayerImageUpload,
   };
 };
 

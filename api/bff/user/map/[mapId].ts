@@ -20,10 +20,13 @@ export default async (mapId: string): Promise<Map> => {
     'x-user-id': userId,
     'Content-Type': 'application/json',
   };
-  const getMap = await fetch(`${mapServiceBaseUrl}/api/map/${mapId}`, {
-    method: 'GET',
-    headers,
-  });
+  const getMap = await fetch(
+    `${mapServiceBaseUrl}/api/map/${mapId}?eagerLoad=true`,
+    {
+      method: 'GET',
+      headers,
+    },
+  );
 
   if (!getMap.ok) {
     throw new Error(`Failed to get map. Status: ${getMap.status}`);
