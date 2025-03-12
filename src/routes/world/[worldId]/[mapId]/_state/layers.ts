@@ -105,33 +105,6 @@ export const LayerModel = model<LayerModelState>('map_layers').define(_ => {
           state.activeLayer,
         );
       },
-      createNewLayer: (
-        state: LayerModelState,
-        opts: { setActive: boolean },
-      ) => {
-        const newLayerCount =
-          state.layers.filter(l => l.status === LayerStatus.DRAFT).length + 1;
-        const layerId = `new/${newLayerCount}`;
-        const newLayer: MapLayer = {
-          type: 'Layer',
-          id: layerId,
-          order: state.layers.length,
-          name: `New Layer ${newLayerCount}`,
-          description: 'Edit the fields here to customize this layer',
-          status: LayerStatus.DRAFT,
-          topography: {
-            position: { x: 0, y: 0 },
-            bounds: { top: 0, left: 0, bottom: 0, right: 0 },
-            scale: { x: 1, y: 1 },
-          },
-          imagePath: '',
-        };
-        state.layers.push(newLayer);
-        state.lastCreatedLayer = newLayer;
-        if (opts.setActive) {
-          state.activeLayer = newLayer;
-        }
-      },
       addLayer: (state: LayerModelState, layer: MapLayer) => {
         const index = state.layers.findIndex(l => l.order > layer.order);
         if (index === -1) {

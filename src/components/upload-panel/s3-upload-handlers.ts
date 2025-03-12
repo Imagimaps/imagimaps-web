@@ -30,7 +30,7 @@ const s3UploadHandler =
       console.error('FileUpload ref not set');
       return;
     }
-    if (!communityId || !worldId || !mapId) {
+    if (!worldId || !mapId) {
       console.error('Not enough Map context provided');
       // TODO: Show Error Toast
       return;

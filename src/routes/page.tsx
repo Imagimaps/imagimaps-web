@@ -9,7 +9,7 @@ import ImagimapsIco from '@assets/icons/imagimaps.ico';
 import { useModel } from '@modern-js/runtime/model';
 import AuthDiscordCard from '@/components/auth-providers/discord-card';
 import { AuthModel } from '@/state/authModel';
-import CommunityGridPanel from '@/components/communities-grid-panel';
+// import CommunityGridPanel from '@/components/communities-grid-panel';
 
 import './index.css';
 
@@ -49,7 +49,7 @@ const Index = () => {
           </div>
         )}
         {isAuthenticated && <Link to="/portal">Go to your Portal</Link>}
-        {isAuthenticated && <CommunityGridPanel />}
+        {/* {isAuthenticated && <CommunityGridPanel />} */}
       </main>
     </div>
   );

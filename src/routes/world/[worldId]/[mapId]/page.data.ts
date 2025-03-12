@@ -1,9 +1,10 @@
 import GetUserMap from '@api/bff/user/map/[mapId]';
 import { LoaderFunctionArgs } from '@modern-js/runtime/router';
-import { Map } from '@shared/_types';
+import { Map, UserMapMetadata } from '@shared/_types';
 
 export type UserMapData = {
   map: Map;
+  metadata: UserMapMetadata;
 };
 
 export const loader = async ({
@@ -13,9 +14,10 @@ export const loader = async ({
   if (!mapId) {
     throw new Error('No map id found');
   }
-  const map = await GetUserMap(mapId);
-  console.log('Loading User Map Data', map);
+  const mapData = await GetUserMap(mapId);
+  console.log('Loading User Map Data', mapData);
   return {
-    map,
+    map: mapData.map,
+    metadata: mapData.userMetadata,
   };
 };

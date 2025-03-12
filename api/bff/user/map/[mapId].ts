@@ -1,10 +1,12 @@
 import ServicesConfig from '@api/_config/services';
 import { useContext } from '@modern-js/runtime/koa';
-import { Map } from '@shared/_types';
+import { Map, UserMapMetadata } from '@shared/_types';
 
 const { mapServiceBaseUrl } = ServicesConfig();
 
-export default async (mapId: string): Promise<Map> => {
+export default async (
+  mapId: string,
+): Promise<{ map: Map; userMetadata: UserMapMetadata }> => {
   const ctx = useContext();
   const logger = ctx.log.child({ source: 'GET user/world/[worldId]' });
   const sessionId = ctx.state.sessionId as string;
@@ -20,7 +22,7 @@ export default async (mapId: string): Promise<Map> => {
     'x-user-id': userId,
     'Content-Type': 'application/json',
   };
-  const getMap = await fetch(
+  const getMapPromise = await fetch(
     `${mapServiceBaseUrl}/api/map/${mapId}?eagerLoad=true`,
     {
       method: 'GET',
@@ -28,12 +30,37 @@ export default async (mapId: string): Promise<Map> => {
     },
   );
 
-  if (!getMap.ok) {
-    throw new Error(`Failed to get map. Status: ${getMap.status}`);
+  const userMetadataPromise = fetch(
+    `${mapServiceBaseUrl}/api/map/${mapId}/user/${userId}/metadata`,
+    {
+      method: 'GET',
+      headers,
+    },
+  );
+
+  const [getMapRes, userMetadataRes] = await Promise.all([
+    getMapPromise,
+    userMetadataPromise,
+  ]);
+
+  if (!getMapRes.ok) {
+    throw new Error(`Failed to get map. Status: ${getMapRes.status}`);
+  }
+  if (!userMetadataRes.ok) {
+    throw new Error(
+      `Failed to get user metadata. Status: ${userMetadataRes.status}`,
+    );
   }
 
-  const map: Map = await getMap.json();
+  const map: Map = await getMapRes.json();
+  const userMetadatDto = await userMetadataRes.json();
+  const userMetadata: UserMapMetadata = {
+    layerId: userMetadatDto.activeLayerId,
+    position: userMetadatDto.lastPosition,
+    zoom: userMetadatDto.lastZoom,
+  };
   logger.info({ msg: 'Got map', map });
+  logger.info({ msg: 'Got user metadata', userMetadata });
 
-  return map;
+  return { map, userMetadata };
 };

@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef, useState } from 'react';
-import { useLoaderData } from '@modern-js/runtime/router';
+import { useLoaderData, useNavigate } from '@modern-js/runtime/router';
 import { useModel } from '@modern-js/runtime/model';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { OrderList } from 'primereact/orderlist';
@@ -28,6 +28,7 @@ const MapPage: FC = () => {
   const [{ activeMap, activeWorld }, actions] = useModel(AppModel);
   const [layersModel, layersActions] = useModel(LayerModel);
   const data = useLoaderData() as UserMapData;
+  const navigate = useNavigate();
 
   const [liveMapModel, setLiveMapModel] = useState(activeMap);
   const [editEnabledFields, setEditEnabledFields] = useState({
@@ -206,7 +207,16 @@ const MapPage: FC = () => {
           }}
         />
         {layersModel?.activeLayerIsWorkable ? (
-          <Button> Enter Map </Button>
+          <Button
+            onClick={() =>
+              navigate(`workspace?layer=${layersModel.activeLayer?.id}`, {
+                state: { userMetadata: data.metadata },
+              })
+            }
+          >
+            {' '}
+            Enter Map{' '}
+          </Button>
         ) : (
           <Button disabled> Enter Map </Button>
         )}

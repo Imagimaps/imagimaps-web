@@ -10,10 +10,12 @@ import EditableTextAreaRow from '@/components/editable-rows/text-area';
 import UploadsPanel from '@/components/upload-panel';
 import { LayerModel } from '@/routes/world/[worldId]/[mapId]/_state/layers';
 import { AppModel } from '@/state/appModel';
+import { useRemoteBackends } from '@/hooks/remoteBackends';
 
 import './index.scss';
 
 const LayerPanel: FC = () => {
+  const { cdnBaseUrl } = useRemoteBackends();
   const [triggerUpload, setTriggerUpload] = useState(false);
 
   const [
@@ -110,15 +112,12 @@ const LayerPanel: FC = () => {
       <p>{`Offset: [X: ${editModel.topography.position.x}, Y: ${editModel.topography.position.y}]`}</p>
       <p>{` Scale: [X: ${editModel.topography.scale.x}, Y: ${editModel.topography.scale.y}]`}</p>
       {editModel.imagePath ? (
-        <div>
-          <div>Layer Image</div>
-          <img
-            src={editModel.imagePath}
-            alt="Layer Image"
-            width="100%"
-            height="auto"
-          />
-        </div>
+        <img
+          src={`${cdnBaseUrl}/${editModel.thumbnailPath}`}
+          alt="Layer Image"
+          width="256px"
+          height="auto"
+        />
       ) : (
         <>
           <UploadsPanel

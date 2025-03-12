@@ -106,18 +106,22 @@ export enum LayerStatus {
 }
 
 export type MapLayer = {
-  id: string;
   type: 'Layer';
+  id: string;
   name: string;
-  order: number;
   status: LayerStatus;
-  imagePath: string;
-  topography: MapTopography;
   isDefault?: boolean;
+  createdDate: Date;
+  updatedDate: Date;
+  imagePath: string;
+  originalImagePath: string;
+  thumbnailPath: string;
+  order: number;
   description?: string;
   icon?: string;
   previewImage?: string;
   overlays?: Overlay[];
+  topography: MapTopography;
   active?: boolean;
 };
 

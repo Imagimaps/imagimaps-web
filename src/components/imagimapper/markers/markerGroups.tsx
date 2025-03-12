@@ -48,7 +48,7 @@ const MarkerGroups: FC = () => {
   return (
     <LayerGroup>
       {overlays.map(overlay => {
-        return overlay.markers.map(marker => {
+        return overlay.markers?.map(marker => {
           const { position, id } = marker;
           const markerPos = xy(position.x, position.y);
           return (

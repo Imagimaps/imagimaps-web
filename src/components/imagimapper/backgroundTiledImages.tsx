@@ -26,13 +26,18 @@ const BackgroundTiledImages: FC = () => {
     }
   }, [activeLayer]);
 
+  console.log(
+    '[backgroundTiledImages] tiles url: ',
+    `${cdnBaseUrl}/${activeLayer?.imagePath}`,
+  );
   return (
     activeLayer && (
       <TileLayer
-        url={`${cdnBaseUrl}/${activeLayer.imagePath}/{z}_{x}_{y}.png`}
+        url={`${cdnBaseUrl}/${activeLayer.imagePath}`}
         bounds={bounds}
         tms={false}
         detectRetina={true}
+        keepBuffer={4}
       />
     )
   );

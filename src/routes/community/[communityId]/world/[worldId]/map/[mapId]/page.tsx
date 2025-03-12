@@ -7,7 +7,7 @@ import { Button } from 'primereact/button';
 
 import GetLayers from '@api/bff/community/[communityId]/world/[worldId]/map/[mapId]/layer';
 import LayersSvg from '@shared/svg/layers.svg';
-import { LayerStatus, MapLayer, MapTopography } from '@shared/_types';
+import { LayerStatus, MapLayer } from '@shared/_types';
 import SvgIcon from '@/components/icon/svg';
 import TreeView from '@/components/tree-view/treeView';
 import { TreeNode } from '@/components/tree-view/types';
@@ -111,17 +111,21 @@ const MapPage: React.FC = () => {
     const newLayer: MapLayer = {
       type: 'Layer',
       id: 'new-layer',
-      order: layers.length,
-      name: 'New Layer',
-      description: 'New Layer Description',
-      status: LayerStatus.PROCESSING,
+      name: `New Layer ${layers.length}`,
+      status: LayerStatus.DRAFT,
+      isDefault: false,
+      createdDate: new Date(),
+      updatedDate: new Date(),
       imagePath: '',
+      originalImagePath: '',
+      thumbnailPath: '',
+      order: layers.length,
+      description: 'Edit the fields here to customize this layer',
       topography: {
         position: { x: 0, y: 0 },
         bounds: { top: 0, left: 0, bottom: 0, right: 0 },
         scale: { x: 1, y: 1 },
-      } as MapTopography,
-      overlays: [],
+      },
     };
     setStagedLayer(newLayer);
   };
