@@ -5,6 +5,7 @@ import { useModel } from '@modern-js/runtime/model';
 import { LayerStatus } from '@shared/_types';
 import { post as UpdateLayer } from '@api/bff/user/map/[mapId]/layer';
 import { post as ProcessImage } from '@api/bff/images/process';
+import { DELETE as DeleteLayer } from '@api/bff/user/map/[mapId]/layer/[layerId]';
 import EditableTitleRow from '@/components/editable-rows/title';
 import EditableTextAreaRow from '@/components/editable-rows/text-area';
 import UploadsPanel from '@/components/upload-panel';
@@ -62,7 +63,14 @@ const LayerPanel: FC = () => {
           <Button
             icon="pi pi-trash"
             className="p-button-rounded p-button-text"
-            onClick={() => console.log('Delete Layer')}
+            onClick={async () => {
+              console.log('Delete Layer');
+              if (!activeMap || !editModel) {
+                return;
+              }
+              await DeleteLayer(activeMap.id, editModel.id);
+              layerActions.deleteLayer(editModel.id);
+            }}
           >
             Delete{' '}
           </Button>

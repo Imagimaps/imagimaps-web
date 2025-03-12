@@ -209,6 +209,12 @@ export const LayerModel = model<LayerModelState>('map_layers').define(_ => {
           state.layers[index] = newLayer;
         }
       },
+      deleteLayer: (state: LayerModelState, layerId: string) => {
+        const index = state.layers.findIndex(l => l.id === layerId);
+        if (index >= 0) {
+          state.layers.splice(index, 1);
+        }
+      },
     },
   };
 });

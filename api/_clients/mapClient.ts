@@ -12,6 +12,13 @@ const MapClient = (userCredentials?: UserCredentials) => {
     throw new Error('User credentials not provided');
   }
 
+  const commonHeaders = {
+    'x-source': 'bff-service',
+    'x-user-id': userCredentials.userId,
+    'x-session-id': userCredentials.sessionToken,
+    'Content-Type': 'application/json',
+  };
+
   const getMapLayerUploadUrl = async (
     mapCtx: MapApiContext,
     filename: string,
@@ -30,11 +37,7 @@ const MapClient = (userCredentials?: UserCredentials) => {
       `${mapServiceBaseUrl}/api/map/upload/s3url?${getParams}`,
       {
         method: 'GET',
-        headers: {
-          'x-source': 'bff-service',
-          'x-user-id': userCredentials.userId,
-          'x-session-id': userCredentials.sessionToken,
-        },
+        headers: commonHeaders,
       },
     );
 
@@ -56,12 +59,7 @@ const MapClient = (userCredentials?: UserCredentials) => {
       `${mapServiceBaseUrl}/api/map/${mapId}/layer/${layerId}/image/process`,
       {
         method: 'POST',
-        headers: {
-          'x-source': 'bff-service',
-          'x-user-id': userCredentials.userId,
-          'x-session-id': userCredentials.sessionToken,
-          'Content-Type': 'application/json',
-        },
+        headers: commonHeaders,
         body: JSON.stringify({ uploadKey }),
       },
     );
@@ -72,9 +70,25 @@ const MapClient = (userCredentials?: UserCredentials) => {
     }
   };
 
+  const deleteLayer = async (mapId: string, layerId: string) => {
+    const response = await fetch(
+      `${mapServiceBaseUrl}/api/map/${mapId}/layer/${layerId}`,
+      {
+        method: 'DELETE',
+        headers: commonHeaders,
+      },
+    );
+
+    if (!response.ok) {
+      console.error('Failed to delete layer', response);
+      throw new Error('Failed to delete layer');
+    }
+  };
+
   return {
     getMapLayerUploadUrl,
     processLayerImageUpload,
+    deleteLayer,
   };
 };
 
