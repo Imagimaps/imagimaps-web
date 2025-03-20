@@ -71,7 +71,7 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
           map.layers.find(l => l.id === userConfig.layerId) ??
           map.layers[0];
         console.log(
-          `[EngineData] Initialised MapId: ${state.map.id}, LayerId: ${state.activeLayer.id}`,
+          `[EngineData] Initialised MapId: ${state.map.id}, LayerId: ${state.activeLayer?.id}`,
         );
       },
       setMapData: (state: EngineData, map: Map) => {
