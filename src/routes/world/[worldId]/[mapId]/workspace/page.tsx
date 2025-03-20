@@ -32,6 +32,7 @@ const WorkspacePage: React.FC = () => {
       console.log('Getting Map Details for Map:', mapId);
       GetUserMap(mapId).then(res => {
         const { map, userMetadata } = res;
+        console.log('[Workspace] Active Map:', map, userMetadata);
         engineDataActions.initialise(
           map,
           { ...userMetadata, layerId: layerId ?? userMetadata.layerId ?? '' },
@@ -49,6 +50,7 @@ const WorkspacePage: React.FC = () => {
       });
     } else {
       const { userMetadata } = location.state;
+      console.log('[Workspace] Active Map:', activeMap);
       engineDataActions.initialise(
         activeMap,
         { ...userMetadata, layerId: layerId ?? userMetadata.layerId ?? '' },
