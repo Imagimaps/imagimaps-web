@@ -53,11 +53,12 @@ const MapPage: FC = () => {
     console.log('Live Map Model Changed', liveMapModel);
     if (liveMapModel) {
       console.log('Checking for changes', activeMap, liveMapModel);
+      const { name, description } = liveMapModel.intrinsics;
       let hasChanges = false;
-      if (liveMapModel.name !== activeMap?.name) {
+      if (name !== activeMap?.intrinsics.name) {
         hasChanges = true;
       }
-      if (liveMapModel.description !== activeMap?.description) {
+      if (description !== activeMap?.intrinsics.description) {
         hasChanges = true;
       }
       setMapHasChanges(hasChanges);
@@ -169,39 +170,56 @@ const MapPage: FC = () => {
 
         <p className="metadata">Name</p>
         <EditableTitleRow
-          value={liveMapModel.name}
+          value={liveMapModel.intrinsics.name}
           editMode={editEnabledFields.name}
-          valueChanged={liveMapModel.name !== activeMap?.name}
+          valueChanged={
+            liveMapModel.intrinsics.name !== activeMap?.intrinsics.name
+          }
           onEditEnable={() => {
             setEditEnabledFields({ ...editEnabledFields, name: true });
           }}
           onChange={value => {
-            setLiveMapModel({ ...liveMapModel, name: value });
+            setLiveMapModel({
+              ...liveMapModel,
+              intrinsics: { ...liveMapModel.intrinsics, name: value },
+            });
           }}
           onUndo={() => {
             setLiveMapModel({
               ...liveMapModel,
-              name: activeMap?.name ?? '',
+              intrinsics: {
+                ...liveMapModel.intrinsics,
+                name: activeMap?.intrinsics.name ?? '',
+              },
             });
             setEditEnabledFields({ ...editEnabledFields, name: false });
           }}
         />
 
         <EditableTextAreaRow
-          value={liveMapModel.description ?? ''}
+          value={liveMapModel.intrinsics.description ?? ''}
           label="Description"
           editMode={editEnabledFields.description}
-          valueChanged={liveMapModel.description !== activeMap?.description}
+          valueChanged={
+            liveMapModel.intrinsics.description !==
+            activeMap?.intrinsics.description
+          }
           onEditEnable={() => {
             setEditEnabledFields({ ...editEnabledFields, description: true });
           }}
           onChange={value => {
-            setLiveMapModel({ ...liveMapModel, description: value });
+            setLiveMapModel({
+              ...liveMapModel,
+              intrinsics: { ...liveMapModel.intrinsics, description: value },
+            });
           }}
           onUndo={() => {
             setLiveMapModel({
               ...liveMapModel,
-              description: activeMap?.description ?? '',
+              intrinsics: {
+                ...liveMapModel.intrinsics,
+                description: activeMap?.intrinsics.description ?? '',
+              },
             });
             setEditEnabledFields({ ...editEnabledFields, description: false });
           }}

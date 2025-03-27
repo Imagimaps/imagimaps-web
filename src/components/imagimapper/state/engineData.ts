@@ -3,6 +3,7 @@ import {
   Map,
   MapLayer,
   MapMarker,
+  MapShared,
   Overlay,
   TemplateGroup,
   UserMapMetadata,
@@ -19,14 +20,17 @@ const EngineDataDefaults: EngineData = {
   map: {
     type: 'Map',
     id: '',
-    name: '',
-    description: '',
+    intrinsics: {
+      name: '',
+      description: '',
+    },
     layers: [],
     boundingTopography: {
       position: { x: 0, y: 0 },
       bounds: { top: 0, left: 0, bottom: 0, right: 0 },
       scale: { x: 1, y: 1 },
     },
+    shared: MapShared.Private,
   },
   userConfig: {
     position: { x: 0, y: 0 },
@@ -34,9 +38,6 @@ const EngineDataDefaults: EngineData = {
     layerId: '',
   },
   templateGroups: [],
-  // runtime: {
-  //   selectedMarkerIsNew: false,
-  // },
 };
 
 // TODO: Split into separate models

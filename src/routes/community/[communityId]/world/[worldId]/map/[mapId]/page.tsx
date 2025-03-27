@@ -132,7 +132,10 @@ const MapPage: React.FC = () => {
 
   return (
     <>
-      <Panel className="map-details-panel" header={`Map: ${activeMap?.name}`}>
+      <Panel
+        className="map-details-panel"
+        header={`Map: ${activeMap?.intrinsics.name}`}
+      >
         <p>Id: {activeMap?.id}</p>
         <p>
           Owner:{' '}
@@ -140,7 +143,7 @@ const MapPage: React.FC = () => {
             ? activeMap?.owner
             : activeMap?.owner?.name}
         </p>
-        <p>{activeMap?.description}</p>
+        <p>{activeMap?.intrinsics.description}</p>
         <div className="button primary">
           <Link to="workspace">Enter Map Workspace</Link>
         </div>

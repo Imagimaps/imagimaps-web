@@ -1,15 +1,18 @@
-import { LayerStatus, Map, MapLayer } from './_types';
+import { LayerStatus, Map, MapLayer, MapShared } from './_types';
 
 export const DefaultMap: Map = {
+  type: 'Map',
   id: 'default',
-  name: 'Default Map',
-  description: 'Default Map',
+  intrinsics: {
+    name: 'Default Map',
+    description: 'Default Map',
+  },
+  shared: MapShared.Private,
   boundingTopography: {
     position: { x: 0, y: 0 },
     bounds: { top: 0, left: 0, bottom: 0, right: 0 },
     scale: { x: 1, y: 1 },
   },
-  type: 'Map',
   layers: [],
 };
 

@@ -28,9 +28,14 @@ export const post = async (
   );
 
   const formData: Partial<Map> = {
-    name,
-    description,
-    owner: userId,
+    intrinsics: {
+      name,
+      description,
+    },
+    owner: {
+      type: 'community',
+      displayId: communityId,
+    },
   };
 
   const createMapResponse = await fetch(`${mapServiceBaseUrl}/api/map/`, {

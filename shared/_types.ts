@@ -1,5 +1,3 @@
-import { User } from './types/user';
-
 export type WorldSpace = number;
 export type Scalar = number;
 export type WorldSpaceCoords = {
@@ -9,6 +7,14 @@ export type WorldSpaceCoords = {
 export type WorldSpaceSize = {
   width: WorldSpace;
   height: WorldSpace;
+};
+
+export type Owner = {
+  type: 'user' | 'community';
+  displayId: string;
+  id?: string;
+  name?: string;
+  icon?: string;
 };
 
 export type MarkerType = 'Marker' | 'Region';
@@ -125,17 +131,28 @@ export type MapLayer = {
   active?: boolean;
 };
 
+export type MapIntrinsics = {
+  name: string;
+  description: string;
+  icon?: string;
+  splashImage?: string;
+};
+
+export enum MapShared {
+  Public = 'public',
+  Private = 'private',
+  Unlisted = 'unlisted',
+}
+
 export type Map = {
   id: string;
   type: 'Map';
-  name: string;
-  description: string;
-  boundingTopography: MapTopography;
-  icon?: string;
-  splashImage?: string;
-  owner?: User | string;
+  intrinsics: MapIntrinsics;
+  owner?: Owner;
+  shared: MapShared;
   layers: MapLayer[];
   templateGroups?: TemplateGroup[];
+  boundingTopography?: MapTopography;
   active?: boolean;
 };
 

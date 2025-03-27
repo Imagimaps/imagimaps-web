@@ -51,7 +51,7 @@ const BreadcrumbMenu: FC = () => {
       });
       if (mapId && activeMap) {
         biscuit.push({
-          label: `Map: ${activeMap.name}`,
+          label: `Map: ${activeMap.intrinsics.name}`,
           icon: PrimeIcons.MAP,
           command: (e: any) => {
             e.originalEvent.preventDefault();

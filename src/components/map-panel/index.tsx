@@ -45,10 +45,10 @@ const MapPanel: FC<MapPanelProps> = ({ maps }) => {
         {maps.map(map => (
           <GridPanelCard
             key={map.id}
-            title={map.name}
-            splashImage={map.icon}
+            title={map.intrinsics.name}
+            splashImage={map.intrinsics.icon}
             subtitle={generateSubTitle(map)}
-            content={map.description}
+            content={map.intrinsics.description}
             onClick={() => handleCardClicked(map)}
           />
         ))}

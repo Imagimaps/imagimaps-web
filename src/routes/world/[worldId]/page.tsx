@@ -224,10 +224,10 @@ const UserWorldPage: React.FC = () => {
         {maps?.map((map, index) => (
           <Tile
             key={index}
-            splashImage={map.splashImage ?? MapPlaceholder}
-            title={map.name}
+            splashImage={map.intrinsics.splashImage ?? MapPlaceholder}
+            title={map.intrinsics.name}
             subtitle={map.id}
-            content={map.description}
+            content={map.intrinsics.description}
             onClick={() => {
               console.log('Go to Map', map.id);
               navigate(`${map.id}`);

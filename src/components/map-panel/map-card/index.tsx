@@ -24,8 +24,8 @@ const MapCard: React.FC<MapCardProps> = ({ map }) => {
   };
 
   return (
-    <Card title={map.name} onClick={goToMap} className="map-card">
-      <p>{map.description}</p>
+    <Card title={map.intrinsics.name} onClick={goToMap} className="map-card">
+      <p>{map.intrinsics.description}</p>
     </Card>
   );
 };

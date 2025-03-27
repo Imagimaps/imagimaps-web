@@ -71,7 +71,10 @@ export const post = async (
   const sessionId = ctx.state.sessionId as string;
   const userId = ctx.state.userId as string;
   const { map: mapData } = data;
-  const { name, description, id } = mapData;
+  const {
+    intrinsics: { name, description },
+    id,
+  } = mapData;
 
   logger.debug({
     msg: 'Updating existing map',
