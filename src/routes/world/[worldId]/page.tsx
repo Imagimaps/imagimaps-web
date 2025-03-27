@@ -49,10 +49,13 @@ const UserWorldPage: React.FC = () => {
     if (liveWorldModel) {
       console.log('Checking for changes', activeWorld, liveWorldModel);
       let hasChanges = false;
-      if (liveWorldModel.name !== activeWorld?.name) {
+      if (liveWorldModel.intrinsics.name !== activeWorld?.intrinsics.name) {
         hasChanges = true;
       }
-      if (liveWorldModel.description !== activeWorld?.description) {
+      if (
+        liveWorldModel.intrinsics.description !==
+        activeWorld?.intrinsics.description
+      ) {
         hasChanges = true;
       }
       setWorldHasChanges(hasChanges);
@@ -136,8 +139,9 @@ const UserWorldPage: React.FC = () => {
                         {
                           query: undefined,
                           data: {
-                            name: liveWorldModel.name,
-                            description: liveWorldModel.description ?? '',
+                            name: liveWorldModel.intrinsics.name,
+                            description:
+                              liveWorldModel.intrinsics.description ?? '',
                           },
                         },
                       );
@@ -167,19 +171,27 @@ const UserWorldPage: React.FC = () => {
         className="world-details-panel"
       >
         <EditableTitleRow
-          value={liveWorldModel.name}
+          value={liveWorldModel.intrinsics.name}
           editMode={editEnabledFields.name}
-          valueChanged={liveWorldModel.name !== activeWorld?.name}
+          valueChanged={
+            liveWorldModel.intrinsics.name !== activeWorld?.intrinsics.name
+          }
           onEditEnable={() => {
             setEditEnabledFields({ ...editEnabledFields, name: true });
           }}
           onChange={value => {
-            setLiveWorldModel({ ...liveWorldModel, name: value });
+            setLiveWorldModel({
+              ...liveWorldModel,
+              intrinsics: { ...liveWorldModel.intrinsics, name: value },
+            });
           }}
           onUndo={() => {
             setLiveWorldModel({
               ...liveWorldModel,
-              name: activeWorld?.name ?? '',
+              intrinsics: {
+                ...liveWorldModel.intrinsics,
+                name: activeWorld?.intrinsics.name ?? '',
+              },
             });
           }}
         />
@@ -188,19 +200,28 @@ const UserWorldPage: React.FC = () => {
           <p className="metadata">{liveWorldModel.id}</p>
         </div>
         <EditableTextAreaRow
-          value={liveWorldModel.description ?? ''}
+          value={liveWorldModel.intrinsics.description ?? ''}
           editMode={editEnabledFields.description}
-          valueChanged={liveWorldModel.description !== activeWorld?.description}
+          valueChanged={
+            liveWorldModel.intrinsics.description !==
+            activeWorld?.intrinsics.description
+          }
           onEditEnable={() => {
             setEditEnabledFields({ ...editEnabledFields, description: true });
           }}
           onChange={value => {
-            setLiveWorldModel({ ...liveWorldModel, description: value });
+            setLiveWorldModel({
+              ...liveWorldModel,
+              intrinsics: { ...liveWorldModel.intrinsics, description: value },
+            });
           }}
           onUndo={() => {
             setLiveWorldModel({
               ...liveWorldModel,
-              description: activeWorld?.description ?? '',
+              intrinsics: {
+                ...liveWorldModel.intrinsics,
+                description: activeWorld?.intrinsics.description ?? '',
+              },
             });
           }}
         />

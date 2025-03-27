@@ -32,10 +32,10 @@ const WorldPanel: React.FC<WorldPanelProps> = ({ worlds }) => {
         {worlds.map(world => (
           <GridPanelCard
             key={world.id}
-            title={world.name}
-            splashImage={world.coverImage}
+            title={world.intrinsics.name}
+            splashImage={world.intrinsics.coverImage}
             subtitle={world.owner.displayName}
-            content={world.description}
+            content={world.intrinsics.description}
             onClick={() => handleWorldClicked(world)}
           />
         ))}

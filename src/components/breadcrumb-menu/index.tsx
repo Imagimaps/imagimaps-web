@@ -42,7 +42,7 @@ const BreadcrumbMenu: FC = () => {
     });
     if (worldId && activeWorld) {
       biscuit.push({
-        label: `World: ${activeWorld.name}`,
+        label: `World: ${activeWorld.intrinsics.name}`,
         icon: PrimeIcons.GLOBE,
         command: (e: any) => {
           e.originalEvent.preventDefault();

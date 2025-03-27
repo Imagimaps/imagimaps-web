@@ -53,11 +53,11 @@ const WorldPage: React.FC = () => {
     <>
       <Panel
         className="world-details-panel"
-        header={`World: ${activeWorld?.name}`}
+        header={`World: ${activeWorld?.intrinsics.name}`}
       >
-        <p>Status: {activeWorld?.status}</p>
+        <p>Status: {activeWorld?.intrinsics.status}</p>
         <p>Owner: {activeWorld?.owner.displayName}</p>
-        <p>{activeWorld?.description}</p>
+        <p>{activeWorld?.intrinsics.description}</p>
       </Panel>
       <MapPanel maps={maps} />
     </>

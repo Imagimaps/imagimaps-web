@@ -58,9 +58,9 @@ const PortalPage: React.FC = () => {
         {worlds.map((world, index) => (
           <Tile
             key={index}
-            splashImage={world.coverImage ?? worldPlaceholder}
-            title={world.name}
-            content={world.description}
+            splashImage={world.intrinsics.coverImage ?? worldPlaceholder}
+            title={world.intrinsics.name}
+            content={world.intrinsics.description}
             onClick={() => {
               console.log('Go to world', world.id);
               actions.setViewingWorld(world);
