@@ -2,6 +2,7 @@ import { URLSearchParams } from 'url';
 import ServicesConfig from '@api/_config/services';
 import { UserCredentials } from '@shared/types/auth';
 import { MapApiContext } from '@shared/types/map';
+import { MapLayer, MapLayerProcessingStatus } from '@shared/_types';
 import { GetImageUploadUrlResponse } from './mapclient.types';
 
 const { mapServiceBaseUrl } = ServicesConfig();
@@ -70,6 +71,51 @@ const MapClient = (userCredentials?: UserCredentials) => {
     }
   };
 
+  const getLayer = async (
+    mapId: string,
+    layerId: string,
+  ): Promise<MapLayer> => {
+    const response = await fetch(
+      `${mapServiceBaseUrl}/api/map/${mapId}/layer/${layerId}`,
+      {
+        method: 'GET',
+        headers: commonHeaders,
+      },
+    );
+
+    if (!response.ok) {
+      console.error('Failed to get layer', response);
+      throw new Error('Failed to get layer');
+    }
+
+    const responseParsed = await response.json();
+    return responseParsed;
+  };
+
+  const getLayerStatus = async (
+    mapId: string,
+    layerId: string,
+  ): Promise<{
+    status: string;
+    processingStatus: MapLayerProcessingStatus;
+  }> => {
+    const response = await fetch(
+      `${mapServiceBaseUrl}/api/map/${mapId}/layer/${layerId}/status`,
+      {
+        method: 'GET',
+        headers: commonHeaders,
+      },
+    );
+
+    if (!response.ok) {
+      console.error('Failed to get layer status', response);
+      throw new Error('Failed to get layer status');
+    }
+
+    const responseParsed = await response.json();
+    return responseParsed;
+  };
+
   const deleteLayer = async (mapId: string, layerId: string) => {
     const response = await fetch(
       `${mapServiceBaseUrl}/api/map/${mapId}/layer/${layerId}`,
@@ -88,6 +134,8 @@ const MapClient = (userCredentials?: UserCredentials) => {
   return {
     getMapLayerUploadUrl,
     processLayerImageUpload,
+    getLayer,
+    getLayerStatus,
     deleteLayer,
   };
 };

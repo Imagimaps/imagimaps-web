@@ -25,6 +25,7 @@ type LayerModelState = {
   lastCreatedLayer?: MapLayer;
   editState: Map<LayerId, LayerEditState>;
   imageUploads: Map<LayerId, LayerImageUpload>;
+  imagesBeingProcessed: Map<LayerId, boolean>;
 };
 
 export const LayerModel = model<LayerModelState>('map_layers').define(_ => {
@@ -34,6 +35,7 @@ export const LayerModel = model<LayerModelState>('map_layers').define(_ => {
       layers: [],
       editState: new Map(),
       imageUploads: new Map(),
+      imagesBeingProcessed: new Map(),
     },
     computed: {
       fieldHasChanged:
@@ -63,12 +65,15 @@ export const LayerModel = model<LayerModelState>('map_layers').define(_ => {
         }
         const originalLayer = state.map?.layers.find(l => l.id === layerId);
         if (!originalLayer) {
+          console.log('[LayersModel] No original layer found');
           return true;
         }
-        return Object.keys(layer).some(
-          k =>
-            layer[k as keyof MapLayer] !== originalLayer[k as keyof MapLayer],
-        );
+        return Object.keys(layer).some(k => {
+          const hasChange =
+            layer[k as keyof MapLayer] !== originalLayer[k as keyof MapLayer];
+          console.log(`[LayersModel] Checking ${k} for changes`, hasChange);
+          return hasChange;
+        });
       },
       changedLayers: (state: LayerModelState) => {
         return state.layers.filter(l => {
@@ -86,6 +91,11 @@ export const LayerModel = model<LayerModelState>('map_layers').define(_ => {
       },
       activeLayerIsWorkable: (state: LayerModelState) => {
         return state.activeLayer?.status === LayerStatus.ACTIVE;
+      },
+      activeLayerIsProcessing: (state: LayerModelState) => {
+        const layerId = state.activeLayer?.id;
+        const isProcessing = state.imagesBeingProcessed.get(layerId ?? '');
+        return isProcessing ?? false;
       },
     },
     actions: {
@@ -208,6 +218,12 @@ export const LayerModel = model<LayerModelState>('map_layers').define(_ => {
         if (index >= 0) {
           state.layers[index] = newLayer;
         }
+      },
+      setLayerProcessing: (state: LayerModelState, layerId: string) => {
+        state.imagesBeingProcessed.set(layerId, true);
+      },
+      setLayerProcessed: (state: LayerModelState, layerId: string) => {
+        state.imagesBeingProcessed.set(layerId, false);
       },
       deleteLayer: (state: LayerModelState, layerId: string) => {
         const index = state.layers.findIndex(l => l.id === layerId);

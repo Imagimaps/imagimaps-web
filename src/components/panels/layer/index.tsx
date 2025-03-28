@@ -1,11 +1,14 @@
 import { Panel } from 'primereact/panel';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Button } from 'primereact/button';
 import { useModel } from '@modern-js/runtime/model';
-import { LayerStatus } from '@shared/_types';
+import { LayerStatus, MapLayerProcessingStatus } from '@shared/_types';
+import GetLayer, {
+  DELETE as DeleteLayer,
+} from '@api/bff/user/map/[mapId]/layer/[layerId]';
 import { post as UpdateLayer } from '@api/bff/user/map/[mapId]/layer';
 import { post as ProcessImage } from '@api/bff/images/process';
-import { DELETE as DeleteLayer } from '@api/bff/user/map/[mapId]/layer/[layerId]';
+import GetLayerProcessingStatus from '@api/bff/user/map/[mapId]/layer/[layerId]/status';
 import EditableTitleRow from '@/components/editable-rows/title';
 import EditableTextAreaRow from '@/components/editable-rows/text-area';
 import UploadsPanel from '@/components/upload-panel';
@@ -18,15 +21,58 @@ import './index.scss';
 const LayerPanel: FC = () => {
   const { cdnBaseUrl } = useRemoteBackends();
   const [triggerUpload, setTriggerUpload] = useState(false);
+  const [processingStatus, setProcessingStatus] =
+    useState<MapLayerProcessingStatus>();
 
   const [
-    { activeLayer, layers, editState, fieldHasChanged, currentLayerHasChanges },
+    {
+      activeLayer,
+      layers,
+      editState,
+      fieldHasChanged,
+      currentLayerHasChanges,
+      activeLayerIsProcessing,
+    },
     layerActions,
   ] = useModel(LayerModel);
-  const [{ activeMap }] = useModel(AppModel);
+  const [{ activeMap }, appActions] = useModel(AppModel);
   const layerId = activeLayer?.id;
   const editModel = layers.find(l => l.id === layerId);
   const fieldEditState = editState.get(layerId ?? '');
+
+  useEffect(() => {
+    if (!activeMap || !activeLayer) {
+      return undefined;
+    }
+    if (activeLayerIsProcessing) {
+      const intervalHandle = setInterval(() => {
+        GetLayerProcessingStatus(activeMap.id, activeLayer.id).then(res => {
+          setProcessingStatus(res.processingStatus);
+          if (res.processingStatus.stage === 'COMPLETE') {
+            clearInterval(intervalHandle);
+            console.log('[Layer Panel] Processing Complete');
+            layerActions.setLayerProcessed(activeLayer.id);
+            GetLayer(activeMap.id, activeLayer.id).then(layer => {
+              console.log('[Layer Panel] Updated Layer:', layer);
+              appActions.addLayer(layer);
+              layerActions.saveUpdatedLayer(layer);
+            });
+          }
+          if (res.processingStatus.stage === 'FAILED') {
+            clearInterval(intervalHandle);
+            console.error('[Layer Panel] Processing Failed');
+            layerActions.setLayerProcessed(activeLayer.id);
+          }
+        });
+      }, 2000);
+
+      return () => {
+        clearInterval(intervalHandle);
+      };
+    }
+
+    return undefined;
+  }, [activeMap, activeLayer, activeLayerIsProcessing]);
 
   if (!editModel) {
     return null;
@@ -119,14 +165,15 @@ const LayerPanel: FC = () => {
       </p>
       <p>{`Offset: [X: ${editModel.topography.position.x}, Y: ${editModel.topography.position.y}]`}</p>
       <p>{` Scale: [X: ${editModel.topography.scale.x}, Y: ${editModel.topography.scale.y}]`}</p>
-      {editModel.imagePath ? (
+      {editModel.imagePath && !activeLayerIsProcessing && (
         <img
           src={`${cdnBaseUrl}/${editModel.thumbnailPath}`}
           alt="Layer Image"
           width="256px"
           height="auto"
         />
-      ) : (
+      )}
+      {!editModel.imagePath && !activeLayerIsProcessing && (
         <>
           <UploadsPanel
             triggerUpload={triggerUpload}
@@ -144,6 +191,7 @@ const LayerPanel: FC = () => {
                   uploadKey,
                 },
               });
+              layerActions.setLayerProcessing(editModel.id);
             }}
             onUploadError={() => setTriggerUpload(false)}
           />
@@ -155,6 +203,29 @@ const LayerPanel: FC = () => {
             Upload Image
           </Button>
         </>
+      )}
+      {activeLayerIsProcessing && !processingStatus && (
+        <p className="processing-message">
+          Image Processing in Progress. Please wait...
+        </p>
+      )}
+      {activeLayerIsProcessing && processingStatus && (
+        <div className="processing-status">
+          <h5>Processing Status</h5>
+          <p>{`Stage: ${processingStatus.stage}`}</p>
+          <p>{`Percent Complete: ${processingStatus.percentComplete}`}</p>
+          <p>{`Created At: ${processingStatus.createdAt}`}</p>
+          <p>{`Last Updated: ${processingStatus.lastUpdated}`}</p>
+          {processingStatus.error && (
+            <p className="error">{`Error: ${processingStatus.error}`}</p>
+          )}
+          {processingStatus.message && (
+            <p>{`Message: ${processingStatus.message}`}</p>
+          )}
+          {processingStatus.log?.map((log, i) => (
+            <p key={`log-line-${i}`}>{log}</p>
+          ))}
+        </div>
       )}
     </Panel>
   );

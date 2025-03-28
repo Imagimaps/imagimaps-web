@@ -111,6 +111,24 @@ export enum LayerStatus {
   ERROR = 'ERROR',
 }
 
+export enum ProcessingStage {
+  PENDING = 'PENDING',
+  PROCESSING = 'PROCESSING',
+  COMPLETE = 'COMPLETE',
+  FAILED = 'FAILED',
+}
+
+export type MapLayerProcessingStatus = {
+  stage: ProcessingStage;
+  percentComplete?: number;
+  error?: any;
+  result?: any;
+  message?: any;
+  log?: string[];
+  createdAt: Date;
+  lastUpdated: Date;
+};
+
 export type MapLayer = {
   type: 'Layer';
   id: string;
