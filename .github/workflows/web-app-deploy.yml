@@ -100,6 +100,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9
+          terraform_wrapper: false
+
       - name: Deploy to development
         uses: Imagimaps/common-actions/.github/actions/deploy-service@main
         with:
