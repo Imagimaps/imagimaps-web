@@ -46,11 +46,13 @@ jobs:
         with:
           filters: |
             webapp:
+              - 'package.json'
               - 'src/**'
               - 'shared/**'
               - 'Dockerfile'
               - '.github/workflows/web-app-build.yml'
             bff:
+              - 'package.json'
               - 'api/**'
               - 'shared/**'
               - 'Dockerfile'
