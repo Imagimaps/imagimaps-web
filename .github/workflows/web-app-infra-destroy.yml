@@ -2,7 +2,7 @@ name: Infra Destroy (Soft)
 
 on:
   schedule:
-  - cron: '45 13 * * *' # 23:45 AEST (1:45pm UTC)
+    - cron: '45 13 * * *' # 23:45 AEST (1:45pm UTC)
   workflow_dispatch:
 
 permissions:
@@ -20,14 +20,20 @@ jobs:
     environment: development
 
     steps:
-    - name: Bootstrap WebApp Infrastructure
-      id: webapp-infra
-      uses: Imagimaps/common-actions/.github/actions/s3-static-site@main
-      with:
-        domain: imagimaps.com
-        environment: development
-        environment_short_name: dev
-        aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
-        aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
-        aws_region: ${{ vars.AWS_REGION }}
-        destroy: true
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9
+          terraform_wrapper: false
+
+      - name: Bootstrap WebApp Infrastructure
+        id: webapp-infra
+        uses: Imagimaps/common-actions/.github/actions/s3-static-site@main
+        with:
+          domain: imagimaps.com
+          environment: development
+          environment_short_name: dev
+          aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
+          aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+          aws_region: ${{ vars.AWS_REGION }}
+          destroy: true

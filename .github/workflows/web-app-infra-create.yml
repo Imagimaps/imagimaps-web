@@ -20,6 +20,12 @@ jobs:
     environment: development
 
     steps:
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9
+          terraform_wrapper: false
+
       - name: Bootstrap WebApp Infrastructure
         id: webapp-infra
         uses: Imagimaps/common-actions/.github/actions/s3-static-site@main
@@ -41,6 +47,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9
+          terraform_wrapper: false
 
       - name: Bootstrap Infra for Webapp BFF
         uses: Imagimaps/common-actions/.github/actions/bootstrap-service@main
