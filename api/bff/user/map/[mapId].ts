@@ -1,8 +1,6 @@
-import ServicesConfig from '@api/_config/services';
+import MapClient from '@api/_clients/mapClient';
 import { useContext } from '@modern-js/runtime/koa';
 import { Map, UserMapMetadata } from '@shared/_types';
-
-const { mapServiceBaseUrl } = ServicesConfig();
 
 export default async (
   mapId: string,
@@ -10,57 +8,37 @@ export default async (
   const ctx = useContext();
   const logger = ctx.log.child({ source: 'GET user/world/[worldId]' });
   const sessionId = ctx.state.sessionId as string;
-  const userId = ctx.cookies.get('id-token');
+  const userId = ctx.cookies.get('id-token') as string;
 
   if (!userId) {
     throw new Error('User not found');
   }
+  const mapClient = MapClient({ sessionToken: sessionId, userId });
 
-  const headers = {
-    'x-source': 'bff-service',
-    'x-session-id': sessionId,
-    'x-user-id': userId,
-    'Content-Type': 'application/json',
-  };
-  const getMapPromise = await fetch(
-    `${mapServiceBaseUrl}/api/map/${mapId}?eagerLoad=true`,
-    {
-      method: 'GET',
-      headers,
-    },
-  );
+  const { map, userMetadata } = await mapClient.getMap(mapId, {
+    loadUserMetadata: true,
+  });
 
-  const userMetadataPromise = fetch(
-    `${mapServiceBaseUrl}/api/map/${mapId}/user/${userId}/metadata`,
-    {
-      method: 'GET',
-      headers,
-    },
-  );
-
-  const [getMapRes, userMetadataRes] = await Promise.all([
-    getMapPromise,
-    userMetadataPromise,
-  ]);
-
-  if (!getMapRes.ok) {
-    throw new Error(`Failed to get map. Status: ${getMapRes.status}`);
-  }
-  if (!userMetadataRes.ok) {
-    throw new Error(
-      `Failed to get user metadata. Status: ${userMetadataRes.status}`,
-    );
-  }
-
-  const map: Map = await getMapRes.json();
-  const userMetadatDto = await userMetadataRes.json();
-  const userMetadata: UserMapMetadata = {
-    layerId: userMetadatDto.activeLayerId,
-    position: userMetadatDto.lastPosition,
-    zoom: userMetadatDto.lastZoom,
-  };
-  logger.info({ msg: 'Got map', map });
-  logger.info({ msg: 'Got user metadata', userMetadata });
+  logger.info({ msg: 'Fetched Map', map });
+  logger.info({ msg: 'Fetched User Metadata', userMetadata });
 
   return { map, userMetadata };
+};
+
+export const DELETE = async (mapId: string) => {
+  const ctx = useContext();
+  const logger = ctx.log.child({ source: 'DELETE user/world/[worldId]' });
+  const sessionId = ctx.state.sessionId as string;
+  const userId = ctx.cookies.get('id-token') as string;
+
+  if (!userId) {
+    throw new Error('User not found');
+  }
+  const mapClient = MapClient({ sessionToken: sessionId, userId });
+
+  await mapClient.deleteMap(mapId);
+
+  logger.info({ msg: 'Deleted Map', mapId });
+  ctx.response.status = 200;
+  return { msg: 'Map deleted successfully', mapId };
 };

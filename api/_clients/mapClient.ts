@@ -2,7 +2,12 @@ import { URLSearchParams } from 'url';
 import ServicesConfig from '@api/_config/services';
 import { UserCredentials } from '@shared/types/auth';
 import { MapApiContext } from '@shared/types/map';
-import { MapLayer, MapLayerProcessingStatus } from '@shared/_types';
+import {
+  Map,
+  MapLayer,
+  MapLayerProcessingStatus,
+  UserMapMetadata,
+} from '@shared/_types';
 import { GetImageUploadUrlResponse } from './mapclient.types';
 
 const { mapServiceBaseUrl } = ServicesConfig();
@@ -18,6 +23,70 @@ const MapClient = (userCredentials?: UserCredentials) => {
     'x-user-id': userCredentials.userId,
     'x-session-id': userCredentials.sessionToken,
     'Content-Type': 'application/json',
+  };
+
+  const getMap = async (
+    mapId: string,
+    opts?: { loadUserMetadata?: boolean },
+  ) => {
+    const reqPromises = [];
+    const getMapPromise = fetch(
+      `${mapServiceBaseUrl}/api/map/${mapId}?eagerLoad=true`,
+      {
+        method: 'GET',
+        headers: commonHeaders,
+      },
+    );
+    reqPromises.push(getMapPromise);
+
+    if (opts?.loadUserMetadata) {
+      const userMetadataPromise = fetch(
+        `${mapServiceBaseUrl}/api/map/${mapId}/user/${userCredentials.userId}/metadata`,
+        {
+          method: 'GET',
+          headers: commonHeaders,
+        },
+      );
+      reqPromises.push(userMetadataPromise);
+    }
+
+    const [getMapRes, userMetadataRes] = await Promise.all(reqPromises);
+    const errors = [];
+    if (!getMapRes.ok) {
+      errors.push(`Failed to get map. Status: ${getMapRes.status}`);
+    }
+    if (opts?.loadUserMetadata && !userMetadataRes.ok) {
+      errors.push(
+        `Failed to get user metadata. Status: ${userMetadataRes.status}`,
+      );
+    }
+    if (errors.length) {
+      throw new Error(errors.join('\n'));
+    }
+
+    const map: Map = await getMapRes.json();
+    const userMetadatDto = opts?.loadUserMetadata
+      ? await userMetadataRes.json()
+      : null;
+    const userMetadata: UserMapMetadata = {
+      layerId: userMetadatDto?.activeLayerId,
+      position: userMetadatDto?.lastPosition,
+      zoom: userMetadatDto?.lastZoom,
+    };
+
+    return { map, userMetadata };
+  };
+
+  const deleteMap = async (mapId: string) => {
+    const response = await fetch(`${mapServiceBaseUrl}/api/map/${mapId}`, {
+      method: 'DELETE',
+      headers: commonHeaders,
+    });
+
+    if (!response.ok) {
+      console.error('Failed to delete map', response);
+      throw new Error('Failed to delete map');
+    }
   };
 
   const getMapLayerUploadUrl = async (
@@ -132,6 +201,8 @@ const MapClient = (userCredentials?: UserCredentials) => {
   };
 
   return {
+    getMap,
+    deleteMap,
     getMapLayerUploadUrl,
     processLayerImageUpload,
     getLayer,

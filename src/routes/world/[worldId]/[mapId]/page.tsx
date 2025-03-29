@@ -12,6 +12,7 @@ import LayersSvg from '@shared/svg/layers.svg';
 import { LayerStatus, MapLayer } from '@shared/_types';
 import { post as updateMap } from '@api/bff/user/world/[worldId]/map';
 import { put as createLayer } from '@api/bff/user/map/[mapId]/layer';
+import { DELETE as DeleteMap } from '@api/bff/user/map/[mapId]';
 import { NewLayer } from '@shared/_defaults';
 import { UserMapData } from './page.data';
 import { LayerModel } from './_state/layers';
@@ -238,7 +239,39 @@ const MapPage: FC = () => {
         ) : (
           <Button disabled> Enter Map </Button>
         )}
-        <div>Ownership and other controls coming soon...</div>
+        <Panel
+          toggleable={true}
+          collapsed={true}
+          header={
+            <div className="header">
+              <p>Warning! Controls</p>
+            </div>
+          }
+        >
+          <Button
+            label="Delete Map"
+            icon="pi pi-trash"
+            className="p-button-danger"
+            onClick={() => {
+              console.log('Delete Map', liveMapModel.id);
+              DeleteMap(liveMapModel.id)
+                .then(() => {
+                  toast.current?.show({
+                    severity: 'success',
+                    summary: 'Map Deleted',
+                  });
+                  navigate('..', { relative: 'path' });
+                })
+                .catch(error => {
+                  console.error('Failed to delete map', error);
+                  toast.current?.show({
+                    severity: 'error',
+                    summary: 'Failed to delete map',
+                  });
+                });
+            }}
+          />
+        </Panel>
       </EntityPanel>
       <Panel header={layersHeader} className="map-layers-panel">
         <Splitter className="map-layers-split-panel">

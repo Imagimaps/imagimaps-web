@@ -104,3 +104,35 @@ export const post = async (
 
   return updatedWorld;
 };
+
+export const DELETE = async (worldId: string) => {
+  const ctx = useContext();
+  const logger = ctx.log.child({ source: 'DELETE user/world/[worldId]' });
+  const sessionId = ctx.state.sessionId as string;
+  const userId = ctx.cookies.get('id-token') as string;
+
+  if (!userId) {
+    throw new Error('User not found');
+  }
+
+  const deleteWorldRes = await fetch(
+    `${userServiceBaseUrl}/api/user/${userId}/world/${worldId}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'x-source': 'bff-service',
+        'x-session-id': sessionId,
+        'x-user-id': userId,
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+
+  if (!deleteWorldRes.ok) {
+    throw new Error(`Failed to delete world. Status: ${deleteWorldRes.status}`);
+  }
+
+  logger.info({ msg: 'Deleted world', worldId });
+  ctx.response.status = 200;
+  return { msg: 'World deleted successfully', worldId };
+};

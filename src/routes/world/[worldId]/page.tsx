@@ -7,7 +7,10 @@ import SvgIcon from '@components/icon/svg';
 import TileGrid from '@components/grid-panel';
 import Tile from '@components/grid-panel/panel-card';
 import { useModel } from '@modern-js/runtime/model';
-import { post as UpdateWorld } from '@api/bff/user/world/[worldId]';
+import {
+  post as UpdateWorld,
+  DELETE as DeleteWorld,
+} from '@api/bff/user/world/[worldId]';
 import { put as CreateMap } from '@api/bff/user/world/[worldId]/map';
 
 import Fingerprint from '@shared/svg/fingerprint.svg';
@@ -234,11 +237,29 @@ const UserWorldPage: React.FC = () => {
             </div>
           }
         >
-          <p>Controls Coming Soon</p>
-          <p>
-            Controls consist of items such as setting share options and deleting
-            this world.
-          </p>
+          <Button
+            label="Delete World"
+            icon="pi pi-trash"
+            className="p-button-danger"
+            onClick={() => {
+              console.log('Delete World', liveWorldModel.id);
+              DeleteWorld(liveWorldModel.id)
+                .then(() => {
+                  toast.current?.show({
+                    severity: 'success',
+                    summary: 'World Deleted',
+                  });
+                  navigate('/worlds');
+                })
+                .catch(error => {
+                  console.error('Failed to delete world', error);
+                  toast.current?.show({
+                    severity: 'error',
+                    summary: 'Failed to delete world',
+                  });
+                });
+            }}
+          />
         </Panel>
       </Panel>
       <TileGrid header="Your Maps">
