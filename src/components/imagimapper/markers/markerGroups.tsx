@@ -9,11 +9,15 @@ import { xy } from '../_coordTranslators';
 import { StagedPointMarkerModel } from '../state/stagedPointMarker';
 
 const MarkerGroups: FC = () => {
-  const [{ overlays, templates, stagedMarkerId }, { selectMarker }] = useModel(
+  const [
+    { overlays, templates, hiddenOverlays, stagedMarkerId },
+    { selectMarker },
+  ] = useModel(
     [EngineDataModel, StagedPointMarkerModel],
     (e, s) => ({
       overlays: e.overlays,
       templates: e.templates,
+      hiddenOverlays: e.hiddenOverlays,
       stagedMarkerId: s._id?.[2] ?? s._id?.[1],
     }),
     (_, s) => ({
@@ -48,6 +52,9 @@ const MarkerGroups: FC = () => {
   return (
     <LayerGroup>
       {overlays.map(overlay => {
+        if (hiddenOverlays.find(ho => ho === overlay.id)) {
+          return null;
+        }
         return overlay.markers?.map(marker => {
           const { position, id } = marker;
           const markerPos = xy(position.x, position.y);

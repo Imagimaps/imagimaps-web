@@ -112,7 +112,7 @@ const ContextMenu: FC = () => {
             onClick={addNewPointMarker}
           />
           <SvgIcon
-            className="icon"
+            className="icon disabled"
             src={PolygonAreaSvg}
             alt="Area on Map"
             onClick={startNewPolygon}

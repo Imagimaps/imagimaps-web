@@ -1,0 +1,18 @@
+.marker-filter-panel-wrapper {
+  display: flex;
+
+  &:hover {
+    background-color: beige;
+  }
+}
+
+.marker-filter-panel {
+  pointer-events: all;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}

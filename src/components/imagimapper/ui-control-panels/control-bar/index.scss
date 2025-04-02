@@ -1,0 +1,14 @@
+.map-control-bar {
+  pointer-events: all;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  border-radius: var(--border-radius);
+}
+
+.control-bar-content {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+}

@@ -136,6 +136,7 @@ const ImagiMapper: FC = () => {
       crs={L.Util.extend({}, CRS.Simple, {
         transformation: new L.Transformation(1, 0, 1, 0),
       })}
+      attributionControl={false}
     >
       <ControlPanelLayout />
       <BackgroundTiledImages />

@@ -1,6 +1,6 @@
 import { model } from '@modern-js/runtime/model';
 import {
-  Map,
+  Map as UserMap,
   MapLayer,
   MapMarker,
   MapShared,
@@ -11,9 +11,11 @@ import {
 
 export type EngineData = {
   userConfig: UserMapMetadata;
-  map: Map;
+  map: UserMap;
   activeLayer?: MapLayer;
   templateGroups: TemplateGroup[];
+  hiddenOverlays: string[];
+  filterPattern?: string;
 };
 
 const EngineDataDefaults: EngineData = {
@@ -38,6 +40,7 @@ const EngineDataDefaults: EngineData = {
     layerId: '',
   },
   templateGroups: [],
+  hiddenOverlays: [],
 };
 
 // TODO: Split into separate models
@@ -60,7 +63,7 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
     actions: {
       initialise: (
         state: EngineData,
-        map: Map,
+        map: UserMap,
         userConfig: UserMapMetadata,
         activeLayer?: MapLayer,
       ) => {
@@ -75,7 +78,7 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
           `[EngineData] Initialised MapId: ${state.map.id}, LayerId: ${state.activeLayer?.id}`,
         );
       },
-      setMapData: (state: EngineData, map: Map) => {
+      setMapData: (state: EngineData, map: UserMap) => {
         state.map = map;
         state.templateGroups = map.templateGroups ?? [];
       },
@@ -187,6 +190,22 @@ export const EngineDataModel = model('engineData').define((_, { onMount }) => {
           return { ...layer, overlays };
         });
         state.map.layers = updatedLayers;
+      },
+      hideOverlay: (state: EngineData, overlayId: string) => {
+        console.log('[EngineDataModel] Hiding overlay', overlayId);
+        const hiddenOverlays =
+          state.hiddenOverlays ?? new Map<string, boolean>();
+        const hiddenSet = new Set<string>(hiddenOverlays);
+        hiddenSet.add(overlayId);
+        state.hiddenOverlays = Array.from(hiddenSet);
+      },
+      showOverlay: (state: EngineData, overlayId: string) => {
+        console.log('[EngineDataModel] Showing overlay', overlayId);
+        const hiddenOverlays =
+          state.hiddenOverlays ?? new Map<string, boolean>();
+        const hiddenSet = new Set<string>(hiddenOverlays);
+        hiddenSet.delete(overlayId);
+        state.hiddenOverlays = Array.from(hiddenSet);
       },
     },
   };

@@ -6,6 +6,9 @@ import { UIPanelDataModel } from '../state/uiPanels';
 import { StagedPointMarkerModel } from '../state/stagedPointMarker';
 import SideContentsPanel from './side-contents-panel';
 import ContextMenu from './context-menu';
+import OverlayFilter from './overlay-filter';
+import EngineSettings from './engine-settings';
+import ControlBar from './control-bar';
 
 import './index.scss';
 
@@ -41,7 +44,12 @@ const ControlPanelLayout: FC = () => {
 
   return (
     <div className="layout-overlay">
-      <div className="panel-dock-top"></div>
+      <div className="panel-dock-top">
+        <ControlBar>
+          <OverlayFilter />
+          <EngineSettings />
+        </ControlBar>
+      </div>
       <SideContentsPanel />
       <ContextMenu />
     </div>
