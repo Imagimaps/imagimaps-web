@@ -7,6 +7,7 @@ import { MapMarker } from '@shared/_types';
 import { EngineDataModel } from '../state/engineData';
 import { xy } from '../_coordTranslators';
 import { StagedPointMarkerModel } from '../state/stagedPointMarker';
+import StringFilterModel from '../state/stringFilter';
 
 const MarkerGroups: FC = () => {
   const [
@@ -24,6 +25,8 @@ const MarkerGroups: FC = () => {
       selectMarker: s.hydrateFromPointMapMarker,
     }),
   );
+  const [{ filterPattern }] = useModel(StringFilterModel);
+
   const map = useMapEvents({});
 
   const handleClick = (marker: MapMarker) => (_e: any) => {
@@ -58,6 +61,9 @@ const MarkerGroups: FC = () => {
         return overlay.markers?.map(marker => {
           const { position, id } = marker;
           const markerPos = xy(position.x, position.y);
+          if (filterPattern && !marker.name.includes(filterPattern)) {
+            return null;
+          }
           return (
             id !== stagedMarkerId && (
               <Marker

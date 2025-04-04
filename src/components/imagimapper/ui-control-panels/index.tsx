@@ -9,6 +9,7 @@ import ContextMenu from './context-menu';
 import OverlayFilter from './overlay-filter';
 import EngineSettings from './engine-settings';
 import ControlBar from './control-bar';
+import StringFilter from './string-filter';
 
 import './index.scss';
 
@@ -46,6 +47,7 @@ const ControlPanelLayout: FC = () => {
     <div className="layout-overlay">
       <div className="panel-dock-top">
         <ControlBar>
+          <StringFilter />
           <OverlayFilter />
           <EngineSettings />
         </ControlBar>
