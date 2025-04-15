@@ -17,6 +17,20 @@ export type Owner = {
   icon?: string;
 };
 
+export type Countdown = {
+  id: string;
+  name: string;
+  position: number;
+  totalCountdownSeconds: number;
+  timeRemainingSeconds: number;
+  autoRepeat: boolean;
+  startTime?: Date;
+  pauseTime?: Date;
+  isPaused: boolean;
+  isRunning: boolean;
+  note?: string;
+};
+
 export type MarkerType = 'Marker' | 'Region';
 
 export type MapMarker = {
@@ -29,6 +43,7 @@ export type MapMarker = {
     y: number;
   };
   templateId: string;
+  countdown?: Countdown;
 };
 
 export type MarkerGroup = {

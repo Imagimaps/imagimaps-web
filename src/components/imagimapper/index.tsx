@@ -18,6 +18,7 @@ import StagedMarker from './markers/stagedPointMarker';
 import GhostTargetMarker from './markers/ghostTargetMarker';
 import StagedPolygon from './markers/stagedPolygon';
 import { StagedPointMarkerModel } from './state/stagedPointMarker';
+import EverySecond from './triggers/everySecond';
 import { useRemoteBackends } from '@/hooks/remoteBackends';
 import { AuthModel } from '@/state/authModel';
 
@@ -37,7 +38,7 @@ const ImagiMapper: FC = () => {
     {
       share: true,
       onError: e => {
-        console.error('error', e);
+        console.error('[Imagimapper] error', e);
       },
       shouldReconnect: closeEvent => {
         console.log('shouldReconnect', closeEvent);
@@ -50,7 +51,7 @@ const ImagiMapper: FC = () => {
       },
       reconnectAttempts: 10,
       onReconnectStop: numAttempts => {
-        console.log('onReconnectStop', numAttempts);
+        console.log('[Imagimapper] onReconnectStop', numAttempts);
         // TODO: Set some kind of state to allow the user to reconnect manually
       },
       heartbeat: {
@@ -65,37 +66,42 @@ const ImagiMapper: FC = () => {
   useEffect(() => {
     console.log('readyState:', readyState);
     if (readyState === ReadyState.CONNECTING) {
-      console.log('Connecting to websocket...');
+      console.log('[Imagimapper] Connecting to websocket...');
     } else if (readyState === ReadyState.OPEN) {
-      console.log('Websocket connected!');
+      console.log('[Imagimapper] Websocket connected!');
       sendJsonMessage({ type: 'USER_CONNECTED', payload: user?.id });
     } else if (readyState === ReadyState.CLOSING) {
-      console.log('Closing websocket...');
+      console.log('[Imagimapper] Closing websocket...');
     } else if (readyState === ReadyState.CLOSED) {
-      console.log('Websocket closed.');
+      console.log('[Imagimapper] Websocket closed.');
     }
   }, [readyState]);
 
   useEffect(() => {
     if (lastMessage) {
       const message = JSON.parse(lastMessage.data);
-      console.log('Received message:', message);
+      console.log('[Imagimapper] Received message:', message);
       const { type, payload } = message;
       if (type === 'MAP_DATA') {
-        console.log('Received map data:', payload);
+        console.log('[Imagimapper] Received map data:', payload);
         actions.setMapData(payload);
       } else if (type === 'LAYER_DATA_REFRESHED') {
-        console.log('Received layer data refresh:', payload);
+        console.log('[Imagimapper] Received layer data refresh:', payload);
         // actions.setLayerData(payload);
-      } else if (type === 'MARKER_CREATION_SUCCESS') {
-        const { marker } = payload;
-        actions.setNewlyCreatedMarkerId(marker);
+        // } else if (type === 'MARKER_CREATION_SUCCESS') {
+        //   const { marker } = payload;
+        //   actions.setNewlyCreatedMarkerId(marker);
       } else if (type === 'MARKER_CREATED') {
         const { marker, overlayId } = payload;
-        actions.setNewlyCreatedMarkerId(marker);
+        console.log(
+          '[Imagimapper] Creating marker from WS Event:',
+          marker,
+          overlayId,
+        );
+        // actions.setNewlyCreatedMarkerId(marker);
         actions.createPointMarker(marker, overlayId);
       } else if (type === 'MARKER_UPDATED') {
-        console.log('Updating marker from WS Event:', payload);
+        console.log('[Imagimapper] Updating marker from WS Event:', payload);
         actions.updateMarker(payload);
       } else if (type === 'MARKER_OVERLAY_UPDATED') {
         const { marker, overlayId } = payload;
@@ -108,7 +114,7 @@ const ImagiMapper: FC = () => {
           resetStagedMarker();
         }
       } else {
-        console.error('Unknown message type:', type, payload);
+        console.error('[Imagimapper] Unknown message type:', type, payload);
       }
     }
   }, [lastMessage]);
@@ -138,6 +144,7 @@ const ImagiMapper: FC = () => {
       })}
       attributionControl={false}
     >
+      <EverySecond />
       <ControlPanelLayout />
       <BackgroundTiledImages />
       <MarkerGroups />

@@ -1,12 +1,14 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { useModel } from '@modern-js/runtime/model';
 import useWebSocket from 'react-use-websocket';
+import { TabPanel, TabView } from 'primereact/tabview';
 
 // import Info from '@shared/svg/info.svg';
 
 import { Overlay } from '@shared/_types';
 import ActionsBar from './components/actionsBar';
 import TitleRow from './components/titleRow';
+import CountdownRow from './components/countdownRow';
 import LocationRow from './components/locationRow';
 import OverlayRow from './components/overlayRow';
 import DetailsRow from './components/detailsRow';
@@ -165,10 +167,19 @@ const MarkerDetails: FC = () => {
             }}
           />
           <TitleRow editMode={editMode} />
-          <LocationRow editMode={editMode} />
-          <OverlayRow editMode={editMode} />
-          <TemplateRow editMode={editMode} />
-          <DetailsRow editMode={editMode} />
+          <TabView>
+            <TabPanel header="Info">
+              <LocationRow editMode={editMode} />
+              <OverlayRow editMode={editMode} />
+              <TemplateRow editMode={editMode} />
+              <DetailsRow editMode={editMode} />
+            </TabPanel>
+            {!isNew && (
+              <TabPanel header="Timers">
+                <CountdownRow />
+              </TabPanel>
+            )}
+          </TabView>
         </div>
       </div>
     )

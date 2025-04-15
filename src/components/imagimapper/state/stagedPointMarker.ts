@@ -1,4 +1,5 @@
 import { model } from '@modern-js/runtime/model';
+import { v7 } from 'uuid';
 import {
   DisplayTemplate,
   MapMarker,
@@ -47,10 +48,12 @@ export const StagedPointMarkerModel = model<StagedPointMarkerData>(
     } as StagedPointMarkerData,
     computed: {
       id: (state: StagedPointMarkerData) => {
-        return state._id?.[2] ?? state._id?.[1] ?? 'default_id';
+        const id = state._id?.[2] ?? state._id?.[1];
+        console.log('[Staged Data Model] Compute ID:', id);
+        return id;
       },
       type: (state: StagedPointMarkerData) => {
-        return state._type?.[2] ?? state._type?.[1] ?? 'default_type';
+        return state._type?.[2] ?? state._type?.[1];
       },
       name: (state: StagedPointMarkerData) => {
         return state._name?.[2] ?? state._name?.[1] ?? 'default_name';
@@ -142,7 +145,7 @@ export const StagedPointMarkerModel = model<StagedPointMarkerData>(
           template,
           initialPosition,
         );
-        state._id = [false, undefined, undefined];
+        state._id = [false, undefined, v7()];
         state._type = [false, 'Marker', undefined];
         state._name = [false, template.name, undefined];
         state._description = [false, template.description, undefined];

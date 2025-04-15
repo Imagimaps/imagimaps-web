@@ -23,7 +23,7 @@ const TreeView: FC<TreeViewProps> = ({
   nodeClicked,
   style,
 }) => {
-  const treeRef = useRef<TreeApi<TreeNode> | null>();
+  const treeRef = useRef<TreeApi<TreeNode> | null>(null);
 
   useEffect(() => {
     console.log('Tree Data Updated', data);
