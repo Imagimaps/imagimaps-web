@@ -6,7 +6,7 @@ export default async (
   mapId: string,
 ): Promise<{ map: Map; userMetadata: UserMapMetadata }> => {
   const ctx = useContext();
-  const logger = ctx.log.child({ source: 'GET user/world/[worldId]' });
+  const logger = ctx.log.child({ source: 'GET user/map/[mapId]' });
   const sessionId = ctx.state.sessionId as string;
   const userId = ctx.cookies.get('id-token') as string;
 
@@ -27,7 +27,7 @@ export default async (
 
 export const DELETE = async (mapId: string) => {
   const ctx = useContext();
-  const logger = ctx.log.child({ source: 'DELETE user/world/[worldId]' });
+  const logger = ctx.log.child({ source: 'DELETE user/map/[mapId]' });
   const sessionId = ctx.state.sessionId as string;
   const userId = ctx.cookies.get('id-token') as string;
 

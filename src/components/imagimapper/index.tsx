@@ -19,6 +19,7 @@ import GhostTargetMarker from './markers/ghostTargetMarker';
 import StagedPolygon from './markers/stagedPolygon';
 import { StagedPointMarkerModel } from './state/stagedPointMarker';
 import EverySecond from './triggers/everySecond';
+import { TimerModel } from './state/timers';
 import { useRemoteBackends } from '@/hooks/remoteBackends';
 import { AuthModel } from '@/state/authModel';
 
@@ -32,6 +33,7 @@ const ImagiMapper: FC = () => {
     useModel(StagedPointMarkerModel, s => ({
       stagedMarkerId: s._id?.[2] ?? s._id?.[1],
     }));
+  const [, timerActions] = useModel(TimerModel);
 
   const { sendJsonMessage, lastMessage, readyState } = useWebSocket(
     `ws://${mapApiHost}/api/map/${map.id}/ws`,
@@ -85,6 +87,7 @@ const ImagiMapper: FC = () => {
       if (type === 'MAP_DATA') {
         console.log('[Imagimapper] Received map data:', payload);
         actions.setMapData(payload);
+        timerActions.initFromMapData(payload);
       } else if (type === 'LAYER_DATA_REFRESHED') {
         console.log('[Imagimapper] Received layer data refresh:', payload);
         // actions.setLayerData(payload);
@@ -113,6 +116,20 @@ const ImagiMapper: FC = () => {
           // TODO: Toast message to inform user that their staged marker was deleted bt someone else
           resetStagedMarker();
         }
+      } else if (type === 'TIMER_CREATED') {
+        timerActions.remoteTimerCreated(payload.markerId, payload.countdown);
+      } else if (type === 'TIMER_UPDATED') {
+        timerActions.remoteTimerUpdated(payload.markerId, payload.countdown);
+      } else if (type === 'TIMER_DELETED') {
+        const { timerId, markerId } = payload as {
+          timerId: string;
+          markerId: string;
+        };
+        timerActions.remoteTimerDeleted(markerId, timerId);
+      } else if (type === 'USER_CONNECTED') {
+        console.log('[Imagimapper] User connected:', payload);
+      } else if (type === 'USER_DISCONNECTED') {
+        console.log('[Imagimapper] User disconnected:', payload);
       } else {
         console.error('[Imagimapper] Unknown message type:', type, payload);
       }

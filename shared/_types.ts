@@ -28,6 +28,7 @@ export type Countdown = {
   pauseTime?: Date;
   isPaused: boolean;
   isRunning: boolean;
+  alarm: boolean;
   note?: string;
 };
 
@@ -43,7 +44,7 @@ export type MapMarker = {
     y: number;
   };
   templateId: string;
-  countdown?: Countdown;
+  countdowns?: Countdown[];
 };
 
 export type MarkerGroup = {

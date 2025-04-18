@@ -14,9 +14,9 @@ export const loader = async ({
   if (!mapId) {
     throw new Error('No map id found');
   }
-  console.log('Loading User Map Data for MapId:', mapId);
+  console.log('[MapId Data] Loading User Map Data for MapId:', mapId);
   const mapData = await GetUserMap(mapId);
-  console.log('Loading User Map Data', mapData);
+  console.log('[MapId Data] Loading User Map Data', mapData);
   return {
     map: mapData.map,
     metadata: mapData.userMetadata,

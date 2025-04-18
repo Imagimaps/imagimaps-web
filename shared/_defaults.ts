@@ -39,9 +39,13 @@ export const NewLayer = (layerOrder: number): MapLayer => {
   };
 };
 
-export const DefaultCountdown = (name: string, position: number): Countdown => {
+export const DefaultCountdown = (
+  name: string,
+  position: number,
+  id?: string,
+): Countdown => {
   return {
-    id: v7(),
+    id: id ?? v7(),
     name,
     position,
     totalCountdownSeconds: 20 * 60, // 20 minutes in seconds
@@ -51,5 +55,6 @@ export const DefaultCountdown = (name: string, position: number): Countdown => {
     pauseTime: undefined,
     isPaused: false,
     isRunning: false,
+    alarm: true,
   };
 };

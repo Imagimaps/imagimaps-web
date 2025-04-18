@@ -5,7 +5,10 @@ import { TimerModel } from '../state/timers';
 
 const EverySecond: FC = () => {
   const [{ timers }, timerActions] = useModel(TimerModel);
-  const countdownRefs = useRef<Map<string, Countdown[]>>(timers);
+  const countdownRefs =
+    useRef<
+      Map<string, { countdown: Countdown; uiState: { isEditing: boolean } }[]>
+    >(timers);
 
   useEffect(() => {
     countdownRefs.current = timers;
@@ -29,7 +32,7 @@ const EverySecond: FC = () => {
         }
 
         timers.forEach((countdowns, markerId) => {
-          countdowns.forEach(countdown => {
+          countdowns.forEach(({ countdown }) => {
             if (countdown.isRunning && !countdown.isPaused) {
               timerActions.tickTimer(markerId, countdown, 1);
             }

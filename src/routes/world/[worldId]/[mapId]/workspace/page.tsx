@@ -26,7 +26,7 @@ const WorkspacePage: React.FC = () => {
         console.error('No mapId detected in URL');
         return;
       }
-      console.log('Getting Map Details for Map:', mapId);
+      console.log('[Workspace] Getting Map Details for Map:', mapId);
       GetUserMap(mapId).then(res => {
         const { map, userMetadata } = res;
         console.log('[Workspace] Fetched Map:', map, userMetadata);
