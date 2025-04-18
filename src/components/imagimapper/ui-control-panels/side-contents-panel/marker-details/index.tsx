@@ -167,7 +167,7 @@ const MarkerDetails: FC = () => {
             }}
           />
           <TitleRow editMode={editMode} />
-          <TabView>
+          <TabView className="marker-details-tabs">
             <TabPanel header="Info">
               <LocationRow editMode={editMode} />
               <OverlayRow editMode={editMode} />
