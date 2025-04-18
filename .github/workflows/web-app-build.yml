@@ -83,7 +83,7 @@ jobs:
           HUSKY: '0'
 
       - name: Build
-        run: pnpm --filter=webapp build
+        run: pnpm build
 
       - name: Assemble WebApp files for packaging
         run: |
