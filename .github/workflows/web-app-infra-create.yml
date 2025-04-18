@@ -66,3 +66,33 @@ jobs:
           artifacts_aws_account_id: ${{ secrets.ARTIFACTS_AWS_ACCOUNT_ID }}
           artifacts_aws_role_arn: ${{ secrets.ARTIFACTS_AWS_ROLE_ARN }}
           aws_region: ${{ vars.AWS_REGION }}
+
+  prod-bff-infra:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      SERVICE_NAME: webapp-bff
+      SERVICE_PATH_IDENTIFIER: bff
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9
+          terraform_wrapper: false
+
+      - name: Bootstrap Infra for Webapp BFF
+        uses: Imagimaps/common-actions/.github/actions/bootstrap-service@main
+        with:
+          service_name: ${{ env.SERVICE_NAME }}
+          service_path_identifier: ${{ env.SERVICE_PATH_IDENTIFIER }}
+          environment: production
+          environment_short_name: prod
+          aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+          aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
+          artifacts_aws_account_id: ${{ secrets.ARTIFACTS_AWS_ACCOUNT_ID }}
+          artifacts_aws_role_arn: ${{ secrets.ARTIFACTS_AWS_ROLE_ARN }}
+          aws_region: ${{ vars.AWS_REGION }}

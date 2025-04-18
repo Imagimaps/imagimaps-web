@@ -90,7 +90,7 @@ jobs:
         env:
           DISTRIBUTION_ID: ${{ steps.cf-distribution.outputs.distribution_id }}
 
-  deploy-bff:
+  dev-deploy-bff:
     runs-on: ubuntu-latest
     environment: development
     env:
@@ -111,6 +111,33 @@ jobs:
         with:
           environment: development
           environment_short_name: dev
+          service_name: ${{ env.SERVICE_NAME }}
+          aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+          aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
+          artifacts_aws_account_id: ${{ secrets.ARTIFACTS_AWS_ACCOUNT_ID }}
+          aws_region: ${{ vars.AWS_REGION }}
+
+  prod-deploy-bff:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      SERVICE_NAME: webapp-bff
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9
+          terraform_wrapper: false
+
+      - name: Deploy to production
+        uses: Imagimaps/common-actions/.github/actions/deploy-service@main
+        with:
+          environment: production
+          environment_short_name: prod
           service_name: ${{ env.SERVICE_NAME }}
           aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
           aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}

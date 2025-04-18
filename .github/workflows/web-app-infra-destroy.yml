@@ -37,3 +37,26 @@ jobs:
           aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
           aws_region: ${{ vars.AWS_REGION }}
           destroy: true
+
+  prod-webapp-infra:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9
+          terraform_wrapper: false
+
+      - name: Bootstrap WebApp Infrastructure
+        id: webapp-infra
+        uses: Imagimaps/common-actions/.github/actions/s3-static-site@main
+        with:
+          domain: imagimaps.com
+          environment: production
+          environment_short_name: prod
+          aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
+          aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+          aws_region: ${{ vars.AWS_REGION }}
+          destroy: true
