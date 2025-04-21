@@ -118,6 +118,8 @@ jobs:
           aws_region: ${{ vars.AWS_REGION }}
 
   prod-deploy-bff:
+    needs:
+      - dev-deploy-bff
     runs-on: ubuntu-latest
     environment: production
     env:

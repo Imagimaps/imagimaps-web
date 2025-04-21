@@ -68,6 +68,8 @@ jobs:
           aws_region: ${{ vars.AWS_REGION }}
 
   prod-bff-infra:
+    needs:
+      - dev-bff-infra
     runs-on: ubuntu-latest
     environment: production
     env:
