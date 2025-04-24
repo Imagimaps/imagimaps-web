@@ -23,7 +23,7 @@ env:
   ARTIFACT_PATH: out/webapp
 
 jobs:
-  deploy-webapp:
+  dev-deploy-webapp:
     runs-on: ubuntu-latest
     environment: development
     env:
@@ -117,9 +117,80 @@ jobs:
           artifacts_aws_account_id: ${{ secrets.ARTIFACTS_AWS_ACCOUNT_ID }}
           aws_region: ${{ vars.AWS_REGION }}
 
+  prod-deploy-webapp:
+    needs:
+      - dev-deploy-webapp
+      - dev-deploy-bff
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      website_bucket: imagimaps.com
+      environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get latest run_id for "WebApp Build"
+        id: get-run-id
+        run: |
+          latest_run_id=$(gh run list --workflow="WebApp Build" --branch=main --json databaseId --jq '.[0].databaseId')
+          echo "latest_run_id=$latest_run_id" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
+          github-token: ${{ secrets.GH_PAT }}
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.get-run-id.outputs.latest_run_id }}
+
+      - name: Login to AWS
+        id: login-aws
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Deploy WebApp to S3
+        run: |
+          echo "Deploying WebApp to S3"
+          echo "Artifact Path: ${{ env.ARTIFACT_PATH }}"
+          echo "Bucket Name: ${{ env.website_bucket }}"
+          aws s3 cp ./${{ env.ARTIFACT_PATH }} s3://${{ env.website_bucket }} --recursive
+
+      - name: Get CloudFront Distribution ID
+        id: cf-distribution
+        run: |
+          TAG_KEY1="Environment"
+          TAG_VALUE1="${{ env.environment }}"
+          TAG_KEY2="Project"
+          TAG_VALUE2="imagimaps"
+          distribution_arns=$(aws cloudfront list-distributions --query "DistributionList.Items[*].ARN" --output text)
+          for arn in $distribution_arns; do
+            tags=$(aws cloudfront list-tags-for-resource --resource $arn --query "Tags.Items" --output json)
+            if echo $tags | jq -e ".[] | select(.Key == \"$TAG_KEY1\" and .Value == \"$TAG_VALUE1\")" > /dev/null && \
+                echo $tags | jq -e ".[] | select(.Key == \"$TAG_KEY2\" and .Value == \"$TAG_VALUE2\")" > /dev/null; then
+              distribution_id=$(aws cloudfront list-distributions --query "DistributionList.Items[?ARN=='$arn'].Id" --output text)
+              echo "distribution_id=$distribution_id" >> $GITHUB_OUTPUT
+              break
+            fi
+          done
+
+      - name: Invalidate CloudFront cache
+        run: |
+          echo "Invalidating CloudFront cache for distribution $DISTRIBUTION_ID"
+          echo 'aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"'
+        env:
+          DISTRIBUTION_ID: ${{ steps.cf-distribution.outputs.distribution_id }}
+
   prod-deploy-bff:
     needs:
       - dev-deploy-bff
+      - dev-deploy-webapp
     runs-on: ubuntu-latest
     environment: production
     env:
