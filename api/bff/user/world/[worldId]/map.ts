@@ -31,6 +31,12 @@ export const put = async (
     'Content-Type': 'application/json',
   };
 
+  logger.debug({
+    msg: 'Create Map Request',
+    endpoint: `PUT ${mapServiceBaseUrl}/api/map`,
+    headers,
+    body: JSON.stringify({ name, description, worldId }),
+  });
   const createMapRes = await fetch(`${mapServiceBaseUrl}/api/map`, {
     method: 'PUT',
     headers,
@@ -38,10 +44,17 @@ export const put = async (
   });
 
   if (!createMapRes.ok) {
+    console.error({ msg: 'Error creating map', createMapRes });
     throw new Error(`Failed to update world. Status: ${createMapRes.status}`);
   }
 
   const map: Map = await createMapRes.json();
+  logger.debug({
+    msg: 'Register Map in World Request',
+    endpoint: `PUT ${userServiceBaseUrl}/api/user/world/${worldId}/map`,
+    headers,
+    body: JSON.stringify({ mapId: map.id }),
+  });
   const addMapToWorldRes = await fetch(
     `${userServiceBaseUrl}/api/user/world/${worldId}/map`,
     {
@@ -57,7 +70,7 @@ export const put = async (
     );
   }
 
-  console.log('World updated', map);
+  logger.info({ msg: 'World updated', map });
 
   return map;
 };

@@ -39,7 +39,6 @@ const Callback = () => {
       console.log('User is authenticated, redirecting to /');
       window.close();
       // TODO: Countdown 5s then close window
-      // window.close();
     }
   }, [authState.isAuthenticated]);
 
