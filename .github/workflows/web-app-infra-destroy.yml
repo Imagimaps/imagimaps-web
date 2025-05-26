@@ -2,7 +2,7 @@ name: Infra Destroy (Soft)
 
 on:
   schedule:
-    - cron: '45 13 * * *' # 23:45 AEST (1:45pm UTC)
+    - cron: '45 12 * * *' # 22:45 AEST (12:45pm UTC)
   workflow_dispatch:
 
 permissions:
