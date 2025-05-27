@@ -1,4 +1,4 @@
-import pino from 'pino';
+import pino, { TransportTargetOptions } from 'pino';
 import NodeCache from 'node-cache';
 import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
 
@@ -9,18 +9,51 @@ const DEFAULT_LOG_LEVEL = 'debug';
 const logLevel = process.env.LOG_LEVEL || DEFAULT_LOG_LEVEL;
 const autoLogging = process.env.AUTO_LOGGING === 'true';
 const dev = process.env.NODE_ENV !== 'production';
+const lokiUrl = process.env.LOKI_URL || 'http://localhost:3100';
+
+const transportTargets: TransportTargetOptions[] = [
+  {
+    target: 'pino-loki',
+    level: process.env.LOG_LEVEL || 'info',
+    options: {
+      batching: true,
+      interval: 5, // Send logs every 5 seconds
+      labels: {
+        app: 'webapp-bff',
+        environment: dev ? 'development' : 'production',
+        service: 'webapp-bff',
+      },
+      host: lokiUrl,
+      replaceTimestamp: false,
+      silenceErrors: false, // Log transport errors
+      timeout: 5000, // 5 seconds timeout for HTTP requests
+      // Add authentication if needed
+      ...(process.env.LOKI_USERNAME && process.env.LOKI_PASSWORD
+        ? {
+            basicAuth: {
+              username: process.env.LOKI_USERNAME,
+              password: process.env.LOKI_PASSWORD,
+            },
+          }
+        : {}),
+    },
+  },
+];
+if (dev) {
+  transportTargets.unshift({
+    target: 'pino-pretty',
+    options: {
+      colorize: true,
+    },
+  });
+}
 
 const config = {
   level: logLevel,
   autoLogging,
-  transport: dev
-    ? {
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
-        },
-      }
-    : undefined,
+  transport: {
+    targets: transportTargets,
+  },
 };
 
 const logger = pino(config);
