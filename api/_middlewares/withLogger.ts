@@ -9,7 +9,8 @@ const DEFAULT_LOG_LEVEL = 'debug';
 const logLevel = process.env.LOG_LEVEL || DEFAULT_LOG_LEVEL;
 const autoLogging = process.env.AUTO_LOGGING === 'true';
 const dev = process.env.NODE_ENV !== 'production';
-const lokiUrl = process.env.LOKI_URL || 'http://localhost:3100';
+const remoteLoggingEndpoint =
+  process.env.LOGGING_ENDPOINT || 'http://localhost:3100';
 
 const transportTargets: TransportTargetOptions[] = [
   {
@@ -23,7 +24,7 @@ const transportTargets: TransportTargetOptions[] = [
         environment: dev ? 'development' : 'production',
         service: 'webapp-bff',
       },
-      host: lokiUrl,
+      host: remoteLoggingEndpoint,
       replaceTimestamp: false,
       silenceErrors: false, // Log transport errors
       timeout: 5000, // 5 seconds timeout for HTTP requests
