@@ -29,11 +29,11 @@ const transportTargets: TransportTargetOptions[] = [
       silenceErrors: false, // Log transport errors
       timeout: 5000, // 5 seconds timeout for HTTP requests
       // Add authentication if needed
-      ...(process.env.LOKI_USERNAME && process.env.LOKI_PASSWORD
+      ...(process.env.LOGGING_USERNAME && process.env.LOGGING_PASSWORD
         ? {
             basicAuth: {
-              username: process.env.LOKI_USERNAME,
-              password: process.env.LOKI_PASSWORD,
+              username: process.env.LOGGING_USERNAME,
+              password: process.env.LOGGING_PASSWORD,
             },
           }
         : {}),
