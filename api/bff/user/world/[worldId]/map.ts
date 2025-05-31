@@ -33,11 +33,11 @@ export const put = async (
 
   logger.debug({
     msg: 'Create Map Request',
-    endpoint: `PUT ${mapServiceBaseUrl}/api/map`,
+    endpoint: `PUT ${mapServiceBaseUrl}/api/map/`,
     headers,
     body: JSON.stringify({ name, description, worldId }),
   });
-  const createMapRes: Response = await fetch(`${mapServiceBaseUrl}/api/map`, {
+  const createMapRes: Response = await fetch(`${mapServiceBaseUrl}/api/map/`, {
     method: 'PUT',
     headers,
     body: JSON.stringify({ name, description, worldId }),
@@ -46,7 +46,11 @@ export const put = async (
   if (!createMapRes.ok) {
     logger.error({
       msg: 'Error creating map',
-      response: JSON.stringify(createMapRes),
+      response: JSON.stringify({
+        status: createMapRes.status,
+        statusText: createMapRes.statusText,
+      }),
+      endpoint: `PUT ${mapServiceBaseUrl}/api/map/`,
     });
     throw new Error(`Failed to update world. Status: ${createMapRes.status}`);
   }
@@ -70,7 +74,10 @@ export const put = async (
   if (!addMapToWorldRes.ok) {
     logger.error({
       msg: 'Failed to add map to world',
-      response: JSON.stringify(addMapToWorldRes),
+      response: JSON.stringify({
+        status: addMapToWorldRes.status,
+        statusText: addMapToWorldRes.statusText,
+      }),
     });
     throw new Error(
       `Failed to add map to world. Status: ${addMapToWorldRes.status}`,
