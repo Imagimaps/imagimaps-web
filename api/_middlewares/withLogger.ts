@@ -8,20 +8,33 @@ const client = new SSMClient({ region: 'ap-southeast-2' });
 const DEFAULT_LOG_LEVEL = 'debug';
 const logLevel = process.env.LOG_LEVEL || DEFAULT_LOG_LEVEL;
 const autoLogging = process.env.AUTO_LOGGING === 'true';
-const dev = process.env.NODE_ENV !== 'production';
+const isLocal = !process.env.DEPLOYED_ENV;
+const deployedEnvironment = process.env.DEPLOYED_ENV || 'local';
+const remoteLoggingEnabled = process.env.REMOTE_LOGGING_ENABLED === 'true';
 const remoteLoggingEndpoint =
   process.env.LOGGING_ENDPOINT || 'http://localhost:3100';
 
-const transportTargets: TransportTargetOptions[] = [
-  {
+const transportTargets: TransportTargetOptions[] = [];
+
+if (isLocal) {
+  transportTargets.push({
+    target: 'pino-pretty',
+    options: {
+      colorize: true,
+    },
+  });
+}
+
+if (remoteLoggingEnabled) {
+  transportTargets.push({
     target: 'pino-loki',
     level: process.env.LOG_LEVEL || 'info',
     options: {
       batching: true,
       interval: 5, // Send logs every 5 seconds
       labels: {
-        app: 'webapp-bff',
-        environment: dev ? 'development' : 'production',
+        app: 'imagimaps',
+        environment: deployedEnvironment,
         service: 'webapp-bff',
       },
       host: remoteLoggingEndpoint,
@@ -38,14 +51,6 @@ const transportTargets: TransportTargetOptions[] = [
           }
         : {}),
     },
-  },
-];
-if (dev) {
-  transportTargets.unshift({
-    target: 'pino-pretty',
-    options: {
-      colorize: true,
-    },
   });
 }
 
@@ -60,7 +65,8 @@ const config = {
 const logger = pino(config);
 
 logger.info({
-  message: `[WithLogger Middleware] Using Logging Config`,
+  message: `Using Logging Config`,
+  middleware: 'WithLogger',
   config,
 });
 
