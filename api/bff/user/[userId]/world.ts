@@ -43,7 +43,7 @@ export const put = async (
   }
 
   const newlyCreatedWorld: World = await createWorldResponse.json();
-  console.log('New World created', newlyCreatedWorld);
+  logger.info('New World created', newlyCreatedWorld);
 
   return newlyCreatedWorld;
 };

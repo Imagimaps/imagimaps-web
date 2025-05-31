@@ -100,7 +100,7 @@ export const post = async (
   }
 
   const updatedWorld: World = await updateWorldRes.json();
-  console.log('World updated', updatedWorld);
+  logger.info('World updated', updatedWorld);
 
   return updatedWorld;
 };

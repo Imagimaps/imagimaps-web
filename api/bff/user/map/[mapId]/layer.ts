@@ -49,7 +49,7 @@ export const put = async (
 
   const newLayer: MapLayer = await createLayerRes.json();
 
-  console.log('Layer Created', newLayer);
+  logger.info('Layer Created', newLayer);
 
   return newLayer;
 };
@@ -99,7 +99,7 @@ export const post = async (
 
   const updatedLayer: MapLayer = await updateLayerRes.json();
 
-  console.log('Layer Updated', updatedLayer);
+  logger.info('Layer Updated', updatedLayer);
 
   return updatedLayer;
 };
