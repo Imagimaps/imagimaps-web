@@ -1,9 +1,9 @@
 import { useRouteError } from '@modern-js/runtime/router';
-import './styles.css';
+import './error/styles.css';
 
-const ErrorPage: React.FC = () => {
+export default function GlobalErrorBoundary() {
   const error = useRouteError();
-  console.error('Uncaught error:', error);
+  console.error('Global uncaught error:', error);
 
   return (
     <div className="error-container">
@@ -36,6 +36,4 @@ const ErrorPage: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default ErrorPage;
+}
