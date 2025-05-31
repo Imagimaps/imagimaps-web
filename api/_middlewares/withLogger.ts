@@ -82,7 +82,10 @@ const WithLogger = async (ctx: any, next: () => Promise<void>) => {
 
       logger.debug('Getting Logging Config from SSM');
       const response = await client.send(command);
-      logger.debug('Logging Config Response', response.Parameter);
+      logger.debug({
+        msg: 'Logging Config Response',
+        params: response.Parameter,
+      });
 
       cLogLevel = response.Parameter?.Value || DEFAULT_LOG_LEVEL;
       cache.set('logLevel', cLogLevel);

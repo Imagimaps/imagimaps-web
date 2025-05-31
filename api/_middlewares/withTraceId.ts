@@ -6,13 +6,19 @@ const WithTraceId = async (ctx: any, next: () => Promise<void>) => {
   if (!traceId) {
     traceId = uuid();
     ctx.request.headers['x-trace-id'] = traceId;
-    logger.warn({
+    logger.trace({
       msg: 'No trace ID found in request headers, Setting one.',
       traceId,
     });
   }
   ctx.traceId = traceId;
-  logger.info(`Trace ID: ${traceId}`);
+  logger.info({
+    msg: 'Trace Start',
+    traceId,
+    path: ctx.request.path,
+    method: ctx.request.method,
+  });
+  ctx.log = ctx.log.child({ traceId });
   await next();
 };
 

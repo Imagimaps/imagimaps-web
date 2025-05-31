@@ -10,11 +10,11 @@ const WithSession = async (ctx: any, next: () => Promise<void>) => {
   if (url.endsWith('/api/bff/health')) {
     await next();
   } else if (isPublicPath) {
-    logger.info('[WithSession Hook] Public path request', url);
+    logger.info({ msg: 'Public path request', url });
     await next();
   } else {
     if (!sessionId) {
-      logger.error('[WithSession Hook]: Session Id not supplied');
+      logger.error('Session Id not supplied');
       ctx.status = 401;
       ctx.body = {
         message: 'Unauthorized',
@@ -23,9 +23,7 @@ const WithSession = async (ctx: any, next: () => Promise<void>) => {
     }
 
     if (Array.isArray(sessionId)) {
-      logger.error(
-        `[WithSession Hook] Somehow ended up with multiple session tokens [${sessionId}]`,
-      );
+      logger.error({ msg: `Multiple session tokens found`, sessionId });
       ctx.status = 403;
       ctx.body = {
         message: 'Forbidden',
@@ -33,9 +31,14 @@ const WithSession = async (ctx: any, next: () => Promise<void>) => {
       return;
     }
 
-    logger.info('[WithSession Hook] Request with session token', sessionId);
+    logger.info({ msg: 'Request with session token', sessionId });
     ctx.state.sessionId = sessionId;
     ctx.state.userId = userId;
+
+    ctx.log = ctx.log.child({
+      sessionId,
+      userId,
+    });
 
     await next();
   }
