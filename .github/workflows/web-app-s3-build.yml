@@ -1,0 +1,63 @@
+name: WebApp S3 Build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'package.json'
+      - 'src/**'
+      - 'shared/**'
+      - 'Dockerfile'
+      - '.github/workflows/web-app-s3-build.yml'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  packages: write
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  ARTIFACT_NAME: webapp
+  ARTIFACT_PATH: out/webapp
+
+jobs:
+  build-webapp:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm -r install
+        env:
+          HUSKY: '0'
+
+      - name: Build
+        run: pnpm build
+
+      - name: Assemble WebApp files for packaging
+        run: |
+          mkdir -p ${{ env.ARTIFACT_PATH }}
+          cp -r dist/static ${{ env.ARTIFACT_PATH }}/static
+          cp dist/html/main/index.html ${{ env.ARTIFACT_PATH }}/index.html
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
+          if-no-files-found: error
+          retention-days: 7

@@ -1,0 +1,66 @@
+name: WebApp BFF Build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'package.json'
+      - 'api/**'
+      - 'shared/**'
+      - 'Dockerfile'
+      - '.github/workflows/web-app-bff-build.yml'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  packages: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-bff:
+    runs-on: ubuntu-latest
+    environment: artifacts
+    env:
+      # target-platforms: linux/amd64,linux/arm64
+      target-platforms: linux/arm64
+      ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Container
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          build-args: |
+            run_args: "--api-only"
+          target: final
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: ${{ env.target-platforms }}
+          tags: |
+            ${{ env.ECR_REGISTRY }}/imagimaps/service/webapp-bff:latest

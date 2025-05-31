@@ -3,8 +3,8 @@ name: WebApp Deploy
 on:
   workflow_dispatch:
     inputs:
-      build-id:
-        description: 'Build ID'
+      s3-build-id:
+        description: 'S3 Build ID (leave empty for latest)'
         required: false
         default: 'latest'
 
@@ -34,10 +34,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Get latest run_id for "WebApp Build"
+      - name: Get latest run_id for "WebApp S3 Build"
         id: get-run-id
         run: |
-          latest_run_id=$(gh run list --workflow="WebApp Build" --branch=main --json databaseId --jq '.[0].databaseId')
+          latest_run_id=$(gh run list --workflow="WebApp S3 Build" --branch=main --json databaseId --jq '.[0].databaseId')
           echo "latest_run_id=$latest_run_id" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
@@ -131,10 +131,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Get latest run_id for "WebApp Build"
+      - name: Get latest run_id for "WebApp S3 Build"
         id: get-run-id
         run: |
-          latest_run_id=$(gh run list --workflow="WebApp Build" --branch=main --json databaseId --jq '.[0].databaseId')
+          latest_run_id=$(gh run list --workflow="WebApp S3 Build" --branch=main --json databaseId --jq '.[0].databaseId')
           echo "latest_run_id=$latest_run_id" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
