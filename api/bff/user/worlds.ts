@@ -6,12 +6,12 @@ const { userServiceBaseUrl } = ServicesConfig();
 
 export default async (): Promise<World[]> => {
   const ctx = useContext();
-  const logger = ctx.log.child({ source: 'GET auth/user/details' });
-  logger.debug('Get User Details');
+  const logger = ctx.log.child({ source: 'GET auth/user/worlds' });
+  logger.debug('Get User Worlds');
 
   const sessionId = ctx.state.sessionId as string;
   const userId = ctx.cookies.get('id-token');
-  logger.debug({ mgs: `Getting details for user`, userId, sessionId });
+  logger.debug({ mgs: `Getting worlds for user`, userId, sessionId });
 
   if (!userId) {
     throw new Error('User not found');
