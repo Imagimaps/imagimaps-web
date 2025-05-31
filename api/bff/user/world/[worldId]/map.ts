@@ -10,7 +10,7 @@ export const put = async (
   { data }: RequestOption<undefined, { name: string; description: string }>,
 ): Promise<Map> => {
   const ctx = useContext();
-  const logger = ctx.log.child({ source: 'POST user/world/[worldId]' });
+  const logger = ctx.log.child({ source: 'PUT user/world/[worldId]/map' });
   const sessionId = ctx.state.sessionId as string;
   const userId = ctx.state.userId as string;
   const { name, description } = data;
@@ -44,7 +44,7 @@ export const put = async (
   });
 
   if (!createMapRes.ok) {
-    console.error({ msg: 'Error creating map', createMapRes });
+    logger.error({ msg: 'Error creating map', createMapRes });
     throw new Error(`Failed to update world. Status: ${createMapRes.status}`);
   }
 
