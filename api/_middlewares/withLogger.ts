@@ -1,4 +1,5 @@
 import pino, { TransportTargetOptions } from 'pino';
+import 'pino-loki';
 import NodeCache from 'node-cache';
 import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
 
