@@ -26,7 +26,7 @@ import { AuthModel } from '@/state/authModel';
 import './index.scss';
 
 const ImagiMapper: FC = () => {
-  const { mapApiHost } = useRemoteBackends();
+  const { baseMapWebSocketUrl } = useRemoteBackends();
   const [{ user }] = useModel(AuthModel);
   const [{ map, userConfig }, actions] = useModel(EngineDataModel);
   const [{ stagedMarkerId }, { resetStagedPointMarker: resetStagedMarker }] =
@@ -36,7 +36,7 @@ const ImagiMapper: FC = () => {
   const [, timerActions] = useModel(TimerModel);
 
   const { sendJsonMessage, lastMessage, readyState } = useWebSocket(
-    `ws://${mapApiHost}/api/map/${map.id}/ws`,
+    `${baseMapWebSocketUrl}/${map.id}/ws`,
     {
       share: true,
       onError: e => {

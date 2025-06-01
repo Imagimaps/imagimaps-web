@@ -35,10 +35,10 @@ const toSeconds = (seconds: number) => {
 };
 
 const CountdownTimer: FC<CountdownTimerProps> = ({ countdown, isEditing }) => {
-  const { mapApiHost } = useRemoteBackends();
+  const { baseMapWebSocketUrl } = useRemoteBackends();
   const [{ map }] = useModel(EngineDataModel);
   const { sendJsonMessage } = useWebSocket(
-    `ws://${mapApiHost}/api/map/${map.id}/ws`,
+    `${baseMapWebSocketUrl}/${map.id}/ws`,
     {
       share: true,
     },

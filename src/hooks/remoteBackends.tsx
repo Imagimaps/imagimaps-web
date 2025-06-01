@@ -10,12 +10,14 @@ export type RemoteBackends = {
   mapApiHost: string;
   mapApiBaseUrl: string;
   cdnBaseUrl: string;
+  baseMapWebSocketUrl: string;
 };
 
 const RemoteBackendsContext = createContext<RemoteBackends>({
   mapApiHost: 'localhost:8082',
   mapApiBaseUrl: 'http://localhost:8082/api/map',
   cdnBaseUrl: 'https://cdn.dev.imagimaps.com',
+  baseMapWebSocketUrl: 'ws://localhost:8082/api/map',
 });
 
 const RemoteBackendsProvider = ({ children }: { children: ReactNode }) => {
@@ -26,6 +28,9 @@ const RemoteBackendsProvider = ({ children }: { children: ReactNode }) => {
   );
   const [cdnBaseUrl, setCdnBaseUrl] = useState<string>(
     'https://cdn.dev.imagimaps.com',
+  );
+  const [baseMapWebSocketUrl, setMapWebSocketUrl] = useState<string>(
+    `ws://${mapApiHost}/api/map`,
   );
 
   useEffect(() => {
@@ -38,6 +43,7 @@ const RemoteBackendsProvider = ({ children }: { children: ReactNode }) => {
         setMapApiHost(`api-alb.${hostname}`);
         setMapApiBaseUrl(`https://api-alb.${hostname}/api/map`);
         setCdnBaseUrl(`https://cdn.${hostname}`);
+        setMapWebSocketUrl(`wss://api-alb.${hostname}/api/map`);
         break;
       default:
         console.error('[RemoteBackend] Unknown hostname:', hostname);
@@ -51,6 +57,7 @@ const RemoteBackendsProvider = ({ children }: { children: ReactNode }) => {
         mapApiHost,
         mapApiBaseUrl,
         cdnBaseUrl,
+        baseMapWebSocketUrl,
       }}
     >
       {children}
